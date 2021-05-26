@@ -65,7 +65,7 @@ let {{
 
 let {{
     def doRipRelativeDecode(Name, opTypes, env):
-        # print "RIPing %s with opTypes %s" % (Name, opTypes)
+        print ("RIPing %s with opTypes %s" % (Name, opTypes))
         env.memoryInst = True
         normEnv = copy.copy(env)
         normEnv.addToDisassembly(
@@ -123,7 +123,7 @@ let {{
     # This function specializes the given piece of code to use a particular
     # set of argument types described by "opTypes".
     def specializeInst(Name, opTypes, env):
-        # print "Specializing %s with opTypes %s" % (Name, opTypes)
+        print ("Specializing %s with opTypes %s" % (Name, opTypes))
         while len(opTypes):
             # Parse the operand type string we're working with
             opType = OpType(opTypes[0])
@@ -258,6 +258,8 @@ let {{
                                 1, X86ISA::ZeroReg, X86ISA::INTREG_RDI, 0,
                                 env.addressSize, false);''')
                 Name += "_M"
+            elif opType.tag == "NR":
+                Name += "_NR"
             else:
                 raise Exception("Unrecognized tag {}.".format(opType.tag))
 

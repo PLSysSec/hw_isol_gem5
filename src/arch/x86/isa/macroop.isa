@@ -156,6 +156,9 @@ let {{
         def control_indirect(self):
             self.control_indirect = True
 
+        def unrestricted(self):
+            self.unrestricted = True
+
         def __init__(self, name):
             super(X86Macroop, self).__init__(name)
             self.directives = {
@@ -167,7 +170,8 @@ let {{
                 "function_call" : self.function_call,
                 "function_return" : self.function_return,
                 "control_direct" : self.control_direct,
-                "control_indirect" : self.control_indirect
+                "control_indirect" : self.control_indirect,
+                "unrestricted": self.unrestricted
             }
             self.declared = False
             self.adjust_env = ""
@@ -188,6 +192,7 @@ let {{
             self.function_return = False
             self.control_direct = False
             self.control_indirect = False
+            self.unrestricted = False
 
         def getAllocator(self, env):
             return "new X86Macroop::%s(machInst, %s)" % \
@@ -223,6 +228,8 @@ let {{
                         flags.append("IsSerializing")
                         flags.append("IsSerializeBefore")
 
+                if self.unrestricted:
+                        flags.append("IsUnrestricted")
                 if micropc == numMicroops - 1:
                     flags.append("IsLastMicroop")
 

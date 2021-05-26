@@ -209,6 +209,8 @@ class StaticInst : public RefCounted, public StaticInstFlags
     bool isHtmStop() const { return flags[IsHtmStop]; }
     bool isHtmCancel() const { return flags[IsHtmCancel]; }
 
+    bool isUnrestricted() const { return flags[IsUnrestricted]; }
+
     bool
     isHtmCmd() const
     {

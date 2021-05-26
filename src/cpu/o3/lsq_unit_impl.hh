@@ -45,6 +45,7 @@
 
 #include "arch/generic/debugfaults.hh"
 #include "arch/locked_mem.hh"
+#include "arch/x86/faults.hh"
 #include "base/str.hh"
 #include "config/the_isa.hh"
 #include "cpu/checker/cpu.hh"
@@ -640,6 +641,25 @@ LSQUnit<Impl>::executeLoad(const DynInstPtr &inst)
         // mem access is complete.
         return NoFault;
     }
+
+    if (inst->readMiscReg(MISCREG_SANDBOX_EN)) {
+        // TODO check if instruction is unrestricted then skip the check
+        if (!inst->isUnrestricted()) {
+            if ((inst->effAddr < inst->readMiscReg(MISCREG_SANDBOX_BASE))  ||
+            (inst->effAddr > (inst->readMiscReg(MISCREG_SANDBOX_BASE) +
+            inst->readMiscReg(MISCREG_SANDBOX_SIZE)))) {
+                std::cout << "lower bound: " << std::hex <<
+                inst->readMiscReg(MISCREG_SANDBOX_BASE) << ", upper bound: " <<
+                std::hex << inst->readMiscReg(MISCREG_SANDBOX_BASE) +
+                inst->readMiscReg(MISCREG_SANDBOX_SIZE) << std::endl;
+                std::cout << "effAddr: " << std::hex << inst->effAddr <<
+                std::endl;
+                inst->fault = std::make_shared<BoundsCheck>();
+                load_fault = inst->fault;
+            }
+        }
+    }
+
 
     // If the instruction faulted or predicated false, then we need to send it
     // along to commit without the instruction completing.

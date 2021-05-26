@@ -395,6 +395,11 @@ namespace X86ISA
         // "Fake" MSRs for internally implemented devices
         MISCREG_PCI_CONFIG_ADDRESS,
 
+        MISCREG_SANDBOX_EN,
+        MISCREG_SANDBOX_ID,
+        MISCREG_SANDBOX_BASE,
+        MISCREG_SANDBOX_SIZE,
+
         NUM_MISCREGS
     };
 

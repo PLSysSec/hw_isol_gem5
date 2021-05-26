@@ -574,6 +574,7 @@ class BaseDynInst : public ExecContext, public RefCounted
     bool isHtmCancel() const { return staticInst->isHtmCancel(); }
     bool isHtmCmd() const { return staticInst->isHtmCmd(); }
 
+    bool isUnrestricted() const { return staticInst->isUnrestricted(); }
     uint64_t
     getHtmTransactionUid() const override
     {

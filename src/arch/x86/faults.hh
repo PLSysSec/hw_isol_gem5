@@ -315,6 +315,12 @@ class MachineCheck : public X86Abort
     MachineCheck() : X86Abort("Machine-Check", "#MC", 18) {}
 };
 
+class BoundsCheck : public X86Abort
+{
+  public:
+    BoundsCheck() : X86Abort("Bounds-Check", "#BC", 19) {}
+};
+
 class SIMDFloatingPointFault : public X86Fault
 {
   public:

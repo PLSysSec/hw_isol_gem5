@@ -209,12 +209,10 @@
                         panic("M5 panic instruction called at pc = %#x.\n",
                               RIP);
                     }}, IsNonSpeculative);
-                    0x55: m5reserved1({{
-                        warn("M5 reserved opcode 1 ignored.\n");
-                    }}, IsNonSpeculative);
-                    0x56: m5reserved2({{
-                        warn("M5 reserved opcode 2 ignored.\n");
-                    }}, IsNonSpeculative);
+                    0x55: Inst::SAND_ENTRY();
+                    format Inst{
+                        0x8B: MOV(Ev,Gv, NRv);
+                    }
                     0x57: m5reserved3({{
                         warn("M5 reserved opcode 3 ignored.\n");
                     }}, IsNonSpeculative);

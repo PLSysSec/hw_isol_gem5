@@ -62,6 +62,8 @@ Decoder::doResetState()
     emi.modRM = 0;
     emi.sib = 0;
 
+    emi.unrestricted = 0;
+
     if (instBytes->si) {
         return FromCacheState;
     } else {
@@ -230,6 +232,11 @@ Decoder::doPrefixState(uint8_t nextByte)
         emi.vex.present = 1;
         nextState = Vex2Of3State;
         break;
+      case Unrestricted:
+        DPRINTF(Decoder, "Found Rex prefix %#x.\n", nextByte);
+        emi.unrestricted = 1;
+        break;
+
       case 0:
         nextState = OneByteOpcodeState;
         break;
@@ -724,6 +731,10 @@ Decoder::decode(PCState &nextPC)
     }
 
     si = decode(emi, origPC);
+    if (emi.unrestricted)
+    {
+      si->setisUnrestricted();
+    }
     return si;
 }
 

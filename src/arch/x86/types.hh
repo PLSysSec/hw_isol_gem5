@@ -68,6 +68,7 @@ namespace X86ISA
         Vex2Prefix,
         Vex3Prefix,
         XopPrefix,
+        Unrestricted,
     };
 
     BitUnion8(LegacyPrefixVector)
@@ -228,6 +229,8 @@ namespace X86ISA
         uint8_t stackSize;
         //The size of the displacement
         uint8_t dispSize;
+        //Unrestricted
+        uint8_t unrestricted;
 
         //Mode information
         OperatingMode mode;

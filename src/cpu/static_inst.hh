@@ -219,6 +219,7 @@ class StaticInst : public RefCounted, public StaticInstFlags
     //@}
 
     void setFirstMicroop() { flags[IsFirstMicroop] = true; }
+    void setisUnrestricted() {flags[IsUnrestricted] = true; }
     void setLastMicroop() { flags[IsLastMicroop] = true; }
     void setDelayedCommit() { flags[IsDelayedCommit] = true; }
     void setFlag(Flags f) { flags[f] = true; }

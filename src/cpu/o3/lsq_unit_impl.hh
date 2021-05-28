@@ -658,6 +658,7 @@ LSQUnit<Impl>::executeLoad(const DynInstPtr &inst)
                 load_fault = inst->fault;
             }
         }
+
     }
 
 

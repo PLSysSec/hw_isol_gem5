@@ -46,18 +46,18 @@ def macroop SAND_ENTRY
     ld t2, seg, [1, t0, rax], 8, dataSize=8
     ld t3, seg, [1, t0, rax], 16, dataSize=8
 
-    rdval t6, "InstRegIndex(MISCREG_SANDBOX_BASE)"
+    rdval t6, "InstRegIndex(MISCREG_SANDBOX_BASE_1)"
     sub t4, t2, t6, flags=(SF,)
     br label("error"), flags=(CSF,)
     add t4, t2, t3
-    rdval t7, "InstRegIndex(MISCREG_SANDBOX_SIZE)"
+    rdval t7, "InstRegIndex(MISCREG_SANDBOX_SIZE_1)"
     add t5, t6, t7
     sub t4, t5, t4, flags=(SF,)
     br label("error"), flags=(CSF,)
 
     wrval "InstRegIndex(MISCREG_SANDBOX_ID)", t1
-    wrval "InstRegIndex(MISCREG_SANDBOX_BASE)", t2
-    wrval "InstRegIndex(MISCREG_SANDBOX_SIZE)", t3
+    wrval "InstRegIndex(MISCREG_SANDBOX_BASE_1)", t2
+    wrval "InstRegIndex(MISCREG_SANDBOX_SIZE_1)", t3
 
     limm t1, 1
     wrval "InstRegIndex(MISCREG_SANDBOX_EN)", t1

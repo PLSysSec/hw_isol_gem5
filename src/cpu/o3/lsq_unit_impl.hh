@@ -643,17 +643,16 @@ LSQUnit<Impl>::executeLoad(const DynInstPtr &inst)
     }
 
     if (inst->readMiscReg(MISCREG_SANDBOX_EN)) {
-        // TODO check if instruction is unrestricted then skip the check
-        if (!inst->isUnrestricted()) {
-            if ((inst->effAddr < inst->readMiscReg(MISCREG_SANDBOX_BASE))  ||
-            (inst->effAddr > (inst->readMiscReg(MISCREG_SANDBOX_BASE) +
-            inst->readMiscReg(MISCREG_SANDBOX_SIZE)))) {
-                std::cout << "lower bound: " << std::hex <<
-                inst->readMiscReg(MISCREG_SANDBOX_BASE) << ", upper bound: " <<
-                std::hex << inst->readMiscReg(MISCREG_SANDBOX_BASE) +
-                inst->readMiscReg(MISCREG_SANDBOX_SIZE) << std::endl;
-                std::cout << "effAddr: " << std::hex << inst->effAddr <<
-                std::endl;
+        if (!inst->macroop->isUnrestricted()) {
+            if ((inst->effAddr < inst->readMiscReg(MISCREG_SANDBOX_BASE_1))  ||
+            (inst->effAddr > (inst->readMiscReg(MISCREG_SANDBOX_BASE_1) +
+            inst->readMiscReg(MISCREG_SANDBOX_SIZE_1)))) {
+                std::cout << "SANDBOX EXCEPTION. lower bound: " << std::hex <<
+                inst->readMiscReg(MISCREG_SANDBOX_BASE_1) << ", upper bound: "
+                << std::hex << inst->readMiscReg(MISCREG_SANDBOX_BASE_1) +
+                inst->readMiscReg(MISCREG_SANDBOX_SIZE_1) << std::endl;
+                std::cout << "Violating address: " << std::hex << inst->effAddr
+                << std::endl;
                 inst->fault = std::make_shared<BoundsCheck>();
                 load_fault = inst->fault;
             }

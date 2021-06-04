@@ -35,3 +35,13 @@ images.
 If you have questions, please send mail to gem5-users@gem5.org
 
 Enjoy using gem5 and please share your modifications and extensions.
+
+
+Hardware Isolation Project Build and Execute:
+To build gem5, use this command:
+<path to scons> build/X86/gem5.opt -j <number of jobs>
+For example: ../scons/bin/scons build/X86/gem5.opt -j 8
+
+To execute gem5 simulation, use this command:
+./build/X86/gem5.opt configs/example/se.py --cpu-type=<CPU> <cache options> -c <path to test binary> -o <arguments to test binary>
+For example: ./build/X86/gem5.opt  configs/example/se.py --cpu-type=DerivO3CPU --caches -c ./tests/test-progs/hello/src/test-umov -o 5

@@ -22,6 +22,12 @@ int entry(void* addr) {
     );
 }
 
+int sand_exit() {
+    __asm (
+        ".byte 0x0F, 0x04, 0x57, 0x00"
+    );
+}
+
 int unrestricted_mov(char * input) {
     __asm__ __volatile__(
         ".byte 0x0e;  mov  (%0), %%rdx" : : "r" (input) : "rdx"
@@ -41,14 +47,18 @@ int main(int argc, char* argv[])
         return -1;
     }
     long arg = strtol(argv[1], NULL, 10);
-    int arr [4] = { 16, 2, 77, 40 };
-    struct Sandbox sandbox = {1, 0, 0x7fffffffee38, 0, 0x7fffffffee38};
+    uint32_t arr [4] = { 16, 2, 77, 40 };
+
+    // Sandbox around arr includes index 0 and 1.
+    struct Sandbox sandbox = {1, 0, 0x7fffffffed38, 0, 0x7fffffffed3f};
     printf("arr start address: %" PRIx64 "\n", &arr);
     printf("base: %" PRIx64 "\n", sandbox.base_1);
     printf("size : %" PRIx64 "\n", sandbox.size_1);
     entry((intptr_t)&sandbox);
 
-    mov(&arr + 4*arg);
-    // unrestricted_mov(&arr + 4*arg);
+    mov(arr + arg);
+    // unrestricted_mov(arr + arg);
+    sand_exit();
+
     return 0;
 }

@@ -39,7 +39,7 @@ def macroop ADD_R_R
     add reg, reg, regm, flags=(OF,SF,ZF,AF,PF,CF)
 };
 
-def macroop SAND_ENTRY
+def macroop LOAD_RANGE
 {
     limm t0, 0
     ld t1, seg, [1, t0, rax], dataSize=8
@@ -59,8 +59,6 @@ def macroop SAND_ENTRY
     wrval "InstRegIndex(MISCREG_SANDBOX_BASE_1)", t2
     wrval "InstRegIndex(MISCREG_SANDBOX_SIZE_1)", t3
 
-    limm t1, 1
-    wrval "InstRegIndex(MISCREG_SANDBOX_EN)", t1
     br label("end")
 
 error:
@@ -71,7 +69,14 @@ end:
 
 };
 
-def macroop SAND_EXIT
+def macroop SAND_ENABLE
+{
+    limm t1, 1
+    wrval "InstRegIndex(MISCREG_SANDBOX_EN)", t1
+
+};
+
+def macroop SAND_DISABLE
 {
     limm t1, 0
     wrval "InstRegIndex(MISCREG_SANDBOX_EN)", t1

@@ -12,7 +12,7 @@ struct Sandbox
     uint64_t size_2;
 };
 
-int entry(void* addr) {
+int load_range(void* addr) {
     __asm (
         "mov %0, %%rax;\
         .byte 0x0F, 0x04, 0x55, 0x00"
@@ -22,7 +22,13 @@ int entry(void* addr) {
     );
 }
 
-int sand_exit() {
+int sand_enable() {
+    __asm (
+        ".byte 0x0F, 0x04, 0x58, 0x00"
+    );
+}
+
+int sand_disable() {
     __asm (
         ".byte 0x0F, 0x04, 0x57, 0x00"
     );
@@ -47,18 +53,19 @@ int main(int argc, char* argv[])
         return -1;
     }
     long arg = strtol(argv[1], NULL, 10);
-    uint32_t arr [4] = { 16, 2, 77, 40 };
+    uint32_t arr [4] = { 0x11, 0x22, 0x33, 0x44 };
 
     // Sandbox around arr includes index 0 and 1.
     struct Sandbox sandbox = {1, 0, 0x7fffffffed38, 0, 0x7fffffffed3f};
     printf("arr start address: %" PRIx64 "\n", &arr);
     printf("base: %" PRIx64 "\n", sandbox.base_1);
     printf("size : %" PRIx64 "\n", sandbox.size_1);
-    entry((intptr_t)&sandbox);
+    sand_enable();
+    load_range((intptr_t)&sandbox);
 
     mov(arr + arg);
     // unrestricted_mov(arr + arg);
-    sand_exit();
+    sand_disable();
 
     return 0;
 }

@@ -405,6 +405,8 @@ X86_64Process::initState()
             tc->setMiscReg(MISCREG_LSTAR, lstar);
             RegVal sfmask = (1 << 8) | (1 << 10); // TF | DF
             tc->setMiscReg(MISCREG_SF_MASK, sfmask);
+            tc->setMiscRegNoEffect(MISCREG_SANDBOX_BASE_1, 0);
+            tc->setMiscRegNoEffect(MISCREG_SANDBOX_SIZE_1, 0xffffffffffff);
         }
 
         /* Set up the content of the TSS and write it to physical memory. */
@@ -580,8 +582,11 @@ X86_64Process::initState()
             tc->setMiscReg(MISCREG_CR0, cr0);
 
             tc->setMiscReg(MISCREG_MXCSR, 0x1f80);
+            tc->setMiscRegNoEffect(MISCREG_SANDBOX_BASE_1, 0);
+            tc->setMiscRegNoEffect(MISCREG_SANDBOX_SIZE_1, 0xffffffffffff);
         }
     }
+
 }
 
 void

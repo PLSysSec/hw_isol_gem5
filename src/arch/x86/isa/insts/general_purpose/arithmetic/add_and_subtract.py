@@ -82,6 +82,11 @@ def macroop SAND_DISABLE
     wrval "InstRegIndex(MISCREG_SANDBOX_EN)", t1
 };
 
+def macroop HFI_GET_VERSION
+{
+    limm rax, 1
+};
+
 def macroop ADD_R_I
 {
     limm t1, imm

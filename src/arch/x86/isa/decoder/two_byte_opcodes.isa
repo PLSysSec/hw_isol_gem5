@@ -227,6 +227,7 @@
                     0x62: m5togglesync({{
                         PseudoInst::togglesync(xc->tcBase());
                     }}, IsNonSpeculative, IsQuiesce);
+                    0x63: Inst::HFI_GET_VERSION();
                     default: Inst::UD2();
                 }
             }

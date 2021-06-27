@@ -6,6 +6,7 @@
 
 extern "C" {
     void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
+    void hfi_load_store_push_pop_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
     uint64_t hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
 }
@@ -35,7 +36,7 @@ int main(int argc, char* argv[])
     hfi_enter_sandbox(&sandbox);
     hfi_exit_sandbox();
 
-    uint64_t array[] = {1,2,3,4,5,6,7,8};
+    uint64_t array[] = {0,1,2,3,4,5,6,7};
 
     //setup sandbox for this array
     for(uint64_t i = 0; i < LINEAR_RANGE_COUNT; i++) {
@@ -47,4 +48,11 @@ int main(int argc, char* argv[])
     // check load and store
     hfi_load_store_test(&sandbox, &(array[3]), &(array[4]));
     assert(array[4] == array[3]);
+    array[4] = 4;
+
+    // check load and store with a push pop
+    // hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
+    // assert(array[4] == array[3]);
+    // array[4] = 4;
+
 }

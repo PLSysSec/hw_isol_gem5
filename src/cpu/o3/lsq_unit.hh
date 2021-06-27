@@ -263,6 +263,15 @@ class LSQUnit
     Fault checkViolations(typename LoadQueue::iterator& loadIt,
             const DynInstPtr& inst);
 
+    void printHFIMetadata(const DynInstPtr& inst);
+    Addr doHFIRangeCheck(const DynInstPtr &inst,
+        TheISA::MiscRegIndex reg_base,
+        TheISA::MiscRegIndex reg_lower,
+        TheISA::MiscRegIndex reg_upper,
+        TheISA::MiscRegIndex reg_perm,
+        bool& out_found,
+        bool& out_faulted);
+
     /** Check if an incoming invalidate hits in the lsq on a load
      * that might have issued out of order wrt another load beacuse
      * of the intermediate invalidate.

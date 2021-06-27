@@ -228,6 +228,9 @@
                         PseudoInst::togglesync(xc->tcBase());
                     }}, IsNonSpeculative, IsQuiesce);
                     0x63: Inst::HFI_GET_VERSION();
+                    0x64: Inst::HFI_GET_LINEAR_RANGE_COUNT();
+                    0x65: Inst::HFI_ENTER_SANDBOX();
+                    0x66: Inst::HFI_EXIT_SANDBOX();
                     default: Inst::UD2();
                 }
             }

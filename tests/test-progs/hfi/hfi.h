@@ -11,7 +11,7 @@ struct hfi_linear_range {
     // Permissions for this range
     char readable;
     char writeable;
-    // char executable;
+    char executable;
     // A constant base whose value is added to all loads and stores performed in the sandbox
     uint64_t base_address;
     // The lower bound of this segment's allowed range
@@ -31,10 +31,22 @@ struct hfi_sandbox {
     hfi_linear_range ranges[LINEAR_RANGE_COUNT];
 };
 
-
 // Get the version of HFI implemented in hardware.
 // Return value: the version of the hfi
 uint64_t hfi_get_version();
+
+// Get the number of ranges supported by HFI.
+// Return value: the number of ranges supported by HFI.
+uint64_t hfi_get_linear_range_count();
+
+// Instruction executed to enter a sandbox.
+// This loads the hfi CPU registers with bounds information used for checking.
+// Parameters: the current sandbox's data
+void hfi_enter_sandbox(hfi_sandbox* param_hfi_curr_sandbox_data);
+
+// Instruction executed to exit a sandbox. Can be invoked by any code
+// Relies on trusted compilers to ensure this instruction is not misused/called from a bad context
+void hfi_exit_sandbox();
 
 #ifdef __cplusplus
 }

@@ -87,6 +87,93 @@ def macroop HFI_GET_VERSION
     limm rax, 1
 };
 
+def macroop HFI_GET_LINEAR_RANGE_COUNT
+{
+    limm rax, 4
+};
+
+def macroop HFI_ENTER_SANDBOX
+{
+    # if (reg_hfi_curr.inside_sandbox) { SIGSEV; }
+    rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    and t1, t1, t1, flags=(ZF,)
+    br label("hfi_enter_sandbox_continue"), flags=(CZF,)
+    fault "std::make_shared<BoundsCheck>()",
+
+hfi_enter_sandbox_continue:
+    limm t1, 0
+    ld t2, seg, [1, t1, rax], dataSize=1
+    ld t3, seg, [1, t1, rax], 1, dataSize=1
+    ld t4, seg, [1, t1, rax], 2, dataSize=1
+    ld t5, seg, [1, t1, rax], 8, dataSize=8
+    ld t6, seg, [1, t1, rax], 16, dataSize=8
+    ld t7, seg, [1, t1, rax], 24, dataSize=8
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_READABLE)", t2
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE)", t3
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_EXECUTABLE)", t4
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)", t6
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)", t7
+
+    limm t1, 32
+    ld t2, seg, [1, t1, rax], dataSize=1
+    ld t3, seg, [1, t1, rax], 1, dataSize=1
+    ld t4, seg, [1, t1, rax], 2, dataSize=1
+    ld t5, seg, [1, t1, rax], 8, dataSize=8
+    ld t6, seg, [1, t1, rax], 16, dataSize=8
+    ld t7, seg, [1, t1, rax], 24, dataSize=8
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_READABLE)", t2
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE)", t3
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_EXECUTABLE)", t4
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)", t6
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)", t7
+
+    limm t1, 64
+    ld t2, seg, [1, t1, rax], dataSize=1
+    ld t3, seg, [1, t1, rax], 1, dataSize=1
+    ld t4, seg, [1, t1, rax], 2, dataSize=1
+    ld t5, seg, [1, t1, rax], 8, dataSize=8
+    ld t6, seg, [1, t1, rax], 16, dataSize=8
+    ld t7, seg, [1, t1, rax], 24, dataSize=8
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_READABLE)", t2
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE)", t3
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_EXECUTABLE)", t4
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)", t6
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)", t7
+
+    limm t1, 96
+    ld t2, seg, [1, t1, rax], dataSize=1
+    ld t3, seg, [1, t1, rax], 1, dataSize=1
+    ld t4, seg, [1, t1, rax], 2, dataSize=1
+    ld t5, seg, [1, t1, rax], 8, dataSize=8
+    ld t6, seg, [1, t1, rax], 16, dataSize=8
+    ld t7, seg, [1, t1, rax], 24, dataSize=8
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_READABLE)", t2
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE)", t3
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_EXECUTABLE)", t4
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)", t6
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)", t7
+
+    limm t1, 1
+    wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t1
+};
+
+def macroop HFI_EXIT_SANDBOX
+{
+    # if (!reg_hfi_curr.inside_sandbox) { SIGSEV; }
+    rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    and t1, t1, t1, flags=(ZF,)
+    br label("hfi_exit_sandbox_continue"), flags=(nCZF,)
+    fault "std::make_shared<BoundsCheck>()",
+
+hfi_exit_sandbox_continue:
+    limm t1, 0
+    wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t1
+};
+
 def macroop ADD_R_I
 {
     limm t1, imm

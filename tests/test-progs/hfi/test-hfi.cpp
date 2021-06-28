@@ -7,6 +7,7 @@
 
 extern "C" {
     void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
+    void hfi_load_store_ret_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     void hfi_load_store_push_pop_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     void hfi_ur_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
@@ -37,6 +38,7 @@ int main(int argc, char* argv[])
     }
 
     // check entry and exit
+    std::cout << "HFI entry exit test\n";
     hfi_enter_sandbox(&sandbox);
     hfi_exit_sandbox();
 
@@ -50,11 +52,19 @@ int main(int argc, char* argv[])
     sandbox.ranges[0].upper_bound = (uintptr_t) &(array[8]);
 
     // check load and store
+    std::cout << "HFI load store test\n";
     hfi_load_store_test(&sandbox, &(array[3]), &(array[4]));
     assert(array[4] == array[3]);
     array[4] = 4;
 
+    // check load and store and returns
+    // std::cout << "HFI load store ret test\n";
+    // hfi_load_store_ret_test(&sandbox, &(array[3]), &(array[4]));
+    // assert(array[4] == array[3]);
+    // array[4] = 4;
+
     // check load and store with a push pop
+    // std::cout << "HFI load store push pop test\n";
     // hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
     // assert(array[4] == array[3]);
     // array[4] = 4;
@@ -63,6 +73,7 @@ int main(int argc, char* argv[])
     sandbox.ranges[0].lower_bound = (uintptr_t) array;
     sandbox.ranges[0].upper_bound = (uintptr_t) &(array[1]);
     // check load and store
+    std::cout << "HFI unrestricted load store test\n";
     hfi_ur_load_store_test(&sandbox, &(array[3]), &(array[4]));
     assert(array[4] == array[3]);
     array[4] = 4;
@@ -82,6 +93,7 @@ int main(int argc, char* argv[])
 
     load_context->curr_sandbox_data = sandbox;
     load_context->inside_sandbox = 1;
+    std::cout << "HFI unrestricted load save context test\n";
     hfi_loadsavecontext_test(&sandbox, save_context, load_context, save_context2);
 
     assert(std::memcmp(save_context, load_context, sizeof(hfi_thread_context)) == 0);

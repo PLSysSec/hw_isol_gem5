@@ -98,6 +98,27 @@ _hfi_store_test:
     .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
 
+.globl noop_func
+.type noop_func,@function
+.align 16
+noop_func:
+_noop_func:
+    ret
+
+.globl hfi_call_test
+.type hfi_call_test,@function
+.align 16
+hfi_call_test:
+_hfi_call_test:
+    # rdi: param 1 is the sandbox params
+    # rsi: param 2 is the call address
+    # enter the sandbox, perform call, then exit
+    mov %rdi, %rax
+    .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
+    call 0x0(%rsi)
+    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
+    ret
+
 .globl hfi_loadsavecontext_test
 .type hfi_loadsavecontext_test,@function
 .align 16

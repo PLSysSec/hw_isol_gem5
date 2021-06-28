@@ -5,6 +5,8 @@
 
 #include "hfi.h"
 
+using void_void_ptr_t = void(*)();
+
 extern "C" {
     void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     void hfi_load_store_ret_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
@@ -12,6 +14,8 @@ extern "C" {
     void hfi_ur_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
     void hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
+    void noop_func();
+    void hfi_call_test(hfi_sandbox* sandbox, void* call_address);
     void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
         hfi_thread_context* load_context, hfi_thread_context* save_context2);
 }
@@ -111,4 +115,10 @@ int main(int argc, char* argv[])
 
     assert(std::memcmp(save_context, load_context, sizeof(hfi_thread_context)) == 0);
     assert(std::memcmp(save_context2, load_context, sizeof(hfi_thread_context)) == 0);
+
+    // check call indirect which does a memory reference
+    void_void_ptr_t func_ptr = &noop_func;
+    sandbox.ranges[0].lower_bound = (uintptr_t) &func_ptr;
+    sandbox.ranges[0].upper_bound = sandbox.ranges[0].lower_bound + sizeof(func_ptr);
+    hfi_call_test(&sandbox, &func_ptr);
 }

@@ -245,6 +245,17 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA){
     using namespace TheISA;
     DPRINTF(HFI, "effective address = %x \n", EA);
 
+    bool is_unrestricted_stack_instruction =
+        // curr_op_code == "push" || curr_op_code == "pop" ||
+        this->macroop->isCall() || this->macroop->isReturn();
+    bool is_unrestricted_mov_instruction = this->macroop->isUnrestricted();
+    bool is_inside_sandbox = this->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX) != 0;
+    bool apply_bounds_checks = is_inside_sandbox &&
+        !is_unrestricted_stack_instruction && !is_unrestricted_mov_instruction;
+    
+    if (!apply_bounds_checks)
+        return NoFault;
+
     if (readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)) {
         if (!this->macroop->isUnrestricted()) {
 

@@ -126,9 +126,9 @@ def template MicroLoadInitiateAcc {{
         %(op_rd)s;
         %(ea_code)s;
         DPRINTF(X86, "%s : %s: The address is %#x\n", instMnem, mnemonic, EA);
-        
-        fault = xc->checkHFI(EA);
-        
+
+        fault = xc->checkHFI(EA, false);
+
         if (fault == NoFault)
             fault = initiateMemRead(xc, traceData, EA,
                                 %(memDataSize)s, memFlags);
@@ -172,12 +172,8 @@ def template MicroStoreExecute {{
         %(op_rd)s;
         %(ea_code)s;
         DPRINTF(X86, "%s : %s: The address is %#x\n", instMnem, mnemonic, EA);
-        
-        fault = xc->checkHFI(EA);
-        
-        if (fault == NoFault){
-            %(code)s;
-        }
+
+        %(code)s;
 
         if (fault == NoFault) {
             fault = writeMemAtomic(xc, traceData, Mem, dataSize, EA,
@@ -203,8 +199,8 @@ def template MicroStoreInitiateAcc {{
         %(ea_code)s;
         DPRINTF(X86, "%s : %s: The address is %#x\n", instMnem, mnemonic, EA);
 
-        fault = xc->checkHFI(EA);
-        
+        fault = xc->checkHFI(EA, true);
+
         if (fault == NoFault){
             %(code)s;
         }

@@ -104,7 +104,7 @@ class BaseO3DynInst : public BaseDynInst<Impl>
         bool& out_faulted);
 
     /** check the HFI for the effective address */
-    Fault checkHFI(Addr &EA);
+    Fault checkHFI(Addr &EA, bool is_store);
 
   private:
     /** Initializes variables. */

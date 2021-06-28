@@ -33,11 +33,21 @@ mybuildout/test-hfi-oob-fail: ../tests/test-progs/hfi/hfi.S ../tests/test-progs/
 	mkdir -p mybuildout
 	$(CXX) $^ $(EXAMPLE_FLAGS) -o $@
 
+mybuildout/test-hfi-readperm-fail: ../tests/test-progs/hfi/hfi.S ../tests/test-progs/hfi/test-hfi-readperm-fail.cpp ../tests/test-progs/hfi/hfi_load_store.S
+	mkdir -p mybuildout
+	$(CXX) $^ $(EXAMPLE_FLAGS) -o $@
+
+mybuildout/test-hfi-writeperm-fail: ../tests/test-progs/hfi/hfi.S ../tests/test-progs/hfi/test-hfi-writeperm-fail.cpp ../tests/test-progs/hfi/hfi_load_store.S
+	mkdir -p mybuildout
+	$(CXX) $^ $(EXAMPLE_FLAGS) -o $@
+
 build-tests: mybuildout/test-umov
 build-tests: mybuildout/test-hfi
 build-tests: mybuildout/test-hfi-reenter-fail
 build-tests: mybuildout/test-hfi-noenterexit-fail
 build-tests: mybuildout/test-hfi-oob-fail
+build-tests: mybuildout/test-hfi-readperm-fail
+build-tests: mybuildout/test-hfi-writeperm-fail
 
 build: build_gem5 build-tests
 
@@ -59,5 +69,14 @@ test-hfi-noenterexit-fail: mybuildout/test-hfi-noenterexit-fail
 test-hfi-oob-fail: mybuildout/test-hfi-oob-fail
 	cd .. && $(EXPECT_FAIL) $(RUN_SIM) mybuild/mybuildout/test-hfi-oob-fail
 
-test: test-hfi test-hfi-reenter-fail test-hfi-noenterexit-fail test-hfi-oob-fail test-umov test-umov-fail
+test-hfi-readperm-fail: mybuildout/test-hfi-readperm-fail
+	cd .. && $(EXPECT_FAIL) $(RUN_SIM) mybuild/mybuildout/test-hfi-readperm-fail
+
+test-hfi-writeperm-fail: mybuildout/test-hfi-writeperm-fail
+	cd .. && $(EXPECT_FAIL) $(RUN_SIM) mybuild/mybuildout/test-hfi-writeperm-fail
+
+old-test: test-umov test-umov-fail
+	@echo "!!!!!!!!!Tests successfully completed!!!!!!!!!"
+
+test: test-hfi test-hfi-reenter-fail test-hfi-noenterexit-fail test-hfi-oob-fail test-hfi-readperm-fail test-hfi-writeperm-fail
 	@echo "!!!!!!!!!Tests successfully completed!!!!!!!!!"

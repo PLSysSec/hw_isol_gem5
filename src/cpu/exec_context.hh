@@ -253,9 +253,9 @@ class ExecContext {
     }
 
 
-    virtual Fault checkHFI(Addr& EA)
+    virtual Fault checkHFI(Addr& EA, bool is_store)
     {
-        panic("ExecContext::checkHFI(Addr&) should be overridden\n");
+        panic("ExecContext::checkHFI(Addr&, bool) should be overridden\n");
     }
 
     /**

@@ -590,7 +590,7 @@ class BaseDynInst : public ExecContext, public RefCounted
     }
 
     Fault
-    checkHFI(Addr &EA) override
+    checkHFI(Addr &EA, bool is_store) override
     {
         panic("Not yet implemented\n");
         return NoFault;

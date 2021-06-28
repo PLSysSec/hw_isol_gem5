@@ -11,7 +11,7 @@ extern "C" {
     void hfi_load_store_push_pop_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     void hfi_ur_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
-    uint64_t hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
+    void hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
     void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
         hfi_thread_context* load_context, hfi_thread_context* save_context2);
 }

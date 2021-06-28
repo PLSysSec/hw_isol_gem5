@@ -1,5 +1,7 @@
 #pragma once
 
+#define HFI_OF_THE_SHELF_EXTENSION
+
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -29,14 +31,31 @@ typedef struct hfi_linear_range {
 typedef struct hfi_sandbox {
     // Each segment specifies an address range and its associated permissions
     hfi_linear_range ranges[LINEAR_RANGE_COUNT];
+    #ifdef HFI_OF_THE_SHELF_EXTENSION
+        // Allow the unrestricted mov instruction
+        bool disallow_unrestricted_mov;
+        // Allow unrestricted stack instructions like push pop ret
+        bool disallow_unrestricted_stack;
+        // Code that is called when the hfi_exit_sandbox or syscall instruction is run while inside a sandbox
+        void* exit_sandbox_handler;
+    #endif
 } hfi_sandbox;
 
 // Context structures that contain all hfi metadata
 // Hardware will allocate registers to store this metadata
 // This structure will also be used to save context when the OS schedules threads (shown later)
+#ifdef HFI_OF_THE_SHELF_EXTENSION
+    enum HFI_EXIT_REASON {
+        HFI_SANDBOX_EXIT,
+        HFI_SANDBOX_SYSCALL
+    };
+#endif
 typedef struct hfi_thread_context {
     hfi_sandbox curr_sandbox_data;
     bool inside_sandbox;
+    #ifdef HFI_OF_THE_SHELF_EXTENSION
+        /* HFI_EXIT_REASON */ uint32_t exit_sandbox_reason;
+    #endif
 } hfi_thread_context;
 
 // Get the version of HFI implemented in hardware.

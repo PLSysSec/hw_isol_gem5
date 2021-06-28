@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <cstring>
 #include <iostream>
 #include <limits>
 
@@ -13,14 +14,13 @@ extern "C" {
 int main(int argc, char* argv[])
 {
     hfi_sandbox sandbox;
+    std::memset(&sandbox, 0, sizeof(hfi_sandbox));
+
     // initialize ranges
     for(uint64_t i = 0; i < LINEAR_RANGE_COUNT; i++) {
         sandbox.ranges[i].readable = 1;
         sandbox.ranges[i].writeable = 1;
         sandbox.ranges[i].executable = 1;
-        sandbox.ranges[i].base_address = 0;
-        sandbox.ranges[i].lower_bound = 0;
-        sandbox.ranges[i].upper_bound = 0;
     }
 
     uint64_t array[] = {1,2,3,4,5,6,7,8};

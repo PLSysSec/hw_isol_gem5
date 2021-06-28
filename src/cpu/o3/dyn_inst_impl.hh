@@ -189,7 +189,6 @@ BaseO3DynInst<Impl>::printHFIMetadata() {
     using namespace TheISA;
 
     std::cout << "HFI sandbox bounds metadata!"
-        << "\nHFI_INSIDE_SANDBOX: " << readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)
         << "\nHFI_LINEAR_RANGE_1_READABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_READABLE)
         << "\nHFI_LINEAR_RANGE_1_WRITEABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE)
         << "\nHFI_LINEAR_RANGE_1_EXECUTABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_EXECUTABLE)
@@ -214,6 +213,11 @@ BaseO3DynInst<Impl>::printHFIMetadata() {
         << "\nHFI_LINEAR_RANGE_4_BASE_ADDRESS: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS)
         << "\nHFI_LINEAR_RANGE_4_LOWER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)
         << "\nHFI_LINEAR_RANGE_4_UPPER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)
+        << "\nHFI_DISALLOW_UNRESTRICTED_MOV: " << readMiscReg(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV)
+        << "\nHFI_DISALLOW_UNRESTRICTED_STACK: " << readMiscReg(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK)
+        << "\nHFI_EXIT_SANDBOX_HANDLER: " << readMiscReg(MISCREG_HFI_EXIT_SANDBOX_HANDLER)
+        << "\nHFI_INSIDE_SANDBOX: " << readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)
+        << "\nHFI_EXIT_REASON: " << readMiscReg(MISCREG_HFI_EXIT_REASON)
         << "\n";
 }
 

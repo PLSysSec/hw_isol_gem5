@@ -84,7 +84,7 @@ def macroop SAND_DISABLE
 
 def macroop HFI_GET_VERSION
 {
-    limm rax, 1
+    limm rax, 2
 };
 
 def macroop HFI_GET_LINEAR_RANGE_COUNT
@@ -157,6 +157,14 @@ hfi_enter_sandbox_continue:
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)", t6
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)", t7
 
+    limm t1, 128
+    ld t2, seg, [1, t1, rax], dataSize=1
+    ld t3, seg, [1, t1, rax], 1, dataSize=1
+    ld t4, seg, [1, t1, rax], 8, dataSize=8
+    wrval "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV)", t2
+    wrval "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK)", t3
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)", t4
+
     limm t1, 1
     .serialize_after
     wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t1
@@ -171,9 +179,9 @@ def macroop HFI_EXIT_SANDBOX
     fault "std::make_shared<BoundsCheck>()",
 
 hfi_exit_sandbox_continue:
-    limm t1, 0
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t0
     .serialize_after
-    wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t1
+    wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t0
 };
 
 # TODO: below instructions should check for ring 0
@@ -237,8 +245,18 @@ def macroop HFI_SAVE_THREAD_CONTEXT
     st t7, seg, [1, t1, rax], 24, dataSize=8
 
     limm t1, 128
-    rdval t2, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    rdval t2, "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV)"
+    rdval t3, "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK)"
+    rdval t4, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
     st t2, seg, [1, t1, rax], dataSize=1
+    st t3, seg, [1, t1, rax], 1, dataSize=1
+    st t4, seg, [1, t1, rax], 8, dataSize=8
+
+    limm t1, 144
+    rdval t2, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    rdval t3, "InstRegIndex(MISCREG_HFI_EXIT_REASON)"
+    st t2, seg, [1, t1, rax], dataSize=1
+    st t3, seg, [1, t1, rax], 4, dataSize=4
 };
 
 def macroop HFI_LOAD_THREAD_CONTEXT
@@ -301,7 +319,17 @@ def macroop HFI_LOAD_THREAD_CONTEXT
 
     limm t1, 128
     ld t2, seg, [1, t1, rax], dataSize=1
+    ld t3, seg, [1, t1, rax], 1, dataSize=1
+    ld t4, seg, [1, t1, rax], 8, dataSize=8
+    wrval "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV)", t2
+    wrval "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK)", t3
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)", t4
+
+    limm t1, 144
+    ld t2, seg, [1, t1, rax], dataSize=1
+    ld t3, seg, [1, t1, rax], 4, dataSize=4
     wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t2
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t3
 };
 
 def macroop ADD_R_I

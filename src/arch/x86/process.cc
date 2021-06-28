@@ -409,8 +409,6 @@ X86_64Process::initState()
             tc->setMiscRegNoEffect(MISCREG_SANDBOX_BASE_1, 0);
             tc->setMiscRegNoEffect(MISCREG_SANDBOX_SIZE_1, 0xffffffffffff);
 
-            tc->setMiscRegNoEffect(MISCREG_HFI_INSIDE_SANDBOX, 0);
-
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_EXECUTABLE, 0);
@@ -439,6 +437,12 @@ X86_64Process::initState()
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND, 0);
 
+            tc->setMiscRegNoEffect(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_EXIT_SANDBOX_HANDLER, 0);
+
+            tc->setMiscRegNoEffect(MISCREG_HFI_INSIDE_SANDBOX, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_EXIT_REASON, 0);
         }
 
         /* Set up the content of the TSS and write it to physical memory. */

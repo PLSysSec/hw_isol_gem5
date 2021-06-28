@@ -1,7 +1,7 @@
 #include <assert.h>
+#include <cstring>
 #include <iostream>
 #include <limits>
-#include <cstring>
 
 #include "hfi.h"
 
@@ -36,8 +36,6 @@ int main(int argc, char* argv[])
         sandbox.ranges[i].readable = 1;
         sandbox.ranges[i].writeable = 1;
         sandbox.ranges[i].executable = 1;
-        sandbox.ranges[i].base_address = 0;
-        sandbox.ranges[i].lower_bound = 0;
         sandbox.ranges[i].upper_bound = std::numeric_limits<uint64_t>::max();
     }
 

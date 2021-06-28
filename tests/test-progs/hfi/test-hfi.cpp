@@ -69,7 +69,20 @@ int main(int argc, char* argv[])
     // assert(array[4] == array[3]);
     // array[4] = 4;
 
+    // check load and store with a base address
+    sandbox.ranges[0].base_address = (uintptr_t) array;
+    sandbox.ranges[0].lower_bound = 0;
+    sandbox.ranges[0].upper_bound = ((uintptr_t) &(array[8])) - ((uintptr_t) &(array[0]));
+    std::cout << "HFI load store test with base address\n";
+    hfi_load_store_test(&sandbox,
+        (void*) ((uintptr_t) &(array[3])) - ((uintptr_t) &(array[0])),
+        (void*) ((uintptr_t) &(array[4])) - ((uintptr_t) &(array[0]))
+    );
+    assert(array[4] == array[3]);
+    array[4] = 4;
+
     // check urmov load and store
+    sandbox.ranges[0].base_address = 0;
     sandbox.ranges[0].lower_bound = (uintptr_t) array;
     sandbox.ranges[0].upper_bound = (uintptr_t) &(array[1]);
     // check load and store

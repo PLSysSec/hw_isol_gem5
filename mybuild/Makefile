@@ -1,4 +1,4 @@
-.PHONY: build test
+.PHONY: build test clean
 
 .DEFAULT_GOAL := build
 
@@ -33,6 +33,10 @@ build: build-gem5 build-tests
 test: $(TEST_NAMES)
 	@echo "!!!!!!!!!Tests successfully completed!!!!!!!!!"
 
-clean:
+clean-gem5:
 	cd .. && scons -c
+
+clean-examples:
 	-rm -rf mybuildout
+
+clean: clean-gem5 clean-examples

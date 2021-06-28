@@ -57,10 +57,7 @@ def template MicroLeaExecute {{
         %(ea_code)s;
         DPRINTF(X86, "%s : %s: The address is %#x\n", instMnem, mnemonic, EA);
 
-        fault = xc->checkHFI(EA);
-
-        if (fault == NoFault)
-            %(code)s;
+        %(code)s;
 
         if(fault == NoFault)
         {

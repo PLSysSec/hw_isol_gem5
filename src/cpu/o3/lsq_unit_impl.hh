@@ -602,61 +602,7 @@ LSQUnit<Impl>::checkViolations(typename LoadQueue::iterator& loadIt,
     return NoFault;
 }
 
-template <class Impl>
-void
-LSQUnit<Impl>::printHFIMetadata(const DynInstPtr &inst) {
-    using namespace TheISA;
 
-    std::cout << "HFI sandbox bounds metadata!"
-        << "\nHFI_INSIDE_SANDBOX: " << inst->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)
-        << "\nHFI_LINEAR_RANGE_1_READABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_READABLE)
-        << "\nHFI_LINEAR_RANGE_1_WRITEABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE)
-        << "\nHFI_LINEAR_RANGE_1_EXECUTABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_EXECUTABLE)
-        << "\nHFI_LINEAR_RANGE_1_BASE_ADDRESS: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS)
-        << "\nHFI_LINEAR_RANGE_1_LOWER_BOUND: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)
-        << "\nHFI_LINEAR_RANGE_1_UPPER_BOUND: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)
-        << "\nHFI_LINEAR_RANGE_2_READABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_READABLE)
-        << "\nHFI_LINEAR_RANGE_2_WRITEABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE)
-        << "\nHFI_LINEAR_RANGE_2_EXECUTABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_EXECUTABLE)
-        << "\nHFI_LINEAR_RANGE_2_BASE_ADDRESS: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS)
-        << "\nHFI_LINEAR_RANGE_2_LOWER_BOUND: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)
-        << "\nHFI_LINEAR_RANGE_2_UPPER_BOUND: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)
-        << "\nHFI_LINEAR_RANGE_3_READABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_READABLE)
-        << "\nHFI_LINEAR_RANGE_3_WRITEABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE)
-        << "\nHFI_LINEAR_RANGE_3_EXECUTABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_EXECUTABLE)
-        << "\nHFI_LINEAR_RANGE_3_BASE_ADDRESS: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS)
-        << "\nHFI_LINEAR_RANGE_3_LOWER_BOUND: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)
-        << "\nHFI_LINEAR_RANGE_3_UPPER_BOUND: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)
-        << "\nHFI_LINEAR_RANGE_4_READABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_READABLE)
-        << "\nHFI_LINEAR_RANGE_4_WRITEABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE)
-        << "\nHFI_LINEAR_RANGE_4_EXECUTABLE: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_EXECUTABLE)
-        << "\nHFI_LINEAR_RANGE_4_BASE_ADDRESS: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS)
-        << "\nHFI_LINEAR_RANGE_4_LOWER_BOUND: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)
-        << "\nHFI_LINEAR_RANGE_4_UPPER_BOUND: " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)
-        << "\n";
-}
-
-template <class Impl>
-Addr
-LSQUnit<Impl>::doHFIRangeCheck(const DynInstPtr &inst,
-    TheISA::MiscRegIndex reg_base,
-    TheISA::MiscRegIndex reg_lower,
-    TheISA::MiscRegIndex reg_upper,
-    TheISA::MiscRegIndex reg_perm,
-    bool& out_found, bool& out_faulted)
-{
-    Addr eA = inst->effAddr;
-    out_found = eA >= inst->readMiscReg(reg_lower) && eA <= inst->readMiscReg(reg_upper);
-    Addr fullAddress = eA;
-    if (out_found) {
-        if(!inst->readMiscReg(reg_perm)) {
-            out_faulted = true;
-        } else {
-            fullAddress += inst->readMiscReg(reg_base);
-        }
-    }
-    return fullAddress;
-}
 
 template <class Impl>
 Fault
@@ -695,84 +641,7 @@ LSQUnit<Impl>::executeLoad(const DynInstPtr &inst)
         return NoFault;
     }
 
-    if (inst->readMiscReg(MISCREG_SANDBOX_EN)) {
-        if (!inst->macroop->isUnrestricted()) {
-            if ((inst->effAddr < inst->readMiscReg(MISCREG_SANDBOX_BASE_1))  ||
-            (inst->effAddr >= (inst->readMiscReg(MISCREG_SANDBOX_BASE_1) +
-            inst->readMiscReg(MISCREG_SANDBOX_SIZE_1)))) {
-                std::cout << "SANDBOX EXCEPTION. lower bound: " << std::hex <<
-                inst->readMiscReg(MISCREG_SANDBOX_BASE_1) << ", upper bound: "
-                << std::hex << inst->readMiscReg(MISCREG_SANDBOX_BASE_1) +
-                inst->readMiscReg(MISCREG_SANDBOX_SIZE_1) - 1 << std::endl;
-                std::cout << "Violating address: " << std::hex << inst->effAddr
-                << std::endl;
-                inst->fault = std::make_shared<BoundsCheck>();
-                load_fault = inst->fault;
-            }
-        }
-
-    }
-
-    if (inst->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)) {
-        if (!inst->macroop->isUnrestricted()) {
-
-            // printHFIMetadata(inst);
-            // std::cout << "Effective address: " << inst->effAddr << "\n";
-            // std::cout << "SFI load\n";
-
-            bool out_found = false;
-            bool out_faulted = false;
-
-            MiscRegIndex hfi_regs_base[]  = { MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS };
-            MiscRegIndex hfi_regs_lower[] = { MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND  };
-            MiscRegIndex hfi_regs_upper[] = { MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND  };
-            MiscRegIndex hfi_regs_perm[]  = { MISCREG_HFI_LINEAR_RANGE_1_READABLE    , MISCREG_HFI_LINEAR_RANGE_2_READABLE    , MISCREG_HFI_LINEAR_RANGE_3_READABLE    , MISCREG_HFI_LINEAR_RANGE_4_READABLE     };
-
-            uint64_t eA = 0;
-
-            for (uint64_t i = 0; i < 4; i++) {
-                eA = doHFIRangeCheck(inst,
-                    hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
-                    out_found, out_faulted);
-                if (out_found) { break; }
-            }
-
-            if(!out_found || out_faulted) {
-                std::cout << "SFI load fault: " << inst->effAddr << "!\n";
-                std::cout << 1
-                        << " [" << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)
-                        << ", " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)
-                        << " (" << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_READABLE)
-                        << ")]\n";
-                std::cout << 2
-                        << " [" << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)
-                        << ", " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)
-                        << " (" << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_READABLE)
-                        << ")]\n";
-                std::cout << 3
-                        << " [" << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)
-                        << ", " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)
-                        << " (" << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_READABLE)
-                        << ")]\n";
-                std::cout << 4
-                        << " [" << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)
-                        << ", " << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)
-                        << " (" << inst->readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_READABLE)
-                        << ")]\n";
-                for (uint64_t i = 0; i < 4; i++) {
-                    eA = doHFIRangeCheck(inst,
-                        hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
-                        out_found, out_faulted);
-                    if (out_found) { break; }
-                }
-                printHFIMetadata(inst);
-                inst->fault = std::make_shared<BoundsCheck>();
-                load_fault = inst->fault;
-            } else {
-                // TODO --- update the effective address here
-            }
-        }
-    }
+    
 
     // If the instruction faulted or predicated false, then we need to send it
     // along to commit without the instruction completing.
@@ -830,41 +699,7 @@ LSQUnit<Impl>::executeStore(const DynInstPtr &store_inst)
         store_fault == NoFault)
         return store_fault;
 
-    if (store_inst->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)) {
-        if (!store_inst->macroop->isUnrestricted()) {
-
-            // printHFIMetadata(store_inst);
-            // std::cout << "Effective address: " << store_inst->effAddr << "\n";
-            // std::cout << "SFI store\n";
-
-            bool out_found = false;
-            bool out_faulted = false;
-
-            MiscRegIndex hfi_regs_base[]  = { MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS };
-            MiscRegIndex hfi_regs_lower[] = { MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND  };
-            MiscRegIndex hfi_regs_upper[] = { MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND  };
-            MiscRegIndex hfi_regs_perm[]  = { MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE    };
-
-            uint64_t eA = 0;
-
-            for (uint64_t i = 0; i < 4; i++) {
-                eA = doHFIRangeCheck(store_inst,
-                    hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
-                    out_found, out_faulted);
-                if (out_found) { break; }
-            }
-
-            if(!out_found || out_faulted) {
-                std::cout << "SFI store fault: " << store_inst->effAddr << "!\n";
-                printHFIMetadata(store_inst);
-                store_inst->fault = std::make_shared<BoundsCheck>();
-                store_fault = store_inst->fault;
-                return store_fault;
-            } else {
-                // TODO --- update the effective address here
-            }
-        }
-    }
+    
 
     if (!store_inst->readPredicate()) {
         DPRINTF(LSQUnit, "Store [sn:%lli] not executed from predication\n",

@@ -94,6 +94,18 @@ class BaseO3DynInst : public BaseDynInst<Impl>
     /** Completes the access.  Only valid for memory operations. */
     Fault completeAcc(PacketPtr pkt);
 
+    void printHFIMetadata();
+    Addr doHFIRangeCheck(Addr EA,
+        TheISA::MiscRegIndex reg_base,
+        TheISA::MiscRegIndex reg_lower,
+        TheISA::MiscRegIndex reg_upper,
+        TheISA::MiscRegIndex reg_perm,
+        bool& out_found,
+        bool& out_faulted);
+
+    /** check the HFI for the effective address */
+    Fault checkHFI(Addr &EA);
+
   private:
     /** Initializes variables. */
     void initVars();

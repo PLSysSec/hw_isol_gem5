@@ -41,8 +41,10 @@
 #ifndef __CPU_O3_DYN_INST_IMPL_HH__
 #define __CPU_O3_DYN_INST_IMPL_HH__
 
+#include "arch/x86/faults.hh"
 #include "cpu/o3/dyn_inst.hh"
 #include "debug/O3PipeView.hh"
+#include "debug/HFI.hh"
 
 template <class Impl>
 BaseO3DynInst<Impl>::BaseO3DynInst(const StaticInstPtr &staticInst,
@@ -178,6 +180,132 @@ BaseO3DynInst<Impl>::completeAcc(PacketPtr pkt)
     this->thread->noSquashFromTC = no_squash_from_TC;
 
     return this->fault;
+}
+
+
+template <class Impl>
+void
+BaseO3DynInst<Impl>::printHFIMetadata() {
+    using namespace TheISA;
+
+    std::cout << "HFI sandbox bounds metadata!"
+        << "\nHFI_INSIDE_SANDBOX: " << readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)
+        << "\nHFI_LINEAR_RANGE_1_READABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_READABLE)
+        << "\nHFI_LINEAR_RANGE_1_WRITEABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE)
+        << "\nHFI_LINEAR_RANGE_1_EXECUTABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_EXECUTABLE)
+        << "\nHFI_LINEAR_RANGE_1_BASE_ADDRESS: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS)
+        << "\nHFI_LINEAR_RANGE_1_LOWER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)
+        << "\nHFI_LINEAR_RANGE_1_UPPER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)
+        << "\nHFI_LINEAR_RANGE_2_READABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_READABLE)
+        << "\nHFI_LINEAR_RANGE_2_WRITEABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE)
+        << "\nHFI_LINEAR_RANGE_2_EXECUTABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_EXECUTABLE)
+        << "\nHFI_LINEAR_RANGE_2_BASE_ADDRESS: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS)
+        << "\nHFI_LINEAR_RANGE_2_LOWER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)
+        << "\nHFI_LINEAR_RANGE_2_UPPER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)
+        << "\nHFI_LINEAR_RANGE_3_READABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_READABLE)
+        << "\nHFI_LINEAR_RANGE_3_WRITEABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE)
+        << "\nHFI_LINEAR_RANGE_3_EXECUTABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_EXECUTABLE)
+        << "\nHFI_LINEAR_RANGE_3_BASE_ADDRESS: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS)
+        << "\nHFI_LINEAR_RANGE_3_LOWER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)
+        << "\nHFI_LINEAR_RANGE_3_UPPER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)
+        << "\nHFI_LINEAR_RANGE_4_READABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_READABLE)
+        << "\nHFI_LINEAR_RANGE_4_WRITEABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE)
+        << "\nHFI_LINEAR_RANGE_4_EXECUTABLE: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_EXECUTABLE)
+        << "\nHFI_LINEAR_RANGE_4_BASE_ADDRESS: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS)
+        << "\nHFI_LINEAR_RANGE_4_LOWER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)
+        << "\nHFI_LINEAR_RANGE_4_UPPER_BOUND: " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)
+        << "\n";
+}
+
+template <class Impl>
+Addr
+BaseO3DynInst<Impl>::doHFIRangeCheck(Addr EA,
+    TheISA::MiscRegIndex reg_base,
+    TheISA::MiscRegIndex reg_lower,
+    TheISA::MiscRegIndex reg_upper,
+    TheISA::MiscRegIndex reg_perm,
+    bool& out_found, bool& out_faulted)
+{
+    out_found = EA >= readMiscReg(reg_lower) && EA <= readMiscReg(reg_upper);
+    Addr fullAddress = EA;
+    if (out_found) {
+        if(!readMiscReg(reg_perm)) {
+            out_faulted = true;
+        } else {
+            fullAddress += readMiscReg(reg_base);
+        }
+    }
+    return fullAddress;
+}
+
+
+template <class Impl>
+Fault
+BaseO3DynInst<Impl>::checkHFI(Addr &EA){
+    using namespace TheISA;
+    DPRINTF(HFI, "effective address = %x \n", EA);
+
+    if (readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)) {
+        if (!this->macroop->isUnrestricted()) {
+
+            // printHFIMetadata(inst);
+            // std::cout << "Effective address: " << inst->effAddr << "\n";
+            // std::cout << "SFI load\n";
+
+            bool out_found = false;
+            bool out_faulted = false;
+
+            MiscRegIndex hfi_regs_base[]  = { MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS };
+            MiscRegIndex hfi_regs_lower[] = { MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND  };
+            MiscRegIndex hfi_regs_upper[] = { MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND  };
+            MiscRegIndex hfi_regs_perm[]  = { MISCREG_HFI_LINEAR_RANGE_1_READABLE    , MISCREG_HFI_LINEAR_RANGE_2_READABLE    , MISCREG_HFI_LINEAR_RANGE_3_READABLE    , MISCREG_HFI_LINEAR_RANGE_4_READABLE     };
+
+            uint64_t final_effective_addr = 0;
+
+            for (uint64_t i = 0; i < 4; i++) {
+                final_effective_addr = doHFIRangeCheck(EA,
+                    hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
+                    out_found, out_faulted);
+                if (out_found) { break; }
+            }
+
+            if(!out_found || out_faulted) {
+                std::cout << "SFI load fault: " << EA << "!\n";
+                std::cout << 1
+                        << " [" << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)
+                        << ", " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)
+                        << " (" << readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_READABLE)
+                        << ")]\n";
+                std::cout << 2
+                        << " [" << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)
+                        << ", " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)
+                        << " (" << readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_READABLE)
+                        << ")]\n";
+                std::cout << 3
+                        << " [" << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)
+                        << ", " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)
+                        << " (" << readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_READABLE)
+                        << ")]\n";
+                std::cout << 4
+                        << " [" << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)
+                        << ", " << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)
+                        << " (" << readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_READABLE)
+                        << ")]\n";
+                for (uint64_t i = 0; i < 4; i++) {
+                    final_effective_addr = doHFIRangeCheck(EA,
+                        hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
+                        out_found, out_faulted);
+                    if (out_found) { break; }
+                }
+                printHFIMetadata();
+                return std::make_shared<TheISA::BoundsCheck>();
+            } else {
+                // update the effective address here
+                EA = final_effective_addr;
+            }
+        }
+    }
+    return NoFault;
 }
 
 template <class Impl>

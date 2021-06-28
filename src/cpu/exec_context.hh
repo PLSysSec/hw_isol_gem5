@@ -252,6 +252,12 @@ class ExecContext {
         panic("ExecContext::initiateMemRead() should be overridden\n");
     }
 
+
+    virtual Fault checkHFI(Addr& EA)
+    {
+        panic("ExecContext::checkHFI(Addr&) should be overridden\n");
+    }
+
     /**
      * Initiate an HTM command,
      * e.g. tell Ruby we're starting/stopping a transaction

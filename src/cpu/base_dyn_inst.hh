@@ -589,6 +589,13 @@ class BaseDynInst : public ExecContext, public RefCounted
         return 0;
     }
 
+    Fault
+    checkHFI(Addr &EA) override
+    {
+        panic("Not yet implemented\n");
+        return NoFault;
+    }
+
     bool
     inHtmTransactionalState() const override
     {

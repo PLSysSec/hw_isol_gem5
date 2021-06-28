@@ -68,6 +68,16 @@ void hfi_save_thread_context(hfi_thread_context* thread_ctx);
 // Restore the current thread's context from the address in the parameter
 void hfi_load_thread_context(hfi_thread_context* thread_ctx);
 
+////////////////
+// Unrestricted mov instructions exposed as functions
+////////////////
+
+// Load from the given address even if it outside hfi bounds
+uint64_t hfi_urmov_load(void* address);
+
+// Store to the given address even if it outside hfi bounds
+void hfi_urmov_store(uint64_t data, void* address);
+
 #ifdef __cplusplus
 }
 #endif

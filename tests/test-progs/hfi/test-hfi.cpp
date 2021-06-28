@@ -8,6 +8,7 @@
 extern "C" {
     void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     void hfi_load_store_push_pop_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
+    void hfi_ur_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
     uint64_t hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
     void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
@@ -57,6 +58,14 @@ int main(int argc, char* argv[])
     // hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
     // assert(array[4] == array[3]);
     // array[4] = 4;
+
+    // check urmov load and store
+    sandbox.ranges[0].lower_bound = (uintptr_t) array;
+    sandbox.ranges[0].upper_bound = (uintptr_t) &(array[1]);
+    // check load and store
+    hfi_ur_load_store_test(&sandbox, &(array[3]), &(array[4]));
+    assert(array[4] == array[3]);
+    array[4] = 4;
 
     // This test saves the current context, loads the target context and then saves the current context again
     // The test plan here is to enter a sandbox

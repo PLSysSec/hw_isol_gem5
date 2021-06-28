@@ -56,3 +56,13 @@ _hfi_load_thread_context:
     mov %rdi, %rax
     .byte   0x0F, 0x04, 0x68, 0x00
     ret
+
+hfi_urmov_load:
+    .byte 0x0e # unrestricted mov prefix
+    mov  0x0(%rdi), %rax
+    ret
+
+hfi_urmov_store:
+    .byte 0x0e # unrestricted mov prefix
+    mov  %rdi, 0x0(%rsi)
+    ret

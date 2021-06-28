@@ -34,6 +34,24 @@ _hfi_load_store_push_pop_test:
     .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
 
+.globl hfi_ur_load_store_test
+.type hfi_ur_load_store_test,@function
+.align 16
+hfi_ur_load_store_test:
+_hfi_ur_load_store_test:
+    # rdi: param 1 is the sandbox params
+    # rsi: param 2 is the load address
+    # rdx: param 3 is the store address
+    # enter the sandbox, perform load&store, then exit
+    mov %rdi, %rax
+    .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
+    .byte 0x0e # unrestricted mov prefix
+    mov 0x0(%rsi), %rcx
+    .byte 0x0e # unrestricted mov prefix
+    mov %rcx, 0x0(%rdx)
+    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
+    ret
+
 .globl hfi_load_test
 .type hfi_load_test,@function
 .align 16

@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
     uint32_t arr [4] = { 0x11, 0x22, 0x33, 0x44 };
 
     // Sandbox around arr includes index 0 and 1.
-    struct Sandbox sandbox = {1, 0, 0x7fffffffed38, 0, 0x7fffffffed3f};
+    struct Sandbox sandbox = {1, 0, &(arr[2]), 0, 0};
     printf("arr start address: %" PRIx64 "\n", &arr);
     printf("base: %" PRIx64 "\n", sandbox.base_1);
     printf("size : %" PRIx64 "\n", sandbox.size_1);

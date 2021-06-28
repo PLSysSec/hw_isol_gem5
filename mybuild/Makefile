@@ -42,7 +42,10 @@ build-tests: mybuildout/test-hfi-oob-fail
 build: build_gem5 build-tests
 
 test-umov: mybuildout/test-umov
-	cd .. && $(RUN_SIM) mybuild/mybuildout/test-umov -o 5
+	cd .. && $(RUN_SIM) mybuild/mybuildout/test-umov -o 1
+
+test-umov-fail: mybuildout/test-umov
+	cd .. &&  $(EXPECT_FAIL) $(RUN_SIM) mybuild/mybuildout/test-umov -o 3
 
 test-hfi: mybuildout/test-hfi
 	cd .. && $(RUN_SIM) mybuild/mybuildout/test-hfi
@@ -56,5 +59,5 @@ test-hfi-noenterexit-fail: mybuildout/test-hfi-noenterexit-fail
 test-hfi-oob-fail: mybuildout/test-hfi-oob-fail
 	cd .. && $(EXPECT_FAIL) $(RUN_SIM) mybuild/mybuildout/test-hfi-oob-fail
 
-test: test-hfi test-hfi-reenter-fail test-hfi-noenterexit-fail test-hfi-oob-fail
+test: test-hfi test-hfi-reenter-fail test-hfi-noenterexit-fail test-hfi-oob-fail test-umov test-umov-fail
 	@echo "!!!!!!!!!Tests successfully completed!!!!!!!!!"

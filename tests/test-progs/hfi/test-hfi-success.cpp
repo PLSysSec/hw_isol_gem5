@@ -58,16 +58,16 @@ int main(int argc, char* argv[])
     array[4] = 4;
 
     // check load and store and returns
-    // std::cout << "HFI load store ret test\n";
-    // hfi_load_store_ret_test(&sandbox, &(array[3]), &(array[4]));
-    // assert(array[4] == array[3]);
-    // array[4] = 4;
+    std::cout << "HFI load store ret test\n";
+    hfi_load_store_ret_test(&sandbox, &(array[3]), &(array[4]));
+    assert(array[4] == array[3]);
+    array[4] = 4;
 
     // check load and store with a push pop
-    // std::cout << "HFI load store push pop test\n";
-    // hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
-    // assert(array[4] == array[3]);
-    // array[4] = 4;
+    std::cout << "HFI load store push pop test\n";
+    hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
+    assert(array[4] == array[3]);
+    array[4] = 4;
 
     // check load and store with a base address
     sandbox.ranges[0].base_address = (uintptr_t) array;

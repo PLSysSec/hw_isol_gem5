@@ -243,18 +243,24 @@ template <class Impl>
 Fault
 BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
     using namespace TheISA;
-    DPRINTF(HFI, "effective address = %x \n", EA);
 
     bool is_unrestricted_stack_instruction =
-        // curr_op_code == "push" || curr_op_code == "pop" ||
-        this->macroop->isCall() || this->macroop->isReturn();
+        this->macroop->getName() ==  "ret" ||this->macroop->getName() == "call" ||
+        this->macroop->getName() == "pop" || this->macroop->getName() == "push" ||
+        this->macroop->getName() == "leave" || this->macroop->getName() == "enter" ||
+        this->macroop->getName() == "pushf" || this->macroop->getName() == "popf";
+
     bool is_unrestricted_mov_instruction = this->macroop->isUnrestricted();
     bool is_inside_sandbox = this->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX) != 0;
     bool apply_bounds_checks = is_inside_sandbox &&
         !is_unrestricted_stack_instruction && !is_unrestricted_mov_instruction;
 
-    if (!apply_bounds_checks)
+    if (!apply_bounds_checks){
+        DPRINTF(HFI, "bounds check is not necessary for %s, EA=%x \n", this->macroop->getName(), EA);
         return NoFault;
+
+    }
+    DPRINTF(HFI, "checking bounds for %s, EA=%x \n", this->macroop->getName(), EA);
 
     if (readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)) {
         if (!this->macroop->isUnrestricted()) {

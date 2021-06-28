@@ -35,3 +35,24 @@ hfi_exit_sandbox:
 _hfi_exit_sandbox:
     .byte   0x0F, 0x04, 0x66, 0x00
     ret
+
+.globl hfi_save_thread_context
+.type hfi_save_thread_context,@function
+.align 16
+hfi_save_thread_context:
+_hfi_save_thread_context:
+    # mov param into rax
+    mov %rdi, %rax
+    .byte   0x0F, 0x04, 0x67, 0x00
+    ret
+
+
+.globl hfi_load_thread_context
+.type hfi_load_thread_context,@function
+.align 16
+hfi_load_thread_context:
+_hfi_load_thread_context:
+    # mov param into rax
+    mov %rdi, %rax
+    .byte   0x0F, 0x04, 0x68, 0x00
+    ret

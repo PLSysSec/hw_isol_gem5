@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <iostream>
 #include <limits>
+#include <cstring>
 
 #include "hfi.h"
 
@@ -9,6 +10,8 @@ extern "C" {
     void hfi_load_store_push_pop_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
     uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
     uint64_t hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
+    void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
+        hfi_thread_context* load_context, hfi_thread_context* save_context2);
 }
 
 int main(int argc, char* argv[])
@@ -55,4 +58,23 @@ int main(int argc, char* argv[])
     // assert(array[4] == array[3]);
     // array[4] = 4;
 
+    // This test saves the current context, loads the target context and then saves the current context again
+    // The test plan here is to enter a sandbox
+    // 1) save context and see that it has the expected value
+    // 2) load context which is the same as the sandbox context, save it again and see if it has the expected value
+    hfi_thread_context contexts[3];
+    std::memset(contexts, 0, sizeof(hfi_thread_context) * 3);
+
+    hfi_thread_context* save_context  = &(contexts[0]);
+    hfi_thread_context* load_context  = &(contexts[0]);
+    hfi_thread_context* save_context2 = &(contexts[0]);
+    sandbox.ranges[0].lower_bound = (uintptr_t) contexts;
+    sandbox.ranges[0].upper_bound = (uintptr_t) &(contexts[4]);
+
+    load_context->curr_sandbox_data = sandbox;
+    load_context->inside_sandbox = 1;
+    hfi_loadsavecontext_test(&sandbox, save_context, load_context, save_context2);
+
+    assert(std::memcmp(save_context, load_context, sizeof(hfi_thread_context)) == 0);
+    assert(std::memcmp(save_context2, load_context, sizeof(hfi_thread_context)) == 0);
 }

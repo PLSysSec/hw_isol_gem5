@@ -718,7 +718,7 @@ LSQUnit<Impl>::executeLoad(const DynInstPtr &inst)
 
             // printHFIMetadata(inst);
             // std::cout << "Effective address: " << inst->effAddr << "\n";
-            std::cout << "SFI load\n";
+            // std::cout << "SFI load\n";
 
             bool out_found = false;
             bool out_faulted = false;
@@ -835,7 +835,7 @@ LSQUnit<Impl>::executeStore(const DynInstPtr &store_inst)
 
             // printHFIMetadata(store_inst);
             // std::cout << "Effective address: " << store_inst->effAddr << "\n";
-            std::cout << "SFI store\n";
+            // std::cout << "SFI store\n";
 
             bool out_found = false;
             bool out_faulted = false;

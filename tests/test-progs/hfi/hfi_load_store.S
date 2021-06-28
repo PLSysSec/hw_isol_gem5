@@ -62,3 +62,24 @@ _hfi_store_test:
     mov %rdx, 0x0(%rsi)
     .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
+
+.globl hfi_loadsavecontext_test
+.type hfi_loadsavecontext_test,@function
+.align 16
+hfi_loadsavecontext_test:
+_hfi_loadsavecontext_test:
+    # rdi: param 1 is the sandbox params
+    # rsi: param 2 is the thread_context to save into
+    # rdx: param 3 is the thread_context to load from
+    # rcx: param 4 is the thread_context to save into the seconfd time
+    # enter the sandbox, perform savecontext, loadcontext, savecontext then exit
+    mov %rdi, %rax
+    .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
+    mov %rsi, %rax
+    .byte   0x0F, 0x04, 0x67, 0x00 # save context
+    mov %rdx, %rax
+    .byte   0x0F, 0x04, 0x68, 0x00 # load context
+    mov %rcx, %rax
+    .byte   0x0F, 0x04, 0x67, 0x00 # save context
+    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
+    ret

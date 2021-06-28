@@ -244,11 +244,8 @@ Fault
 BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
     using namespace TheISA;
 
-    bool is_unrestricted_stack_instruction =
-        this->macroop->getName() ==  "ret" ||this->macroop->getName() == "call" ||
-        this->macroop->getName() == "pop" || this->macroop->getName() == "push" ||
-        this->macroop->getName() == "leave" || this->macroop->getName() == "enter" ||
-        this->macroop->getName() == "pushf" || this->macroop->getName() == "popf";
+    bool is_unrestricted_stack_instruction = this->staticInst->isUnrestricted();
+
 
     bool is_unrestricted_mov_instruction = this->macroop->isUnrestricted();
     bool is_inside_sandbox = this->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX) != 0;

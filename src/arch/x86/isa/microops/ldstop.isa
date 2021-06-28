@@ -321,6 +321,8 @@ let {{
                 self.instFlags += " | (1ULL << StaticInst::IsNonSpeculative)"
             if uncacheable:
                 self.instFlags += " | (Request::UNCACHEABLE)"
+            if self.base == "InstRegIndex(INTREG_RSP)" or implicitStack:
+                self.instFlags += " | (1ULL << StaticInst::IsUnrestricted)"
             # For implicit stack operations, we should use *not* use the
             # alternative addressing mode for loads/stores if the prefix is set
             if not implicitStack:
@@ -363,6 +365,8 @@ let {{
                 self.instFlags += " | (1ULL << StaticInst::IsNonSpeculative)"
             if uncacheable:
                 self.instFlags += " | (Request::UNCACHEABLE)"
+            if self.base == "InstRegIndex(INTREG_RSP)" or implicitStack:
+                self.instFlags += " | (1ULL << StaticInst::IsUnrestricted)"
             # For implicit stack operations, we should use *not* use the
             # alternative addressing mode for loads/stores if the prefix is set
             if not implicitStack:

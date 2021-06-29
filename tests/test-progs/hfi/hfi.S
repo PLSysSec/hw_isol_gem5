@@ -36,6 +36,14 @@ _hfi_exit_sandbox:
     .byte   0x0F, 0x04, 0x66, 0x00
     ret
 
+.globl hfi_get_exit_reason
+.type hfi_get_exit_reason,@function
+.align 16
+hfi_get_exit_reason:
+_hfi_get_exit_reason:
+    .byte   0x0F, 0x04, 0x69, 0x00
+    ret
+
 .globl hfi_save_thread_context
 .type hfi_save_thread_context,@function
 .align 16

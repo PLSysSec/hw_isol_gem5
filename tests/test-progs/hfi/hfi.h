@@ -76,6 +76,9 @@ void hfi_enter_sandbox(hfi_sandbox* param_hfi_curr_sandbox_data);
 // Relies on trusted compilers to ensure this instruction is not misused/called from a bad context
 void hfi_exit_sandbox();
 
+// Instruction that gets the last reason for sandbox exit
+enum HFI_EXIT_REASON hfi_get_exit_reason();
+
 ////////////////
 // Context load/save instructions
 // These are instructions are needed to support process/thread scheduling

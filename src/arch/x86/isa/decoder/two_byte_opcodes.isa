@@ -233,6 +233,7 @@
                     0x66: Inst::HFI_EXIT_SANDBOX();
                     0x67: Inst::HFI_SAVE_THREAD_CONTEXT();
                     0x68: Inst::HFI_LOAD_THREAD_CONTEXT();
+                    0x69: Inst::HFI_GET_EXIT_REASON();
                     default: Inst::UD2();
                 }
             }

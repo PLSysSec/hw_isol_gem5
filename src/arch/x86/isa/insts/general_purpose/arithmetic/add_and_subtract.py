@@ -194,8 +194,21 @@ def macroop HFI_EXIT_SANDBOX
 
 hfi_exit_sandbox_continue:
     wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t0
-    .serialize_after
     wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t0
+
+    # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }
+    rdval t1, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
+    and t2, t1, t1, flags=(ZF,)
+    .serialize_after
+    br label("hfi_exit_sandbox_nohandler"), flags=(CZF,)
+
+    # Make the default data size of jumps 64 bits in 64 bit mode
+    .adjust_env oszIn64Override
+    .control_indirect
+    wripi t1, 0
+
+hfi_exit_sandbox_nohandler:
+    limm t0, 0
 };
 
 # TODO: below instructions should check for ring 0
@@ -360,6 +373,11 @@ def macroop HFI_LOAD_THREAD_CONTEXT
     ld t3, seg, [1, t1, rax], 4, dataSize=4
     wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t2
     wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t3
+};
+
+def macroop HFI_GET_EXIT_REASON
+{
+    rdval rax, "InstRegIndex(MISCREG_HFI_EXIT_REASON)"
 };
 
 def macroop ADD_R_I

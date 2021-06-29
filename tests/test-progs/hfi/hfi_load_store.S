@@ -139,3 +139,15 @@ _hfi_loadsavecontext_test:
     .byte   0x0F, 0x04, 0x67, 0x00 # save context
     .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
+
+.globl hfi_exit_handler_test
+.type hfi_exit_handler_test,@function
+.align 16
+hfi_exit_handler_test:
+_hfi_exit_handler_test:
+    # rdi: param 1 is the sandbox params
+    # enter the sandbox, then exit. The exit would invoke the exit handler which will directly return
+    mov %rdi, %rax
+    .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
+    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
+    ud2

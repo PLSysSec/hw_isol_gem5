@@ -18,6 +18,7 @@ void noop_func();
 void hfi_call_test(hfi_sandbox* sandbox, void* call_address);
 void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
     hfi_thread_context* load_context, hfi_thread_context* save_context2);
+void hfi_exit_handler_test(hfi_sandbox* sandbox);
 
 hfi_sandbox get_full_access_sandbox() {
     hfi_sandbox sandbox;
@@ -120,11 +121,20 @@ void test_call_indirect() {
     hfi_call_test(&sandbox, &func_ptr);
 }
 
+void test_exit_handler() {
+    hfi_sandbox sandbox = get_full_access_sandbox();
+    sandbox.exit_sandbox_handler = (void*) &noop_func;
+    printf("test_exit_handler\n");
+    hfi_exit_handler_test(&sandbox);
+    enum HFI_EXIT_REASON exit_reason = hfi_get_exit_reason();
+    assert(exit_reason == HFI_SANDBOX_EXIT);
+}
+
 int main(int argc, char* argv[])
 {
     uint64_t version = hfi_get_version();
     printf("HFI version: %"PRIu64"\n", version);
-    assert(version >= 1);
+    assert(version >= 2);
 
     uint64_t hfi_linear_range_count = hfi_get_linear_range_count();
     printf("HFI linear range count%"PRIu64"\n", hfi_linear_range_count);
@@ -135,4 +145,5 @@ int main(int argc, char* argv[])
     test_load_store_with_base();
     test_save_load_context();
     test_call_indirect();
+    test_exit_handler();
 }

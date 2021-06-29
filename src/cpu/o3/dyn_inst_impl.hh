@@ -251,23 +251,32 @@ Fault
 BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
     using namespace TheISA;
 
+    bool allow_unrestricted_stack = this->readMiscReg(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK) == 0;
     bool is_unrestricted_stack_instruction = this->staticInst->isUnrestricted();
+    bool allowed_unrestricted_stack_instruction = allow_unrestricted_stack && is_unrestricted_stack_instruction;
 
-
+    bool allow_unrestricted_mov = this->readMiscReg(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV) == 0;
     bool is_unrestricted_mov_instruction = this->macroop->isUnrestricted();
+    bool allowed_unrestricted_mov_instruction = allow_unrestricted_mov && is_unrestricted_mov_instruction;
+
     bool is_inside_sandbox = this->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX) != 0;
+
     bool apply_bounds_checks = is_inside_sandbox &&
-        !is_unrestricted_stack_instruction && !is_unrestricted_mov_instruction;
+        !allowed_unrestricted_stack_instruction && !allowed_unrestricted_mov_instruction;
 
     if (is_inside_sandbox && !apply_bounds_checks) {
         DPRINTF(HFI,
             "HFI bounds check is not necessary for %s, EA=%lx \n"
+            "HFI allow_unrestricted_stack: %d\n"
             "HFI is_unrestricted_stack_instruction: %d\n"
+            "HFI allow_unrestricted_mov: %d\n"
             "HFI is_unrestricted_mov_instruction: %d\n"
             "HFI is_inside_sandbox: %d\n"
             "HFI apply_bounds_checks: %d\n",
             this->macroop->getName().c_str(), EA,
+            (int) allow_unrestricted_stack,
             (int) is_unrestricted_stack_instruction,
+            (int) allow_unrestricted_mov,
             (int) is_unrestricted_mov_instruction,
             (int) is_inside_sandbox,
             (int) apply_bounds_checks
@@ -280,47 +289,43 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
 
     DPRINTF(HFI, "checking bounds for %s, EA=%x \n", this->macroop->getName(), EA);
 
-    if (readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)) {
-        if (!this->macroop->isUnrestricted()) {
+    printHFIMetadata();
 
-            printHFIMetadata();
+    bool out_found = false;
+    bool out_faulted = false;
 
-            bool out_found = false;
-            bool out_faulted = false;
+    MiscRegIndex hfi_regs_base[]  = { MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS };
+    MiscRegIndex hfi_regs_lower[] = { MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND  };
+    MiscRegIndex hfi_regs_upper[] = { MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND  };
+    MiscRegIndex hfi_regs_read[]  = { MISCREG_HFI_LINEAR_RANGE_1_READABLE    , MISCREG_HFI_LINEAR_RANGE_2_READABLE    , MISCREG_HFI_LINEAR_RANGE_3_READABLE    , MISCREG_HFI_LINEAR_RANGE_4_READABLE     };
+    MiscRegIndex hfi_regs_write[] = { MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE    };
+    MiscRegIndex* hfi_regs_perm   = is_store? hfi_regs_write : hfi_regs_read;
 
-            MiscRegIndex hfi_regs_base[]  = { MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS };
-            MiscRegIndex hfi_regs_lower[] = { MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND  };
-            MiscRegIndex hfi_regs_upper[] = { MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND  };
-            MiscRegIndex hfi_regs_read[]  = { MISCREG_HFI_LINEAR_RANGE_1_READABLE    , MISCREG_HFI_LINEAR_RANGE_2_READABLE    , MISCREG_HFI_LINEAR_RANGE_3_READABLE    , MISCREG_HFI_LINEAR_RANGE_4_READABLE     };
-            MiscRegIndex hfi_regs_write[] = { MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE    };
-            MiscRegIndex* hfi_regs_perm   = is_store? hfi_regs_write : hfi_regs_read;
+    uint64_t final_effective_addr = 0;
 
-            uint64_t final_effective_addr = 0;
-
-            for (uint64_t i = 0; i < 4; i++) {
-                final_effective_addr = doHFIRangeCheck(EA,
-                    hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
-                    out_found, out_faulted);
-                if (out_found) { break; }
-            }
-
-            if(!out_found || out_faulted) {
-                std::cout << "SFI " << (is_store? "store" : "load") << " fault: " << EA << "!\n";
-
-                // redo the check below for easy debugging when a debugger is attached
-                for (uint64_t i = 0; i < 4; i++) {
-                    final_effective_addr = doHFIRangeCheck(EA,
-                        hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
-                        out_found, out_faulted);
-                    if (out_found) { break; }
-                }
-                return std::make_shared<TheISA::BoundsCheck>();
-            } else {
-                // update the effective address here
-                EA = final_effective_addr;
-            }
-        }
+    for (uint64_t i = 0; i < 4; i++) {
+        final_effective_addr = doHFIRangeCheck(EA,
+            hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
+            out_found, out_faulted);
+        if (out_found) { break; }
     }
+
+    if(!out_found || out_faulted) {
+        std::cout << "SFI " << (is_store? "store" : "load") << " fault: " << EA << "!\n";
+
+        // redo the check below for easy debugging when a debugger is attached
+        for (uint64_t i = 0; i < 4; i++) {
+            final_effective_addr = doHFIRangeCheck(EA,
+                hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
+                out_found, out_faulted);
+            if (out_found) { break; }
+        }
+        return std::make_shared<TheISA::BoundsCheck>();
+    } else {
+        // update the effective address here
+        EA = final_effective_addr;
+    }
+
     return NoFault;
 }
 

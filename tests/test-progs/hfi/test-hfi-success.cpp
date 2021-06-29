@@ -43,23 +43,23 @@ void test_load_store() {
     sandbox.ranges[0].lower_bound = (uintptr_t) array;
     sandbox.ranges[0].upper_bound = (uintptr_t) &(array[5]);
 
-    // // check load and store
-    // std::cout << "test_load_store\n";
-    // hfi_load_store_test(&sandbox, &(array[3]), &(array[4]));
-    // assert(array[4] == array[3]);
-    // array[4] = 4;
+    // check load and store
+    std::cout << "test_load_store\n";
+    hfi_load_store_test(&sandbox, &(array[3]), &(array[4]));
+    assert(array[4] == array[3]);
+    array[4] = 4;
 
-    // // check load and store and returns
-    // std::cout << "test_load_store + ret\n";
-    // hfi_load_store_ret_test(&sandbox, &(array[3]), &(array[4]));
-    // assert(array[4] == array[3]);
-    // array[4] = 4;
+    // check load and store and returns
+    std::cout << "test_load_store + ret\n";
+    hfi_load_store_ret_test(&sandbox, &(array[3]), &(array[4]));
+    assert(array[4] == array[3]);
+    array[4] = 4;
 
-    // // check load and store with a push pop
-    // std::cout << "test_load_store + push pop\n";
-    // hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
-    // assert(array[4] == array[3]);
-    // array[4] = 4;
+    // check load and store with a push pop
+    std::cout << "test_load_store + push pop\n";
+    hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
+    assert(array[4] == array[3]);
+    array[4] = 4;
 
     // check urmov load and store
     std::cout << "test_load_store unrestricted\n";
@@ -131,9 +131,9 @@ int main(int argc, char* argv[])
     std::cout << "HFI linear range count: " << hfi_linear_range_count << "\n";
     assert(hfi_linear_range_count >= 4);
 
-    // test_entry_exit();
+    test_entry_exit();
     test_load_store();
     test_load_store_with_base();
-    // test_save_load_context();
-    // test_call_indirect();
+    test_save_load_context();
+    test_call_indirect();
 }

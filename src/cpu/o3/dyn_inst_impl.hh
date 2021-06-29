@@ -261,20 +261,24 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
         !is_unrestricted_stack_instruction && !is_unrestricted_mov_instruction;
 
     if (is_inside_sandbox && !apply_bounds_checks) {
-        printf("HFI bounds check is not necessary for %s, EA=%lx \n", this->macroop->getName().c_str(), EA);
-        std::cout <<
-            " is_unrestricted_stack_instruction: " << is_unrestricted_stack_instruction <<
-            " is_unrestricted_mov_instruction: " << is_unrestricted_mov_instruction <<
-            " is_inside_sandbox: " << is_inside_sandbox <<
-            " apply_bounds_checks: " << apply_bounds_checks <<
-            "\n";
+        DPRINTF(HFI,
+            "HFI bounds check is not necessary for %s, EA=%lx \n"
+            "HFI is_unrestricted_stack_instruction: %d\n"
+            "HFI is_unrestricted_mov_instruction: %d\n"
+            "HFI is_inside_sandbox: %d\n"
+            "HFI apply_bounds_checks: %d\n",
+            this->macroop->getName().c_str(), EA,
+            (int) is_unrestricted_stack_instruction,
+            (int) is_unrestricted_mov_instruction,
+            (int) is_inside_sandbox,
+            (int) apply_bounds_checks
+        );
     }
 
     if (!apply_bounds_checks){
-        DPRINTF(HFI, "bounds check is not necessary for %s, EA=%lx \n", this->macroop->getName().c_str(), EA);
         return NoFault;
-
     }
+
     DPRINTF(HFI, "checking bounds for %s, EA=%x \n", this->macroop->getName(), EA);
 
     if (readMiscReg(MISCREG_HFI_INSIDE_SANDBOX)) {

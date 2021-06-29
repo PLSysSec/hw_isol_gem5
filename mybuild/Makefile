@@ -6,6 +6,7 @@ PARALLEL_COUNT=$(shell nproc)
 EXAMPLE_FLAGS=-O0 -g
 GEM5_TRACE_FLAG=
 # GEM5_TRACE_FLAG=--debug-flags=Exec
+# GEM5_TRACE_FLAG=--debug-flags=HFI
 # GEM5_TRACE_FLAG=--debug-break=1355932000
 RUN_SIM=./build/X86/gem5.opt $(GEM5_TRACE_FLAG) configs/example/se.py --cpu-type=DerivO3CPU --caches -c
 EXPECT_FAIL=./mybuild/expectfail.sh

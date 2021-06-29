@@ -244,12 +244,13 @@ namespace X86ISA
                      "op = {\n\t\ttype = %s,\n\t\top = %#x,\n\t\t},\n\t"
                      "modRM = %#x,\n\tsib = %#x,\n\t"
                      "immediate = %#x,\n\tdisplacement = %#x\n\t"
-                     "dispSize = %d}\n",
+                     "dispSize = %d}\n\t"
+                     "unrestricted = %#x}\n",
                      (uint8_t)emi.legacy, (uint8_t)emi.rex,
                      (uint8_t)emi.vex,
                      opcodeTypeToStr(emi.opcode.type), (uint8_t)emi.opcode.op,
                      (uint8_t)emi.modRM, (uint8_t)emi.sib,
-                     emi.immediate, emi.displacement, emi.dispSize);
+                     emi.immediate, emi.displacement, emi.dispSize, emi.unrestricted);
         return os;
     }
 
@@ -283,6 +284,8 @@ namespace X86ISA
         if (emi1.stackSize != emi2.stackSize)
             return false;
         if (emi1.dispSize != emi2.dispSize)
+            return false;
+        if (emi1.unrestricted != emi2.unrestricted)
             return false;
         return true;
     }

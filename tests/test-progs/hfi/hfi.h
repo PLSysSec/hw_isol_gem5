@@ -2,6 +2,7 @@
 
 #define HFI_OF_THE_SHELF_EXTENSION
 
+#include <stdbool.h>
 #include <stdint.h>
 
 #ifdef __cplusplus

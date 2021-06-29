@@ -1,21 +1,19 @@
 #include <assert.h>
-#include <cstring>
-#include <iostream>
-#include <limits>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "hfi.h"
 
-using void_void_ptr_t = void(*)();
+typedef void(*void_void_ptr_t)();
 
-extern "C" {
-    void noop_func();
-    void hfi_call_test(hfi_sandbox* sandbox, void_void_ptr_t* call_slot);
-}
+void noop_func();
+void hfi_call_test(hfi_sandbox* sandbox, void_void_ptr_t* call_slot);
 
 int main(int argc, char* argv[])
 {
     hfi_sandbox sandbox;
-    std::memset(&sandbox, 0, sizeof(hfi_sandbox));
+    memset(&sandbox, 0, sizeof(hfi_sandbox));
 
     // initialize ranges
     for(uint64_t i = 0; i < LINEAR_RANGE_COUNT; i++) {

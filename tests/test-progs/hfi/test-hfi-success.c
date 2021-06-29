@@ -1,38 +1,37 @@
 #include <assert.h>
-#include <cstring>
-#include <iostream>
-#include <limits>
+#include <inttypes.h>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "hfi.h"
 
-using void_void_ptr_t = void(*)();
+typedef void(*void_void_ptr_t)();
 
-extern "C" {
-    void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
-    void hfi_load_store_ret_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
-    void hfi_load_store_push_pop_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
-    void hfi_ur_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
-    uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
-    void hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
-    void noop_func();
-    void hfi_call_test(hfi_sandbox* sandbox, void* call_address);
-    void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
-        hfi_thread_context* load_context, hfi_thread_context* save_context2);
-}
+void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
+void hfi_load_store_ret_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
+void hfi_load_store_push_pop_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
+void hfi_ur_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
+uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
+void hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
+void noop_func();
+void hfi_call_test(hfi_sandbox* sandbox, void* call_address);
+void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
+    hfi_thread_context* load_context, hfi_thread_context* save_context2);
 
 hfi_sandbox get_full_access_sandbox() {
     hfi_sandbox sandbox;
-    std::memset(&sandbox, 0, sizeof(hfi_sandbox));
+    memset(&sandbox, 0, sizeof(hfi_sandbox));
     sandbox.ranges[0].readable = 1;
     sandbox.ranges[0].writeable = 1;
     sandbox.ranges[0].executable = 1;
-    sandbox.ranges[0].upper_bound = std::numeric_limits<uint64_t>::max();
+    sandbox.ranges[0].upper_bound = UINT64_MAX;
     return sandbox;
 }
 
 void test_entry_exit() {
     hfi_sandbox sandbox = get_full_access_sandbox();
-    std::cout << "test_entry_exit\n";
+    printf("test_entry_exit\n");
     hfi_enter_sandbox(&sandbox);
     hfi_exit_sandbox();
 }
@@ -44,25 +43,25 @@ void test_load_store() {
     sandbox.ranges[0].upper_bound = (uintptr_t) &(array[5]);
 
     // check load and store
-    std::cout << "test_load_store\n";
+    printf("test_load_store\n");
     hfi_load_store_test(&sandbox, &(array[3]), &(array[4]));
     assert(array[4] == array[3]);
     array[4] = 4;
 
     // check load and store and returns
-    std::cout << "test_load_store + ret\n";
+    printf("test_load_store + ret\n");
     hfi_load_store_ret_test(&sandbox, &(array[3]), &(array[4]));
     assert(array[4] == array[3]);
     array[4] = 4;
 
     // check load and store with a push pop
-    std::cout << "test_load_store + push pop\n";
+    printf("test_load_store + push pop\n");
     hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
     assert(array[4] == array[3]);
     array[4] = 4;
 
     // check urmov load and store
-    std::cout << "test_load_store unrestricted\n";
+    printf("test_load_store unrestricted\n");
     hfi_ur_load_store_test(&sandbox, &(array[6]), &(array[7]));
     assert(array[7] == array[6]);
     array[7] = 7;
@@ -76,7 +75,7 @@ void test_load_store_with_base() {
     sandbox.ranges[0].base_address = (uintptr_t) array;
     sandbox.ranges[0].lower_bound = 0;
     sandbox.ranges[0].upper_bound = ((uintptr_t) &(array[5])) - ((uintptr_t) &(array[0]));
-    std::cout << "test_load_store_with_base\n";
+    printf("test_load_store_with_base\n");
     hfi_load_store_test(&sandbox,
         (void*) (((uintptr_t) &(array[3])) - ((uintptr_t) &(array[0]))),
         (void*) (((uintptr_t) &(array[4])) - ((uintptr_t) &(array[0])))
@@ -93,7 +92,7 @@ void test_save_load_context() {
     // 1) save context and see that it has the expected value
     // 2) load context which is the same as the sandbox context, save it again and see if it has the expected value
     hfi_thread_context contexts[3];
-    std::memset(contexts, 0, sizeof(hfi_thread_context) * 3);
+    memset(contexts, 0, sizeof(hfi_thread_context) * 3);
 
     hfi_thread_context* save_context  = &(contexts[0]);
     hfi_thread_context* load_context  = &(contexts[0]);
@@ -103,17 +102,17 @@ void test_save_load_context() {
 
     load_context->curr_sandbox_data = sandbox;
     load_context->inside_sandbox = 1;
-    std::cout << "test_save_load_context\n";
+    printf("test_save_load_context\n");
     hfi_loadsavecontext_test(&sandbox, save_context, load_context, save_context2);
 
-    assert(std::memcmp(save_context, load_context, sizeof(hfi_thread_context)) == 0);
-    assert(std::memcmp(save_context2, load_context, sizeof(hfi_thread_context)) == 0);
+    assert(memcmp(save_context, load_context, sizeof(hfi_thread_context)) == 0);
+    assert(memcmp(save_context2, load_context, sizeof(hfi_thread_context)) == 0);
 }
 
 void test_call_indirect() {
     hfi_sandbox sandbox = get_full_access_sandbox();
 
-    std::cout << "test_call_indirect\n";
+    printf("test_call_indirect\n");
     // check call indirect which does a memory reference
     void_void_ptr_t func_ptr = &noop_func;
     sandbox.ranges[0].lower_bound = (uintptr_t) &func_ptr;
@@ -124,11 +123,11 @@ void test_call_indirect() {
 int main(int argc, char* argv[])
 {
     uint64_t version = hfi_get_version();
-    std::cout << "HFI version: " << version << "\n";
+    printf("HFI version: %"PRIu64"\n", version);
     assert(version >= 1);
 
     uint64_t hfi_linear_range_count = hfi_get_linear_range_count();
-    std::cout << "HFI linear range count: " << hfi_linear_range_count << "\n";
+    printf("HFI linear range count%"PRIu64"\n", hfi_linear_range_count);
     assert(hfi_linear_range_count >= 4);
 
     test_entry_exit();

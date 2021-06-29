@@ -1,6 +1,6 @@
 #include <assert.h>
-#include <iostream>
-#include <limits>
+#include <limits.h>
+#include <stdio.h>
 
 #include "hfi.h"
 

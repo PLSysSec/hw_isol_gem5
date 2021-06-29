@@ -102,6 +102,9 @@ def macroop HFI_ENTER_SANDBOX
 
 hfi_enter_sandbox_continue:
     limm t1, 0
+    limm t2, 0
+    limm t3, 0
+    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 2, dataSize=1
@@ -116,6 +119,9 @@ hfi_enter_sandbox_continue:
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)", t7
 
     limm t1, 32
+    limm t2, 0
+    limm t3, 0
+    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 2, dataSize=1
@@ -130,6 +136,9 @@ hfi_enter_sandbox_continue:
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)", t7
 
     limm t1, 64
+    limm t2, 0
+    limm t3, 0
+    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 2, dataSize=1
@@ -144,6 +153,9 @@ hfi_enter_sandbox_continue:
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)", t7
 
     limm t1, 96
+    limm t2, 0
+    limm t3, 0
+    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 2, dataSize=1
@@ -158,6 +170,8 @@ hfi_enter_sandbox_continue:
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)", t7
 
     limm t1, 128
+    limm t2, 0
+    limm t3, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 8, dataSize=8
@@ -262,6 +276,9 @@ def macroop HFI_SAVE_THREAD_CONTEXT
 def macroop HFI_LOAD_THREAD_CONTEXT
 {
     limm t1, 0
+    limm t2, 0
+    limm t3, 0
+    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 2, dataSize=1
@@ -276,6 +293,9 @@ def macroop HFI_LOAD_THREAD_CONTEXT
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)", t7
 
     limm t1, 32
+    limm t2, 0
+    limm t3, 0
+    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 2, dataSize=1
@@ -290,6 +310,9 @@ def macroop HFI_LOAD_THREAD_CONTEXT
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)", t7
 
     limm t1, 64
+    limm t2, 0
+    limm t3, 0
+    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 2, dataSize=1
@@ -304,6 +327,9 @@ def macroop HFI_LOAD_THREAD_CONTEXT
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)", t7
 
     limm t1, 96
+    limm t2, 0
+    limm t3, 0
+    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 2, dataSize=1
@@ -318,6 +344,8 @@ def macroop HFI_LOAD_THREAD_CONTEXT
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)", t7
 
     limm t1, 128
+    limm t2, 0
+    limm t3, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 8, dataSize=8
@@ -326,6 +354,8 @@ def macroop HFI_LOAD_THREAD_CONTEXT
     wrval "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)", t4
 
     limm t1, 144
+    limm t2, 0
+    limm t3, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 4, dataSize=4
     wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t2

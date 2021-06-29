@@ -1,20 +1,19 @@
 #include <assert.h>
-#include <cstring>
-#include <iostream>
-#include <limits>
+#include <inttypes.h>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "hfi.h"
 
-extern "C" {
-    void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
-    uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
-    void hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
-}
+void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
+uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
+void hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
 
 int main(int argc, char* argv[])
 {
     hfi_sandbox sandbox;
-    std::memset(&sandbox, 0, sizeof(hfi_sandbox));
+    memset(&sandbox, 0, sizeof(hfi_sandbox));
 
     // initialize ranges
     for(uint64_t i = 0; i < LINEAR_RANGE_COUNT; i++) {
@@ -31,5 +30,5 @@ int main(int argc, char* argv[])
 
     // check load
     uint64_t a = hfi_load_test(&sandbox, &(array[3]));
-    std::cout << a << "\n";
+    printf("%"PRIu64"\n", a);
 }

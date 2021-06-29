@@ -115,7 +115,7 @@ _hfi_call_test:
     # enter the sandbox, perform call, then exit
     mov %rdi, %rax
     .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
-    call 0x0(%rsi)
+    call *(%rsi)
     .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
 

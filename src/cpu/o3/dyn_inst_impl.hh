@@ -238,7 +238,7 @@ BaseO3DynInst<Impl>::doHFIRangeCheck(Addr EA,
         } else {
             auto base = readMiscReg(reg_base);
             if (base != 0) {
-                std::cout << "Adding base: " << base << "\n";
+                DPRINTF(HFI, "Adding base: %lu\n", (long unsigned) base);
             }
             fullAddress += base;
         }

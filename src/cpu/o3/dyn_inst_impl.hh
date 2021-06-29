@@ -236,7 +236,11 @@ BaseO3DynInst<Impl>::doHFIRangeCheck(Addr EA,
         if(!readMiscReg(reg_perm)) {
             out_faulted = true;
         } else {
-            fullAddress += readMiscReg(reg_base);
+            auto base = readMiscReg(reg_base);
+            if (base != 0) {
+                std::cout << "Adding base: " << base << "\n";
+            }
+            fullAddress += base;
         }
     }
     return fullAddress;
@@ -256,8 +260,18 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
     bool apply_bounds_checks = is_inside_sandbox &&
         !is_unrestricted_stack_instruction && !is_unrestricted_mov_instruction;
 
+    if (is_inside_sandbox && !apply_bounds_checks) {
+        printf("HFI bounds check is not necessary for %s, EA=%lx \n", this->macroop->getName().c_str(), EA);
+        std::cout <<
+            " is_unrestricted_stack_instruction: " << is_unrestricted_stack_instruction <<
+            " is_unrestricted_mov_instruction: " << is_unrestricted_mov_instruction <<
+            " is_inside_sandbox: " << is_inside_sandbox <<
+            " apply_bounds_checks: " << apply_bounds_checks <<
+            "\n";
+    }
+
     if (!apply_bounds_checks){
-        DPRINTF(HFI, "bounds check is not necessary for %s, EA=%x \n", this->macroop->getName(), EA);
+        DPRINTF(HFI, "bounds check is not necessary for %s, EA=%lx \n", this->macroop->getName().c_str(), EA);
         return NoFault;
 
     }

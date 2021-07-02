@@ -44,8 +44,7 @@ def macroop SYSCALL_64
 
     limm t2, 1025
     wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t2
-    rdip t3
-    # sub t3, t3, 2, flags=(ZF,)
+    rdipc t3
     wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
 
     # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }
@@ -121,8 +120,7 @@ def macroop SYSCALL_COMPAT
 
     limm t2, 1025
     wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t2
-    rdip t3
-    # sub t3, t3, 2, flags=(ZF,)
+    rdipc t3
     wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
 
     # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }

@@ -195,9 +195,7 @@ def macroop HFI_EXIT_SANDBOX
 hfi_exit_sandbox_continue:
     limm t2, 1024
     wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t2
-    rdip t3
-    limm t4, 4
-    sub t3, t3, t4, flags=(ZF,)
+    rdipc t3
     wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
     wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t0
 

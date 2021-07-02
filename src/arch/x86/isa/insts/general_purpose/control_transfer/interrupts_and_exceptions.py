@@ -231,8 +231,7 @@ def macroop INT3 {
     br label("hfi_int_nohandler"), flags=(nCZF,)
 
     wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t1
-    rdip t3
-    # sub t3, t3, 1, flags=(ZF,)
+    rdipc t3
     wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
 
     # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }
@@ -269,8 +268,7 @@ def macroop INT_I {
     br label("hfi_int_nohandler"), flags=(nCZF,)
 
     wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t1
-    rdip t3
-    # sub t3, t3, 2, flags=(ZF,)
+    rdipc t3
     wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
 
     # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }

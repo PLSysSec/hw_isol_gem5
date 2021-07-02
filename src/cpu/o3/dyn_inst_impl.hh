@@ -218,6 +218,7 @@ BaseO3DynInst<Impl>::printHFIMetadata() {
     DPRINTF(HFI, "HFI_EXIT_SANDBOX_HANDLER: %" PRIu64 "\n",        (uint64_t) readMiscReg(MISCREG_HFI_EXIT_SANDBOX_HANDLER));
     DPRINTF(HFI, "HFI_INSIDE_SANDBOX: %" PRIu64 "\n",              (uint64_t) readMiscReg(MISCREG_HFI_INSIDE_SANDBOX));
     DPRINTF(HFI, "HFI_EXIT_REASON: %" PRIu64 "\n",                 (uint64_t) readMiscReg(MISCREG_HFI_EXIT_REASON));
+    DPRINTF(HFI, "HFI_EXIT_LOCATION: %" PRIu64 "\n",               (uint64_t) readMiscReg(MISCREG_HFI_EXIT_LOCATION));
 }
 
 template <class Impl>

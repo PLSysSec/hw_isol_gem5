@@ -47,8 +47,13 @@ typedef struct hfi_sandbox {
 // This structure will also be used to save context when the OS schedules threads (shown later)
 #ifdef HFI_OF_THE_SHELF_EXTENSION
     enum HFI_EXIT_REASON {
-        HFI_SANDBOX_EXIT,
-        HFI_SANDBOX_SYSCALL
+        HFI_EXIT_REASON_INTERRUPT_0,
+        HFI_EXIT_REASON_INTERRUPT_1,
+        // .. through 2^8 - 1 = HFI_EXIT_REASON_INTERRUPT_255 
+        HFI_EXIT_REASON_EXIT = 1024,
+        HFI_EXIT_REASON_SYSCALL = 1025,
+        HFI_EXIT_REASON_SYSENTER = 1026,
+        HFI_EXIT_REASON_PRIVSWITCH = 1027
     };
 #endif
 typedef struct hfi_thread_context {
@@ -56,6 +61,7 @@ typedef struct hfi_thread_context {
     bool inside_sandbox;
     #ifdef HFI_OF_THE_SHELF_EXTENSION
         /* HFI_EXIT_REASON */ uint32_t exit_sandbox_reason;
+        void* exit_instruction_pointer;
     #endif
 } hfi_thread_context;
 
@@ -78,6 +84,9 @@ void hfi_exit_sandbox();
 
 // Instruction that gets the last reason for sandbox exit
 enum HFI_EXIT_REASON hfi_get_exit_reason();
+
+// Instruction that gets the last reason for sandbox exit
+void* hfi_get_exit_location();
 
 ////////////////
 // Context load/save instructions

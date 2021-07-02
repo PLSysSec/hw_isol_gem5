@@ -234,6 +234,7 @@
                     0x67: Inst::HFI_SAVE_THREAD_CONTEXT();
                     0x68: Inst::HFI_LOAD_THREAD_CONTEXT();
                     0x69: Inst::HFI_GET_EXIT_REASON();
+                    0x70: Inst::HFI_GET_EXIT_LOCATION();
                     default: Inst::UD2();
                 }
             }

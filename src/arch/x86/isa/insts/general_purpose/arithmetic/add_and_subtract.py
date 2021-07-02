@@ -193,19 +193,24 @@ def macroop HFI_EXIT_SANDBOX
     fault "std::make_shared<BoundsCheck>()",
 
 hfi_exit_sandbox_continue:
-    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t0
+    limm t2, 1024
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t2
+    rdip t3
+    limm t4, 4
+    sub t3, t3, t4, flags=(ZF,)
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
     wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t0
 
     # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }
-    rdval t1, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
-    and t2, t1, t1, flags=(ZF,)
+    rdval t2, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
+    and t3, t2, t2, flags=(ZF,)
     .serialize_after
     br label("hfi_exit_sandbox_nohandler"), flags=(CZF,)
 
     # Make the default data size of jumps 64 bits in 64 bit mode
     .adjust_env oszIn64Override
     .control_indirect
-    wripi t1, 0
+    wripi t2, 0
 
 hfi_exit_sandbox_nohandler:
     limm t0, 0
@@ -378,6 +383,11 @@ def macroop HFI_LOAD_THREAD_CONTEXT
 def macroop HFI_GET_EXIT_REASON
 {
     rdval rax, "InstRegIndex(MISCREG_HFI_EXIT_REASON)"
+};
+
+def macroop HFI_GET_EXIT_LOCATION
+{
+    rdval rax, "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)"
 };
 
 def macroop ADD_R_I

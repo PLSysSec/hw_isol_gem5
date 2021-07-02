@@ -36,6 +36,30 @@
 microcode = '''
 def macroop SYSCALL_64
 {
+    # if (!inside_sandbox) { goto hfi_syscall_nohandler; }
+    rdval t2, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
+    and t3, t2, t2, flags=(ZF,)
+    .serialize_after
+    br label("hfi_syscall_nohandler"), flags=(nCZF,)
+
+    limm t2, 1025
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t2
+    rdip t3
+    # sub t3, t3, 2, flags=(ZF,)
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
+
+    # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }
+    rdval t2, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    and t3, t2, t2, flags=(ZF,)
+    .serialize_after
+    br label("hfi_syscall_nohandler"), flags=(CZF,)
+
+    # Make the default data size of jumps 64 bits in 64 bit mode
+    .adjust_env oszIn64Override
+    .control_indirect
+    wripi t2, 0
+
+hfi_syscall_nohandler:
     # All 1s.
     limm t1, "(uint64_t)(-1)", dataSize=8
 
@@ -89,6 +113,30 @@ def macroop SYSCALL_64
 
 def macroop SYSCALL_COMPAT
 {
+    # if (!inside_sandbox) { goto hfi_syscall_nohandler; }
+    rdval t2, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
+    and t3, t2, t2, flags=(ZF,)
+    .serialize_after
+    br label("hfi_syscall_nohandler"), flags=(nCZF,)
+
+    limm t2, 1025
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t2
+    rdip t3
+    # sub t3, t3, 2, flags=(ZF,)
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
+
+    # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }
+    rdval t2, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    and t3, t2, t2, flags=(ZF,)
+    .serialize_after
+    br label("hfi_syscall_nohandler"), flags=(CZF,)
+
+    # Make the default data size of jumps 64 bits in 64 bit mode
+    .adjust_env oszIn64Override
+    .control_indirect
+    wripi t2, 0
+
+hfi_syscall_nohandler:
     # All 1s.
     limm t1, "(uint64_t)(-1)", dataSize=8
 

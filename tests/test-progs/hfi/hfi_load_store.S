@@ -149,5 +149,9 @@ _hfi_exit_handler_test:
     # enter the sandbox, then exit. The exit would invoke the exit handler which will directly return
     mov %rdi, %rax
     .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
+
+.globl hfi_test_exit_location
+.type hfi_test_exit_location,@function
+hfi_test_exit_location:
     .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ud2

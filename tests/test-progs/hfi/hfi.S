@@ -44,6 +44,14 @@ _hfi_get_exit_reason:
     .byte   0x0F, 0x04, 0x69, 0x00
     ret
 
+.globl hfi_get_exit_location
+.type hfi_get_exit_location,@function
+.align 16
+hfi_get_exit_location:
+_hfi_get_exit_location:
+    .byte   0x0F, 0x04, 0x70, 0x00
+    ret
+
 .globl hfi_save_thread_context
 .type hfi_save_thread_context,@function
 .align 16

@@ -443,6 +443,7 @@ X86_64Process::initState()
 
             tc->setMiscRegNoEffect(MISCREG_HFI_INSIDE_SANDBOX, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_EXIT_REASON, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_EXIT_LOCATION, 0);
         }
 
         /* Set up the content of the TSS and write it to physical memory. */

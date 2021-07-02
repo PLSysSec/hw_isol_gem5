@@ -224,6 +224,29 @@ def macroop INT3 {
 
     limm t1, 0x03, dataSize=8
 
+    # if (!inside_sandbox) { goto hfi_int_nohandler; }
+    rdval t2, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
+    and t3, t2, t2, flags=(ZF,)
+    .serialize_after
+    br label("hfi_int_nohandler"), flags=(nCZF,)
+
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t1
+    rdip t3
+    # sub t3, t3, 1, flags=(ZF,)
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
+
+    # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }
+    rdval t2, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    and t3, t2, t2, flags=(ZF,)
+    .serialize_after
+    br label("hfi_int_nohandler"), flags=(CZF,)
+
+    # Make the default data size of jumps 64 bits in 64 bit mode
+    .adjust_env oszIn64Override
+    .control_indirect
+    wripi t2, 0
+
+hfi_int_nohandler:
     rdip t7
 
     # Are we in long mode?
@@ -239,6 +262,29 @@ def macroop INT_I {
     .adjust_imm trimImm(8)
     limm t1, imm, dataSize=8
 
+    # if (!inside_sandbox) { goto hfi_int_nohandler; }
+    rdval t2, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
+    and t3, t2, t2, flags=(ZF,)
+    .serialize_after
+    br label("hfi_int_nohandler"), flags=(nCZF,)
+
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t1
+    rdip t3
+    # sub t3, t3, 2, flags=(ZF,)
+    wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t3
+
+    # if (exit_sandbox_handler) { jmp exit_sandbox_handler; }
+    rdval t2, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    and t3, t2, t2, flags=(ZF,)
+    .serialize_after
+    br label("hfi_int_nohandler"), flags=(CZF,)
+
+    # Make the default data size of jumps 64 bits in 64 bit mode
+    .adjust_env oszIn64Override
+    .control_indirect
+    wripi t2, 0
+
+hfi_int_nohandler:
     rdip t7
 
     # Are we in long mode?

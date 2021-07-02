@@ -19,6 +19,7 @@ void hfi_call_test(hfi_sandbox* sandbox, void* call_address);
 void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
     hfi_thread_context* load_context, hfi_thread_context* save_context2);
 void hfi_exit_handler_test(hfi_sandbox* sandbox);
+void hfi_test_exit_location();
 
 hfi_sandbox get_full_access_sandbox() {
     hfi_sandbox sandbox;
@@ -127,7 +128,11 @@ void test_exit_handler() {
     printf("test_exit_handler\n");
     hfi_exit_handler_test(&sandbox);
     enum HFI_EXIT_REASON exit_reason = hfi_get_exit_reason();
-    assert(exit_reason == HFI_SANDBOX_EXIT);
+    assert(exit_reason == HFI_EXIT_REASON_EXIT);
+    void* exit_location = hfi_get_exit_location();
+    void* expected = &hfi_test_exit_location;
+    printf("exit_location. Got: %p, Expected: %p\n", exit_location, expected);
+    assert(exit_location == expected);
 }
 
 int main(int argc, char* argv[])

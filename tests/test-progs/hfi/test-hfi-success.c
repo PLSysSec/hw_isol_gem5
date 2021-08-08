@@ -170,7 +170,7 @@ int main(int argc, char* argv[])
     assert(version >= 2);
 
     uint64_t hfi_linear_range_count = hfi_get_linear_range_count();
-    printf("HFI linear range count%"PRIu64"\n", hfi_linear_range_count);
+    printf("HFI linear range count: %"PRIu64"\n", hfi_linear_range_count);
     assert(hfi_linear_range_count >= 4);
 
     test_entry_exit();

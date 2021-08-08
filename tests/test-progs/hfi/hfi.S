@@ -18,13 +18,31 @@ _hfi_get_linear_range_count:
     .byte   0x0F, 0x04, 0x64, 0x00
     ret
 
+.globl hfi_set_sandbox_metadata
+.type hfi_set_sandbox_metadata,@function
+.align 16
+hfi_set_sandbox_metadata:
+_hfi_set_sandbox_metadata:
+    # mov param into rax
+    mov %rdi, %rax
+    .byte   0x0F, 0x04, 0x71, 0x00
+    ret
+
+.globl hfi_get_sandbox_metadata
+.type hfi_get_sandbox_metadata,@function
+.align 16
+hfi_get_sandbox_metadata:
+_hfi_get_sandbox_metadata:
+    # mov param into rax
+    mov %rdi, %rax
+    .byte   0x0F, 0x04, 0x72, 0x00
+    ret
+
 .globl hfi_enter_sandbox
 .type hfi_enter_sandbox,@function
 .align 16
 hfi_enter_sandbox:
 _hfi_enter_sandbox:
-    # mov param into rax
-    mov %rdi, %rax
     .byte   0x0F, 0x04, 0x65, 0x00
     ret
 

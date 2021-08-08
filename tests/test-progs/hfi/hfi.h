@@ -49,7 +49,7 @@ typedef struct hfi_sandbox {
     enum HFI_EXIT_REASON {
         HFI_EXIT_REASON_INTERRUPT_0,
         HFI_EXIT_REASON_INTERRUPT_1,
-        // .. through 2^8 - 1 = HFI_EXIT_REASON_INTERRUPT_255 
+        // .. through 2^8 - 1 = HFI_EXIT_REASON_INTERRUPT_255
         HFI_EXIT_REASON_EXIT = 1024,
         HFI_EXIT_REASON_SYSCALL = 1025,
         HFI_EXIT_REASON_SYSENTER = 1026,
@@ -73,10 +73,19 @@ uint64_t hfi_get_version();
 // Return value: the number of ranges supported by HFI.
 uint64_t hfi_get_linear_range_count();
 
-// Instruction executed to enter a sandbox.
+// Instruction executed to configure the sandbox for the current thread.
 // This loads the hfi CPU registers with bounds information used for checking.
 // Parameters: the current sandbox's data
-void hfi_enter_sandbox(hfi_sandbox* param_hfi_curr_sandbox_data);
+void hfi_set_sandbox_metadata(const hfi_sandbox* param_hfi_curr_sandbox_data);
+
+// Instruction executed to get the current configuration the sandbox for the current thread.
+// This loads the hfi CPU registers with bounds information used for checking.
+// Parameters: the current sandbox's data
+void hfi_get_sandbox_metadata(hfi_sandbox* param_hfi_curr_sandbox_data);
+
+// Instruction executed to enter a sandbox.
+// This enables the hfi bounds checking.
+void hfi_enter_sandbox();
 
 // Instruction executed to exit a sandbox. Can be invoked by any code
 // Relies on trusted compilers to ensure this instruction is not misused/called from a bad context
@@ -98,7 +107,7 @@ void* hfi_get_exit_location();
 void hfi_save_thread_context(hfi_thread_context* thread_ctx);
 
 // Restore the current thread's context from the address in the parameter
-void hfi_load_thread_context(hfi_thread_context* thread_ctx);
+void hfi_load_thread_context(const hfi_thread_context* thread_ctx);
 
 ////////////////
 // Unrestricted mov instructions exposed as functions

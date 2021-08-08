@@ -18,7 +18,8 @@ int main(int argc, char* argv[])
         sandbox.ranges[i].upper_bound = UINT64_MAX;
     }
 
-    hfi_enter_sandbox(&sandbox);
+    hfi_set_sandbox_metadata(&sandbox);
+    hfi_enter_sandbox();
     // enter sandbox while in a sandbox should fail
-    hfi_enter_sandbox(&sandbox);
+    hfi_enter_sandbox();
 }

@@ -106,6 +106,12 @@ class BaseO3DynInst : public BaseDynInst<Impl>
     /** check the HFI for the effective address */
     Fault checkHFI(Addr &EA, bool is_store);
 
+    /*
+    * Calling this function before a TLB access for any load/store will cause 
+    * extra delay cycles.
+    */
+    void  setHFITranslationDelay(Cycles delay);
+
   private:
     /** Initializes variables. */
     void initVars();

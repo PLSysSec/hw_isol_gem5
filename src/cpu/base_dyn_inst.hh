@@ -269,6 +269,12 @@ class BaseDynInst : public ExecContext, public RefCounted
     std::array<PhysRegIdPtr, TheISA::MaxInstDestRegs> _prevDestRegIdx;
 
 
+    /** HFI: The extra number of cycles we wait for TLB access
+     *  for any load / store instruction.
+     */
+    Cycles translation_delay;
+
+
   public:
     /** Records changes to result? */
     void recordResult(bool f) { instFlags[RecordResult] = f; }
@@ -328,6 +334,18 @@ class BaseDynInst : public ExecContext, public RefCounted
     bool translationCompleted() const { return instFlags[TranslationCompleted]; }
     void translationCompleted(bool f) { instFlags[TranslationCompleted] = f; }
 
+    void delayedTranslationComplete() {
+        if (translation_delay)
+            cpu->schedule(new EventFunctionWrapper(
+                        [this]{
+                            translationCompleted(true);
+                        }, name() + ".CompleteTranslation", true),
+                        cpu->clockEdge(translation_delay)
+                    );
+        else
+            translationCompleted(true);
+
+    }
     /** True if this address was found to match a previous load and they issued
      * out of order. If that happend, then it's only a problem if an incoming
      * snoop invalidate modifies the line, in which case we need to squash.

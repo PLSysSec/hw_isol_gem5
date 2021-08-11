@@ -246,6 +246,11 @@ BaseO3DynInst<Impl>::doHFIRangeCheck(Addr EA,
     return fullAddress;
 }
 
+template <class Impl>
+void
+BaseO3DynInst<Impl>::setHFITranslationDelay(Cycles delay){
+    this->translation_delay = delay;
+}
 
 template <class Impl>
 Fault

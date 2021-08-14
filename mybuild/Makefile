@@ -9,7 +9,8 @@ GEM5_TRACE_FLAG=
 # GEM5_TRACE_FLAG=--debug-flags=HFI
 # GEM5_TRACE_FLAG=--debug-flags=Exec,HFI
 # GEM5_TRACE_FLAG=--debug-break=1355932000
-RUN_SIM=./build/X86/gem5.opt $(GEM5_TRACE_FLAG) configs/example/se.py --cpu-type=DerivO3CPU --caches -c
+# GEM5_TRACE_FLAG=--debug-flags=SyscallVerbose
+RUN_SIM=$(shell realpath ../build/X86/gem5.opt) $(GEM5_TRACE_FLAG) $(shell realpath ../configs/example/se.py) --cpu-type=DerivO3CPU --caches -c
 EXPECT_FAIL=./mybuild/expectfail.sh
 TEST_FILES := $(wildcard ../tests/test-progs/hfi/test-*.c)
 TEST_NAMES := $(basename $(notdir $(TEST_FILES)))
@@ -31,6 +32,9 @@ test-%-fail: mybuildout/test-%-fail
 	cd .. && $(EXPECT_FAIL) $(RUN_SIM) mybuild/$^
 
 build: build-gem5 build-tests
+
+test-rlbox:
+	cd ../../rlbox_hfi_wasm2c_sandbox/build_debug && $(RUN_SIM) ./test_rlbox_glue
 
 test: $(TEST_NAMES)
 	@echo "!!!!!!!!!Tests successfully completed!!!!!!!!!"

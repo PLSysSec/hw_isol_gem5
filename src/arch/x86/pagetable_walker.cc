@@ -511,7 +511,8 @@ Walker::WalkerState::stepWalk(PacketPtr &write)
     if (doEndWalk) {
         if (doTLBInsert)
             if (!functional)
-                walker->tlb->insert(entry.vaddr, entry);
+                walker->tlb->insert(std::make_pair(tc->readMiscRegNoEffect(MISCREG_HFI_SANDBOX_ID),
+                                    entry.vaddr), entry);
         endWalk();
     } else {
         PacketPtr oldRead = read;

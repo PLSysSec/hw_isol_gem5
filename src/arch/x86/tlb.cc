@@ -67,7 +67,7 @@ TLB::TLB(const Params *p)
         fatal("TLBs must have a non-zero size.\n");
 
     for (int x = 0; x < size; x++) {
-        tlb[x].trieHandle = NULL;
+        tlb[x].trieHandle = trie.end();
         freeList.push_back(&tlb[x]);
     }
 
@@ -87,40 +87,43 @@ TLB::evictLRU()
             lru = i;
     }
 
-    assert(tlb[lru].trieHandle);
-    trie.remove(tlb[lru].trieHandle);
-    tlb[lru].trieHandle = NULL;
+    assert(tlb[lru].trieHandle != trie.end());
+    trie.erase(tlb[lru].trieHandle);
+    tlb[lru].trieHandle = trie.end();
     freeList.push_back(&tlb[lru]);
 }
 
 TlbEntry *
-TLB::insert(Addr vpn, const TlbEntry &entry)
+TLB::insert(std::pair<Addr, Addr> key, const TlbEntry &entry)
 {
     // If somebody beat us to it, just use that existing entry.
-    TlbEntry *newEntry = trie.lookup(vpn);
-    if (newEntry) {
-        assert(newEntry->vaddr == vpn);
-        return newEntry;
+    TlbEntryTrie::iterator newEntryItr = trie.find(key);
+    if (newEntryItr != trie.end()) {
+        assert( newEntryItr->second->vaddr == key.second);
+        return newEntryItr->second;
     }
 
     if (freeList.empty())
         evictLRU();
 
-    newEntry = freeList.front();
+
+    TlbEntry* newEntry = freeList.front();
     freeList.pop_front();
 
     *newEntry = entry;
     newEntry->lruSeq = nextSeq();
-    newEntry->vaddr = vpn;
-    newEntry->trieHandle =
-    trie.insert(vpn, TlbEntryTrie::MaxBits - entry.logBytes, newEntry);
+    newEntry->vaddr = key.second; //vpn;
+    newEntry->trieHandle = trie.insert({key, newEntry}).first;
     return newEntry;
 }
 
 TlbEntry *
-TLB::lookup(Addr va, bool update_lru)
+TLB::lookup(std::pair<Addr, Addr> key, bool update_lru)
 {
-    TlbEntry *entry = trie.lookup(va);
+    auto itr = trie.find(key);
+    if (itr == trie.end())
+        return NULL;
+    TlbEntry *entry = itr->second;
     if (entry && update_lru)
         entry->lruSeq = nextSeq();
     return entry;
@@ -131,9 +134,9 @@ TLB::flushAll()
 {
     DPRINTF(TLB, "Invalidating all entries.\n");
     for (unsigned i = 0; i < size; i++) {
-        if (tlb[i].trieHandle) {
-            trie.remove(tlb[i].trieHandle);
-            tlb[i].trieHandle = NULL;
+        if (tlb[i].trieHandle != trie.end()) {
+            trie.erase(tlb[i].trieHandle);
+            tlb[i].trieHandle = trie.end();
             freeList.push_back(&tlb[i]);
         }
     }
@@ -150,9 +153,9 @@ TLB::flushNonGlobal()
 {
     DPRINTF(TLB, "Invalidating all non global entries.\n");
     for (unsigned i = 0; i < size; i++) {
-        if (tlb[i].trieHandle && !tlb[i].global) {
-            trie.remove(tlb[i].trieHandle);
-            tlb[i].trieHandle = NULL;
+        if (tlb[i].trieHandle != trie.end() && !tlb[i].global) {
+            trie.erase(tlb[i].trieHandle);
+            tlb[i].trieHandle = trie.end();
             freeList.push_back(&tlb[i]);
         }
     }
@@ -161,10 +164,13 @@ TLB::flushNonGlobal()
 void
 TLB::demapPage(Addr va, uint64_t asn)
 {
-    TlbEntry *entry = trie.lookup(va);
+    auto itr = trie.find(std::make_pair(0, va));
+    if (itr == trie.end())
+        return; 
+    TlbEntry *entry = itr->second;
     if (entry) {
-        trie.remove(entry->trieHandle);
-        entry->trieHandle = NULL;
+        trie.erase(entry->trieHandle);
+        entry->trieHandle = trie.end();
         freeList.push_back(entry);
     }
 }
@@ -325,6 +331,9 @@ TLB::translate(const RequestPtr &req,
 
     HandyM5Reg m5Reg = tc->readMiscRegNoEffect(MISCREG_M5_REG);
 
+    // bool hfi_inside_sandbox = tc->readMiscRegNoEffect(MISCREG_HFI_INSIDE_SANDBOX);
+    uint64_t hfi_sandbox_id = tc->readMiscRegNoEffect(MISCREG_HFI_SANDBOX_ID);
+
     // If protected mode has been enabled...
     if (m5Reg.prot) {
         DPRINTF(TLB, "In protected mode.\n");
@@ -371,7 +380,7 @@ TLB::translate(const RequestPtr &req,
         if (m5Reg.paging) {
             DPRINTF(TLB, "Paging enabled.\n");
             // The vaddr already has the segment base applied.
-            TlbEntry *entry = lookup(vaddr);
+            TlbEntry *entry = lookup(std::make_pair(hfi_sandbox_id, vaddr));
             if (mode == Read) {
                 stats.rdAccesses++;
             } else {
@@ -393,7 +402,7 @@ TLB::translate(const RequestPtr &req,
                         delayedResponse = true;
                         return fault;
                     }
-                    entry = lookup(vaddr);
+                    entry = lookup(std::make_pair(hfi_sandbox_id, vaddr));
                     assert(entry);
                 } else {
                     Process *p = tc->getProcessPtr();
@@ -406,7 +415,7 @@ TLB::translate(const RequestPtr &req,
                         Addr alignedVaddr = p->pTable->pageAlign(vaddr);
                         DPRINTF(TLB, "Mapping %#x to %#x\n", alignedVaddr,
                                 pte->paddr);
-                        entry = insert(alignedVaddr, TlbEntry(
+                        entry = insert(std::make_pair(hfi_sandbox_id, alignedVaddr), TlbEntry(
                                 p->pTable->pid(), alignedVaddr, pte->paddr,
                                 pte->flags & EmulationPageTable::Uncacheable,
                                 pte->flags & EmulationPageTable::ReadOnly));
@@ -537,7 +546,7 @@ TLB::serialize(CheckpointOut &cp) const
 
     uint32_t _count = 0;
     for (uint32_t x = 0; x < size; x++) {
-        if (tlb[x].trieHandle != NULL)
+        if (tlb[x].trieHandle != trie.end())
             tlb[x].serializeSection(cp, csprintf("Entry%d", _count++));
     }
 }
@@ -559,8 +568,7 @@ TLB::unserialize(CheckpointIn &cp)
         freeList.pop_front();
 
         newEntry->unserializeSection(cp, csprintf("Entry%d", x));
-        newEntry->trieHandle = trie.insert(newEntry->vaddr,
-            TlbEntryTrie::MaxBits - newEntry->logBytes, newEntry);
+        newEntry->trieHandle = trie.insert({std::make_pair(0,newEntry->vaddr), newEntry}).first;
     }
 }
 

@@ -42,6 +42,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
+
 
 #include "arch/x86/isa_traits.hh"
 #include "base/bitunion.hh"
@@ -58,7 +60,7 @@ namespace X86ISA
     struct TlbEntry;
 }
 
-typedef Trie<Addr, X86ISA::TlbEntry> TlbEntryTrie;
+typedef std::map<std::pair<Addr,Addr>, X86ISA::TlbEntry*> TlbEntryTrie;
 
 namespace X86ISA
 {
@@ -91,8 +93,9 @@ namespace X86ISA
         // A sequence number to keep track of LRU.
         uint64_t lruSeq;
 
-        TlbEntryTrie::Handle trieHandle;
-
+        // TlbEntryTrie::Handle trieHandle;
+        TlbEntryTrie::iterator trieHandle;
+        
         TlbEntry(Addr asn, Addr _vaddr, Addr _paddr,
                  bool uncacheable, bool read_only);
         TlbEntry();

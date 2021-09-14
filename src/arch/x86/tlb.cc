@@ -193,6 +193,7 @@ TLB::insert(std::pair<Addr, Addr> key, const TlbEntry &entry)
     *newEntry = entry;
     newEntry->lruSeq = nextSeq();
     newEntry->vaddr = key.second; //vpn;
+    newEntry->sandID = key.first;
     newEntry->trieHandle = trie.insert({key, newEntry}).first;
     return newEntry;
 }
@@ -234,6 +235,19 @@ TLB::flushNonGlobal()
     DPRINTF(TLB, "Invalidating all non global entries.\n");
     for (unsigned i = 0; i < size; i++) {
         if (tlb[i].trieHandle != trie.end() && !tlb[i].global) {
+            trie.erase(tlb[i].trieHandle);
+            tlb[i].trieHandle = trie.end();
+            freeList.push_back(&tlb[i]);
+        }
+    }
+}
+
+void
+TLB::flushCompartments()
+{
+    DPRINTF(TLB, "Invalidating all non host entries.\n");
+    for (unsigned i = 0; i < size; i++) {
+        if (tlb[i].trieHandle != trie.end() && !tlb[i].sandID != 0) {
             trie.erase(tlb[i].trieHandle);
             tlb[i].trieHandle = trie.end();
             freeList.push_back(&tlb[i]);

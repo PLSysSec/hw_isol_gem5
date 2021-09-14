@@ -77,6 +77,8 @@ namespace X86ISA
     // accesses from the CPU, and the other is for all APICs to communicate.
     const Addr PhysAddrAPICRangeSize = 1 << 12;
 
+    const int HFI_MAX_ACIDS = 4;
+
     static inline Addr
     x86IOAddress(const uint32_t port)
     {

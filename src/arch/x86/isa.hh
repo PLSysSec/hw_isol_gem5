@@ -53,6 +53,7 @@ namespace X86ISA
         RegVal regVal[NUM_MISCREGS];
         void updateHandyM5Reg(Efer efer, CR0 cr0,
                 SegAttr csAttr, SegAttr ssAttr, RFLAGS rflags);
+        std::set<RegVal> HFIComponentSet;
 
       public:
         void clear();

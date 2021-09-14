@@ -93,6 +93,8 @@ namespace X86ISA
 
         void flushNonGlobal();
 
+        void flushCompartments();
+
         void demapPage(Addr va, uint64_t asn) override;
 
       protected:

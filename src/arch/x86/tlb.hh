@@ -46,6 +46,7 @@
 #include "base/trie.hh"
 #include "mem/request.hh"
 #include "params/X86TLB.hh"
+#include "sim/clocked_object.hh"
 #include "sim/stats.hh"
 
 class ThreadContext;
@@ -80,6 +81,11 @@ namespace X86ISA
 
         Walker * walker;
 
+        void handleMiss(Addr alignedVaddr,
+                        Translation * translation,
+                        RequestPtr req, ThreadContext* tc,
+                        BaseTLB::Mode mode);
+
       public:
         Walker *getWalker();
 
@@ -109,6 +115,8 @@ namespace X86ISA
             Stats::Scalar rdMisses;
             Stats::Scalar wrMisses;
         } stats;
+
+        Cycles miss_latency;
 
         Fault translateInt(bool read, RequestPtr req, ThreadContext *tc);
 

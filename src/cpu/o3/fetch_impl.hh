@@ -637,7 +637,7 @@ DefaultFetch<Impl>::finishTranslation(const Fault &fault,
 
 
     // If translation was successful, attempt to read the icache block.
-    if (fault == NoFault) {
+    if (retryPkt == NULL && fault == NoFault) {
         // Check that we're not going off into random memory
         // If we have, just wait around for commit to squash something and put
         // us on the right track
@@ -681,7 +681,8 @@ DefaultFetch<Impl>::finishTranslation(const Fault &fault,
         }
     } else {
         // Don't send an instruction to decode if we can't handle it.
-        if (!(numInst < fetchWidth) || !(fetchQueue[tid].size() < fetchQueueSize)) {
+        if (retryPkt!=NULL || !(numInst < fetchWidth) ||
+             !(fetchQueue[tid].size() < fetchQueueSize)) {
             assert(!finishTranslationEvent.scheduled());
             finishTranslationEvent.setFault(fault);
             finishTranslationEvent.setReq(mem_req);

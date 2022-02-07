@@ -64,6 +64,8 @@ namespace X86ISA
 
         uint32_t configAddress;
 
+        TlbKeyType joinAddr(Addr sandID, Addr vaddr);
+
       public:
 
         typedef X86TLBParams Params;
@@ -71,7 +73,7 @@ namespace X86ISA
 
         void takeOverFrom(BaseTLB *otlb) override {}
 
-        TlbEntry *lookup(std::pair<Addr, Addr> key, bool update_lru = true);
+        TlbEntry *lookup(TlbKeyType key, bool update_lru = true);
 
         bool l2lookup(Addr);
 
@@ -173,7 +175,7 @@ namespace X86ISA
         Fault finalizePhysical(const RequestPtr &req, ThreadContext *tc,
                                Mode mode) const override;
 
-        TlbEntry *insert(std::pair<Addr, Addr> key, const TlbEntry &entry);
+        TlbEntry *insert(TlbKeyPair key, const TlbEntry &entry);
 
         // Checkpointing
         void serialize(CheckpointOut &cp) const override;

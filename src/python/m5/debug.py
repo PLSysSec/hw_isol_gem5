@@ -26,7 +26,10 @@
 
 from __future__ import print_function
 
-from collections import Mapping
+try:
+    from collections import Mapping
+except:
+    from collections.abc import Mapping
 
 import _m5.debug
 from _m5.debug import SimpleFlag, CompoundFlag

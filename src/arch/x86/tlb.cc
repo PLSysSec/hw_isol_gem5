@@ -61,7 +61,7 @@ namespace X86ISA {
 
 TLB::TLB(const Params *p)
     : BaseTLB(p), configAddress(0), size(p->size),
-      tlb(size), lruSeq(0), m5opRange(p->system->m5opRange()), stats(this), miss_latency(p->miss_latency)
+      tlb(size), lruSeq(0), m5opRange(p->system->m5opRange()), stats(this)
 {
     if (!size)
         fatal("TLBs must have a non-zero size.\n");
@@ -74,86 +74,6 @@ TLB::TLB(const Params *p)
     walker = p->walker;
     walker->setTLB(this);
 }
-
-
-void
- TLB::handleMiss(Addr vaddr,
-                 Translation * translation, RequestPtr req,
-                 ThreadContext* tc, BaseTLB::Mode mode)
- {
-     if (translation->squashed()){
-         translation->finish(
-            std::make_shared<UnimpFault>("Squashed Inst"),
-            req, tc, mode);
-         return;
-     }
-
-
-     Fault fault = NoFault;
-     Process *p = tc->getProcessPtr();
-     const EmulationPageTable::Entry *pte =
-         p->pTable->lookup(vaddr);
-     if (!pte)
-     {
-
-         fault = std::make_shared<PageFault>(vaddr, true, mode,
-                                             true, false);
-         translation->finish(fault, req, tc, mode);
-         return;
-     }
-     Addr alignedVaddr = p->pTable->pageAlign(vaddr);
-     TlbEntry *tlb_entry = new TlbEntry(
-         tc->contextId(), alignedVaddr, pte->paddr,
-         pte->flags & EmulationPageTable::Uncacheable,
-         pte->flags & EmulationPageTable::ReadOnly);
-
-    uint64_t hfi_sandbox_id = tc->readMiscRegNoEffect(MISCREG_HFI_SANDBOX_ID);
-
-
-     TlbEntry *entry = insert(std::make_pair(hfi_sandbox_id, alignedVaddr), *tlb_entry);
-
-     DPRINTF(TLB, "finishing translation for  %#x \n", alignedVaddr);
-
-     HandyM5Reg m5Reg = tc->readMiscRegNoEffect(MISCREG_M5_REG);
-
-     bool storeCheck = req->getFlags() & (StoreCheck << FlagShift);
-     DPRINTF(TLB, "Entry found with paddr %#x, "
-                  "doing protection checks.\n",
-             entry->paddr);
-     // Do paging protection checks.
-     bool inUser = (m5Reg.cpl == 3 &&
-                    !(req->getFlags() & (CPL0FlagBit << FlagShift)));
-     CR0 cr0 = tc->readMiscRegNoEffect(MISCREG_CR0);
-     bool badWrite = (!entry->writable && (inUser || cr0.wp));
-     if ((inUser && !entry->user) || (mode == Write && badWrite))
-     {
-         // The page must have been present to get into the TLB in
-         // the first place. We'll assume the reserved bits are
-         // fine even though we're not checking them.
-         fault = std::make_shared<PageFault>(vaddr, true, mode, inUser,
-                                             false);
-         translation->finish(fault, req, tc, mode);
-         return;
-     }
-     if (storeCheck && badWrite)
-     {
-         // This would fault if this were a write, so return a page
-         // fault that reflects that happening.
-         fault = std::make_shared<PageFault>(vaddr, true, Write, inUser,
-                                             false);
-         translation->finish(fault, req, tc, mode);
-         return;
-     }
-
-     Addr paddr = entry->paddr | (vaddr & mask(entry->logBytes));
-     DPRINTF(TLB, "Translated %#x -> %#x.\n", vaddr, paddr);
-     req->setPaddr(paddr);
-     if (entry->uncacheable)
-         req->setFlags(Request::UNCACHEABLE | Request::STRICT_ORDER);
-
-     translation->finish(finalizePhysical(req, tc, mode), req, tc, mode);
- }
-
 
 void
 TLB::evictLRU()
@@ -485,22 +405,6 @@ TLB::translate(const RequestPtr &req,
                     entry = lookup(std::make_pair(hfi_sandbox_id, vaddr));
                     assert(entry);
                 } else {
-
-                    if (timing){
-                         BaseCPU * cpu = tc->getCpuPtr();
-                         schedule(new EventFunctionWrapper(
-                             [this, vaddr, translation, req, tc, mode]{
-                                 handleMiss(vaddr, translation, req, tc, mode);
-                             }, name() + ".TLBMissEvent", true),
-                             cpu->clockEdge(miss_latency));
-
-                         DPRINTF(TLB, "schduling to handle TLB miss for %#x \n",
-                          vaddr);
-
-                         delayedResponse = true;
-                         return NoFault;
-                     }
-                     
                     Process *p = tc->getProcessPtr();
                     const EmulationPageTable::Entry *pte =
                         p->pTable->lookup(vaddr);

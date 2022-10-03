@@ -54,6 +54,5 @@ class X86TLB(BaseTLB):
     cxx_header = 'arch/x86/tlb.hh'
     size = Param.Unsigned(64, "TLB size")
     system = Param.System(Parent.any, "system object")
-    miss_latency = Param.Int(30, "miss latency of TLB")
     walker = Param.X86PagetableWalker(\
             X86PagetableWalker(), "page table walker")

@@ -411,28 +411,24 @@ X86_64Process::initState()
 
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_EXECUTABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND, 0);
 
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_EXECUTABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND, 0);
 
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_EXECUTABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND, 0);
 
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_EXECUTABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND, 0);

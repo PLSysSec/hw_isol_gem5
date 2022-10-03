@@ -1,7 +1,5 @@
 #pragma once
 
-#define HFI_OF_THE_SHELF_EXTENSION
-
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -9,60 +7,67 @@
 extern "C" {
 #endif
 
-// Metadata for one linear range or "segment" of a sandbox
-typedef struct hfi_linear_range {
-    // Permissions for this range
-    char readable;
+/**
+ * @brief Metadata for one linear data range of a sandbox
+ */
+typedef struct {
+    /**
+     * @brief Read permissions for this range
+     */
+    uint8_t readable;
+    /**
+     * @brief Write permissions for this range
+     */
     char writeable;
-    char executable;
-    // A constant base whose value is added to all loads and stores performed in the sandbox
+    /**
+     * @brief A constant base whose value is added to all loads and stores
+     * performed in this region.
+     */
     uint64_t base_address;
     // The lower bound of this segment's allowed range
     uint64_t lower_bound;
     // The upper bound of this segment's allowed range
     uint64_t upper_bound;
-} hfi_linear_range;
+} hfi_linear_data_range;
 
-// The number of linear ranges supported
-// This can be different on different machines
-// In this machine, it is 4
-#define LINEAR_RANGE_COUNT 4
+/**
+ * @brief The number of linear data ranges supported. This can be different on
+ * different HFI versions. In this version, it is 4.
+ */
+#define LINEAR_DATA_RANGE_COUNT 4
 
 // The metadata required for a "hardware sandbox"
 typedef struct hfi_sandbox {
     // Each segment specifies an address range and its associated permissions
-    hfi_linear_range ranges[LINEAR_RANGE_COUNT];
-    #ifdef HFI_OF_THE_SHELF_EXTENSION
-        // Allow the unrestricted mov instruction
-        bool disallow_unrestricted_mov;
-        // Allow unrestricted stack instructions like push pop ret
-        bool disallow_unrestricted_stack;
-        // Code that is called when the hfi_exit_sandbox or syscall instruction is run while inside a sandbox
-        void* exit_sandbox_handler;
-    #endif
+    hfi_linear_data_range data_ranges[LINEAR_DATA_RANGE_COUNT];
+    // Allow the unrestricted mov instruction
+    bool disallow_unrestricted_mov;
+    // Allow unrestricted stack instructions like push pop ret
+    bool disallow_unrestricted_stack;
+    /**
+     * @brief Optional code address that is called (jumped to) when the
+     * hfi_exit_sandbox or syscall instruction is run while inside a sandbox
+     */
+    void* exit_sandbox_handler;
 } hfi_sandbox;
 
 // Context structures that contain all hfi metadata
 // Hardware will allocate registers to store this metadata
 // This structure will also be used to save context when the OS schedules threads (shown later)
-#ifdef HFI_OF_THE_SHELF_EXTENSION
-    enum HFI_EXIT_REASON {
-        HFI_EXIT_REASON_INTERRUPT_0,
-        HFI_EXIT_REASON_INTERRUPT_1,
-        // .. through 2^8 - 1 = HFI_EXIT_REASON_INTERRUPT_255
-        HFI_EXIT_REASON_EXIT = 1024,
-        HFI_EXIT_REASON_SYSCALL = 1025,
-        HFI_EXIT_REASON_SYSENTER = 1026,
-        HFI_EXIT_REASON_PRIVSWITCH = 1027
-    };
-#endif
+enum HFI_EXIT_REASON {
+    HFI_EXIT_REASON_INTERRUPT_0,
+    HFI_EXIT_REASON_INTERRUPT_1,
+    // .. through 2^8 - 1 = HFI_EXIT_REASON_INTERRUPT_255
+    HFI_EXIT_REASON_EXIT = 1024,
+    HFI_EXIT_REASON_SYSCALL = 1025,
+    HFI_EXIT_REASON_SYSENTER = 1026,
+    HFI_EXIT_REASON_PRIVSWITCH = 1027
+};
 typedef struct hfi_thread_context {
     hfi_sandbox curr_sandbox_data;
     bool inside_sandbox;
-    #ifdef HFI_OF_THE_SHELF_EXTENSION
-        /* HFI_EXIT_REASON */ uint32_t exit_sandbox_reason;
-        void* exit_instruction_pointer;
-    #endif
+    /* HFI_EXIT_REASON */ uint32_t exit_sandbox_reason;
+    void* exit_instruction_pointer;
 } hfi_thread_context;
 
 // Get the version of HFI implemented in hardware.

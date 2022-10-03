@@ -11,11 +11,10 @@ int main(int argc, char* argv[])
     memset(&sandbox, 0, sizeof(hfi_sandbox));
 
     // initialize ranges
-    for(uint64_t i = 0; i < LINEAR_RANGE_COUNT; i++) {
-        sandbox.ranges[i].readable = 1;
-        sandbox.ranges[i].writeable = 1;
-        sandbox.ranges[i].executable = 1;
-        sandbox.ranges[i].upper_bound = UINT64_MAX;
+    for(uint64_t i = 0; i < LINEAR_DATA_RANGE_COUNT; i++) {
+        sandbox.data_ranges[i].readable = 1;
+        sandbox.data_ranges[i].writeable = 1;
+        sandbox.data_ranges[i].upper_bound = UINT64_MAX;
     }
 
     hfi_set_sandbox_metadata(&sandbox);

@@ -23,13 +23,25 @@ void hfi_loadsavemetadata_test(hfi_sandbox* sandbox, hfi_sandbox* save_metadata,
 void hfi_exit_handler_test(hfi_sandbox* sandbox);
 void hfi_test_exit_location();
 
+void* assert_memcmp(const void* p1, const void* p2, size_t n) {
+    bool is_equal = memcmp(p1, p2, n) == 0;
+    if (!is_equal) {
+        const char* c1 = (const char*) p1;
+        const char* c2 = (const char*) p2;
+        for(size_t i = 0; i < n; i++) {
+            const char* diff_string = c1[i] == c2[i]? "" : "<----";
+            printf("Byte %zu: (left, right): %02X, %02X %s\n", i, c1[i], c2[i], diff_string);
+        }
+        assert(is_equal);
+    }
+}
+
 hfi_sandbox get_full_access_sandbox() {
     hfi_sandbox sandbox;
     memset(&sandbox, 0, sizeof(hfi_sandbox));
-    sandbox.ranges[0].readable = 1;
-    sandbox.ranges[0].writeable = 1;
-    sandbox.ranges[0].executable = 1;
-    sandbox.ranges[0].upper_bound = UINT64_MAX;
+    sandbox.data_ranges[0].readable = 1;
+    sandbox.data_ranges[0].writeable = 1;
+    sandbox.data_ranges[0].upper_bound = UINT64_MAX;
     return sandbox;
 }
 
@@ -44,8 +56,8 @@ void test_entry_exit() {
 void test_load_store() {
     hfi_sandbox sandbox = get_full_access_sandbox();
     uint64_t array[] = {0,1,2,3,4,5,6,7};
-    sandbox.ranges[0].lower_bound = (uintptr_t) array;
-    sandbox.ranges[0].upper_bound = (uintptr_t) &(array[5]);
+    sandbox.data_ranges[0].lower_bound = (uintptr_t) array;
+    sandbox.data_ranges[0].upper_bound = (uintptr_t) &(array[5]);
 
     // check load and store
     printf("test_load_store\n");
@@ -77,9 +89,9 @@ void test_load_store_with_base() {
     uint64_t array[] = {0,1,2,3,4,5,6,7};
 
     // check load and store with a base address
-    sandbox.ranges[0].base_address = (uintptr_t) array;
-    sandbox.ranges[0].lower_bound = 0;
-    sandbox.ranges[0].upper_bound = ((uintptr_t) &(array[5])) - ((uintptr_t) &(array[0]));
+    sandbox.data_ranges[0].base_address = (uintptr_t) array;
+    sandbox.data_ranges[0].lower_bound = 0;
+    sandbox.data_ranges[0].upper_bound = ((uintptr_t) &(array[5])) - ((uintptr_t) &(array[0]));
     printf("test_load_store_with_base\n");
     hfi_load_store_test(&sandbox,
         (void*) (((uintptr_t) &(array[3])) - ((uintptr_t) &(array[0]))),
@@ -102,8 +114,8 @@ void test_save_load_context() {
     hfi_thread_context* save_context  = &(contexts[0]);
     hfi_thread_context* load_context  = &(contexts[1]);
     hfi_thread_context* save_context2 = &(contexts[2]);
-    sandbox.ranges[0].lower_bound = (uintptr_t) contexts;
-    sandbox.ranges[0].upper_bound = (uintptr_t) &(contexts[4]);
+    sandbox.data_ranges[0].lower_bound = (uintptr_t) contexts;
+    sandbox.data_ranges[0].upper_bound = (uintptr_t) &(contexts[4]);
 
     load_context->curr_sandbox_data = sandbox;
     load_context->inside_sandbox = 1;
@@ -112,8 +124,8 @@ void test_save_load_context() {
     printf("test_save_load_context\n");
     hfi_loadsavecontext_test(&sandbox, save_context, load_context, save_context2);
 
-    assert(memcmp(save_context, load_context, sizeof(hfi_thread_context)) == 0);
-    assert(memcmp(save_context2, load_context, sizeof(hfi_thread_context)) == 0);
+    assert_memcmp(save_context, load_context, sizeof(hfi_thread_context));
+    assert_memcmp(save_context2, load_context, sizeof(hfi_thread_context));
 }
 
 void test_save_load_metadata() {
@@ -129,15 +141,15 @@ void test_save_load_metadata() {
     hfi_sandbox* save_metadata  = &(metadatas[0]);
     hfi_sandbox* load_metadata  = &(metadatas[1]);
     hfi_sandbox* save_metadata2 = &(metadatas[2]);
-    sandbox.ranges[0].lower_bound = (uintptr_t) metadatas;
-    sandbox.ranges[0].upper_bound = (uintptr_t) &(metadatas[4]);
+    sandbox.data_ranges[0].lower_bound = (uintptr_t) metadatas;
+    sandbox.data_ranges[0].upper_bound = (uintptr_t) &(metadatas[4]);
 
     *load_metadata = sandbox;
     printf("test_save_load_metadata\n");
     hfi_loadsavemetadata_test(&sandbox, save_metadata, load_metadata, save_metadata2);
 
-    assert(memcmp(save_metadata, load_metadata, sizeof(hfi_sandbox)) == 0);
-    assert(memcmp(save_metadata2, load_metadata, sizeof(hfi_sandbox)) == 0);
+    assert_memcmp(save_metadata, load_metadata, sizeof(hfi_sandbox));
+    assert_memcmp(save_metadata2, load_metadata, sizeof(hfi_sandbox));
 }
 
 void test_call_indirect() {
@@ -146,8 +158,8 @@ void test_call_indirect() {
     printf("test_call_indirect\n");
     // check call indirect which does a memory reference
     void_void_ptr_t func_ptr = &noop_func;
-    sandbox.ranges[0].lower_bound = (uintptr_t) &func_ptr;
-    sandbox.ranges[0].upper_bound = sandbox.ranges[0].lower_bound + sizeof(func_ptr);
+    sandbox.data_ranges[0].lower_bound = (uintptr_t) &func_ptr;
+    sandbox.data_ranges[0].upper_bound = sandbox.data_ranges[0].lower_bound + sizeof(func_ptr);
     hfi_call_test(&sandbox, &func_ptr);
 }
 

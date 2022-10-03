@@ -31,19 +31,11 @@
 
 #include <cassert>
 #include <iostream>
-#include <bitset>
 #include <type_traits>
 
 #include "base/cprintf.hh"
 #include "base/logging.hh"
 #include "base/types.hh"
-
-// To check a type is derived from
-template<typename T>
-struct is_bitset : std::false_type {};
-
-template<std::size_t N>
-struct is_bitset<std::bitset<N>> : std::true_type {};
 
 /**
  * A trie is a tree-based data structure used for data retrieval. It uses
@@ -59,9 +51,8 @@ template <class Key, class Value>
 class Trie
 {
   protected:
-    static_assert(std::is_integral<Key>::value ||
-                  is_bitset<Key>::value,
-        "Key has to be an integral type or bitset");
+    static_assert(std::is_integral<Key>::value,
+        "Key has to be an integral type");
 
     struct Node
     {
@@ -139,7 +130,7 @@ class Trie
     /**
      * @ingroup api_base_utils
      */
-    static const unsigned MaxBits = (is_bitset<Key>::value) ? Key().size() : sizeof(Key) * 8;
+    static const unsigned MaxBits = sizeof(Key) * 8;
 
   private:
     /**
@@ -175,7 +166,7 @@ class Trie
     extendMask(Key orig)
     {
         // Just in case orig was 0.
-        const Key msb = Key(ULL(1)) << (MaxBits - 1);
+        const Key msb = ULL(1) << (MaxBits - 1);
         return orig | (orig >> 1) | msb;
     }
 

@@ -60,11 +60,7 @@ namespace X86ISA
     struct TlbEntry;
 }
 
-typedef std::bitset<128> TlbKeyType; 
-typedef std::pair<Addr, Addr> TlbKeyPair;
-
-// typedef std::map<std::pair<Addr,Addr>, X86ISA::TlbEntry*> TlbEntryTrie;
-typedef Trie<TlbKeyType, X86ISA::TlbEntry> TlbEntryTrie;
+typedef std::map<std::pair<Addr,Addr>, X86ISA::TlbEntry*> TlbEntryTrie;
 
 namespace X86ISA
 {
@@ -103,7 +99,7 @@ namespace X86ISA
         uint64_t lruSeq;
 
         // TlbEntryTrie::Handle trieHandle;
-        TlbEntryTrie::Handle trieHandle;
+        TlbEntryTrie::iterator trieHandle;
         
         TlbEntry(Addr asn, Addr _vaddr, Addr _paddr,
                  bool uncacheable, bool read_only);

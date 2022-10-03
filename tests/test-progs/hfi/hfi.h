@@ -71,7 +71,7 @@ uint64_t hfi_get_version();
 
 // Get the number of ranges supported by HFI.
 // Return value: the number of ranges supported by HFI.
-uint64_t hfi_get_linear_range_count();
+uint64_t hfi_get_linear_data_range_count();
 
 // Instruction executed to configure the sandbox for the current thread.
 // This loads the hfi CPU registers with bounds information used for checking.

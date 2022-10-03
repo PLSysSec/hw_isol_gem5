@@ -44,7 +44,7 @@ def macroop HFI_GET_VERSION
     limm rax, 2
 };
 
-def macroop HFI_GET_LINEAR_RANGE_COUNT
+def macroop HFI_GET_LINEAR_DATA_RANGE_COUNT
 {
     limm rax, 4
 };

@@ -39,49 +39,6 @@ def macroop ADD_R_R
     add reg, reg, regm, flags=(OF,SF,ZF,AF,PF,CF)
 };
 
-def macroop LOAD_RANGE
-{
-    limm t0, 0
-    ld t1, seg, [1, t0, rax], dataSize=8
-    ld t2, seg, [1, t0, rax], 8, dataSize=8
-    ld t3, seg, [1, t0, rax], 16, dataSize=8
-
-    rdval t6, "InstRegIndex(MISCREG_SANDBOX_BASE_1)"
-    sub t4, t2, t6, flags=(SF,)
-    br label("error"), flags=(CSF,)
-    add t4, t2, t3
-    rdval t7, "InstRegIndex(MISCREG_SANDBOX_SIZE_1)"
-    add t5, t6, t7
-    sub t4, t5, t4, flags=(SF,)
-    br label("error"), flags=(CSF,)
-
-    wrval "InstRegIndex(MISCREG_SANDBOX_ID)", t1
-    wrval "InstRegIndex(MISCREG_SANDBOX_BASE_1)", t2
-    wrval "InstRegIndex(MISCREG_SANDBOX_SIZE_1)", t3
-
-    br label("end")
-
-error:
-    fault "std::make_shared<BoundsCheck>()",
-
-end:
-    fault "NoFault"
-
-};
-
-def macroop SAND_ENABLE
-{
-    limm t1, 1
-    wrval "InstRegIndex(MISCREG_SANDBOX_EN)", t1
-
-};
-
-def macroop SAND_DISABLE
-{
-    limm t1, 0
-    wrval "InstRegIndex(MISCREG_SANDBOX_EN)", t1
-};
-
 def macroop HFI_GET_VERSION
 {
     limm rax, 2
@@ -98,7 +55,7 @@ def macroop HFI_SET_SANDBOX_METADATA
     rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
     and t1, t1, t1, flags=(ZF,)
     br label("hfi_set_sandbox_metadata_continue"), flags=(CZF,)
-    fault "std::make_shared<BoundsCheck>()",
+    fault "std::make_shared<HFIIllegalInst>()",
 
 hfi_set_sandbox_metadata_continue:
     limm t1, 0
@@ -186,7 +143,7 @@ def macroop HFI_GET_SANDBOX_METADATA
     rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
     and t1, t1, t1, flags=(ZF,)
     br label("hfi_get_sandbox_metadata_continue"), flags=(CZF,)
-    fault "std::make_shared<BoundsCheck>()",
+    fault "std::make_shared<HFIIllegalInst>()",
 
 hfi_get_sandbox_metadata_continue:
     limm t1, 0
@@ -260,7 +217,7 @@ def macroop HFI_ENTER_SANDBOX
     rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
     and t1, t1, t1, flags=(ZF,)
     br label("hfi_enter_sandbox_continue"), flags=(CZF,)
-    fault "std::make_shared<BoundsCheck>()",
+    fault "std::make_shared<HFIIllegalInst>()",
 
 hfi_enter_sandbox_continue:
     limm t1, 1
@@ -274,7 +231,7 @@ def macroop HFI_EXIT_SANDBOX
     rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
     and t1, t1, t1, flags=(ZF,)
     br label("hfi_exit_sandbox_continue"), flags=(nCZF,)
-    fault "std::make_shared<BoundsCheck>()",
+    fault "std::make_shared<HFIIllegalInst>()",
 
 hfi_exit_sandbox_continue:
     limm t2, 1024

@@ -326,7 +326,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
                 out_found, out_faulted);
             if (out_found) { break; }
         }
-        return std::make_shared<TheISA::BoundsCheck>();
+        return std::make_shared<TheISA::HFIBoundsCheck>();
     } else {
         // update the effective address here
         EA = final_effective_addr;

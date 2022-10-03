@@ -2,34 +2,40 @@
 
 .DEFAULT_GOAL := build
 
+CURR_DIR := $(shell realpath ./)
 PARALLEL_COUNT=$(shell nproc)
+
+EXAMPLE_CC=$(CURR_DIR)/../../musl-gcc/bin/x86_64-linux-musl-gcc -static
 EXAMPLE_FLAGS=-O0 -g
-GEM5_TRACE_FLAG=
-# GEM5_TRACE_FLAG=--debug-flags=Exec
-# GEM5_TRACE_FLAG=--debug-flags=HFI
-# GEM5_TRACE_FLAG=--debug-flags=Exec,HFI
-# GEM5_TRACE_FLAG=--debug-break=1355932000
-# GEM5_TRACE_FLAG=--debug-flags=SyscallVerbose
-RUN_SIM=$(shell realpath ../build/X86/gem5.opt) $(GEM5_TRACE_FLAG) $(shell realpath ../configs/example/se.py) --cpu-type=DerivO3CPU --caches -c
+EXAMPLE_GEM5_TRACE_FLAG=
+# EXAMPLE_GEM5_TRACE_FLAG=--debug-flags=Exec
+# EXAMPLE_GEM5_TRACE_FLAG=--debug-flags=HFI
+# EXAMPLE_GEM5_TRACE_FLAG=--debug-flags=Exec,HFI
+# EXAMPLE_GEM5_TRACE_FLAG=--debug-break=1355932000
+# EXAMPLE_GEM5_TRACE_FLAG=--debug-flags=SyscallVerbose
+RUN_SIM=$(shell realpath ../build/X86/gem5.opt) $(EXAMPLE_GEM5_TRACE_FLAG) $(shell realpath ../configs/example/se.py) --cpu-type=DerivO3CPU --caches -c
 EXPECT_FAIL=./mybuild/expectfail.sh
 TEST_FILES := $(wildcard ../tests/test-progs/hfi/test-*.c)
 TEST_NAMES := $(basename $(notdir $(TEST_FILES)))
 
 build-gem5:
-	cd .. && scons build/X86/gem5.opt -j $(PARALLEL_COUNT)
+	cd .. && scons build/X86/gem5.opt -j $(PARALLEL_COUNT) --ignore-style
 
 .PRECIOUS: mybuildout/test-%
 mybuildout/test-%: ../tests/test-progs/hfi/hfi.S ../tests/test-progs/hfi/test-%.c ../tests/test-progs/hfi/hfi_load_store.S
 	mkdir -p mybuildout
-	$(CC) $^ $(EXAMPLE_FLAGS) -o $@
-
-build-tests: $(addprefix mybuildout/,$(TEST_NAMES))
+	$(EXAMPLE_CC) $^ $(EXAMPLE_FLAGS) -o $@
 
 test-%-success: mybuildout/test-%-success
 	cd .. && $(RUN_SIM) mybuild/$^
 
 test-%-fail: mybuildout/test-%-fail
 	cd .. && $(EXPECT_FAIL) $(RUN_SIM) mybuild/$^
+
+build-tests-serial: $(addprefix mybuildout/,$(TEST_NAMES))
+
+build-tests:
+	$(MAKE) -j$(PARALLEL_COUNT) build-tests-serial
 
 build: build-gem5 build-tests
 

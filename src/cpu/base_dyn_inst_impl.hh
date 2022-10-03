@@ -135,7 +135,6 @@ BaseDynInst<Impl>::initVars()
     cpu->snList.insert(seqNum);
 #endif
 
-    translation_delay  = Cycles(0);
 }
 
 template <class Impl>

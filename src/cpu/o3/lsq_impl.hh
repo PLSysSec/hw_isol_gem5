@@ -729,7 +729,7 @@ LSQ<Impl>::pushRequest(const DynInstPtr& inst, bool isLoad, uint8_t *data,
     }
 
     /* This is the place were instructions get the effAddr. */
-    if (inst->translationCompleted()) {
+    if (req->isTranslationComplete()) {
         if (req->isMemAccessRequired()) {
             inst->effAddr = req->getVaddr();
             inst->effSize = size;
@@ -792,7 +792,7 @@ LSQ<Impl>::SingleDataRequest::finish(const Fault &fault, const RequestPtr &req,
         }
 
         LSQRequest::_inst->fault = fault;
-        LSQRequest::_inst->delayedTranslationComplete();
+        LSQRequest::_inst->translationCompleted(true);
     }
 }
 
@@ -818,7 +818,7 @@ LSQ<Impl>::SplitDataRequest::finish(const Fault &fault, const RequestPtr &req,
         } else {
             _inst->strictlyOrdered(mainReq->isStrictlyOrdered());
             flags.set(Flag::TranslationFinished);
-            _inst->delayedTranslationComplete();
+            _inst->translationCompleted(true);
 
             for (i = 0; i < _fault.size() && _fault[i] == NoFault; i++);
             if (i > 0) {

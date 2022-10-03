@@ -70,7 +70,7 @@ namespace X86ISA
 
         void takeOverFrom(BaseTLB *otlb) override {}
 
-        TlbEntry *lookup(std::pair<Addr, Addr> key, bool update_lru = true);
+        TlbEntry *lookup(Addr va, bool update_lru = true);
 
         void setConfigAddress(uint32_t addr);
 
@@ -150,7 +150,7 @@ namespace X86ISA
         Fault finalizePhysical(const RequestPtr &req, ThreadContext *tc,
                                Mode mode) const override;
 
-        TlbEntry *insert(std::pair<Addr, Addr> key, const TlbEntry &entry);
+        TlbEntry *insert(Addr vpn, const TlbEntry &entry);
 
         // Checkpointing
         void serialize(CheckpointOut &cp) const override;

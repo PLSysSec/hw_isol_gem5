@@ -71,10 +71,6 @@ namespace X86ISA
 
         // The beginning of the virtual page this entry maps.
         Addr vaddr;
-
-        // Whether or not to kick this page out on a write to CR3.
-        Addr sandID;
-
         // The size of the page this represents, in address bits.
         unsigned logBytes;
 
@@ -90,7 +86,6 @@ namespace X86ISA
         bool uncacheable;
         // Whether or not to kick this page out on a write to CR3.
         bool global;
-
         // A bit used to form an index into the PAT table.
         bool patBit;
         // Whether or not memory on this page can be executed.

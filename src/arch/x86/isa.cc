@@ -231,21 +231,6 @@ ISA::setMiscReg(int miscReg, RegVal val)
     RegVal newVal = val;
     switch(miscReg)
     {
-      case MISCREG_HFI_SANDBOX_ID:
-      {
-        if (val != 0){ 
-            // Entering a new SANDBOX
-            if (HFIComponentSet.size() == HFI_MAX_ACIDS){
-                HFIComponentSet.clear();
-                dynamic_cast<TLB *>(tc->getITBPtr())->flushAll();
-            }
-            else if (HFIComponentSet.size() < HFI_MAX_ACIDS)
-                HFIComponentSet.insert(val);
-            else
-                fatal("number of active sandboxes should be less than HFI_MAX_ACIDS");
-        }
-      }
-      break;
       case MISCREG_CR0:
         {
             CR0 toggled = regVal[miscReg] ^ val;

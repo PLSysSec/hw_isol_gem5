@@ -61,9 +61,7 @@ namespace X86ISA {
 
 TLB::TLB(const Params *p)
     : BaseTLB(p), configAddress(0), size(p->size),
-      tlb(size), lruSeq(0), m5opRange(p->system->m5opRange()), stats(this), 
-      l2miss_latency(p->l2miss_latency), l2hit_latency(p->l2hit_latency), 
-      l2assoc(p->l2assoc), l2sets(p->l2sets)
+      tlb(size), lruSeq(0), m5opRange(p->system->m5opRange()), stats(this), miss_latency(p->miss_latency)
 {
     if (!size)
         fatal("TLBs must have a non-zero size.\n");
@@ -72,8 +70,6 @@ TLB::TLB(const Params *p)
         tlb[x].trieHandle = trie.end();
         freeList.push_back(&tlb[x]);
     }
-
-    l2tlb.resize(l2sets);
 
     walker = p->walker;
     walker->setTLB(this);
@@ -180,8 +176,6 @@ TLB::evictLRU()
 TlbEntry *
 TLB::insert(std::pair<Addr, Addr> key, const TlbEntry &entry)
 {
-
-    
     // If somebody beat us to it, just use that existing entry.
     TlbEntryTrie::iterator newEntryItr = trie.find(key);
     if (newEntryItr != trie.end()) {
@@ -201,55 +195,7 @@ TLB::insert(std::pair<Addr, Addr> key, const TlbEntry &entry)
     newEntry->vaddr = key.second; //vpn;
     newEntry->sandID = key.first;
     newEntry->trieHandle = trie.insert({key, newEntry}).first;
-
-
-    //update l2 if it does not exist in l2
-    if (!l2lookup(key.second)){ 
-        Addr index = key.second >> PageShift  & (l2sets-1);
-        
-        // if l2 set is full 
-        if (l2tlb[index].size() == l2assoc){ 
-
-            // find LRU
-            unsigned lru = 0;
-            Addr lru_vaddr = 0;
-            for (const auto& any : l2tlb[index]) {
-                if (any.second->lruSeq < lru ) {
-                    lru = any.second->lruSeq;
-                    lru_vaddr = any.first;
-                }
-            }
-            l2tlb[index].erase(lru_vaddr);
-
-        } 
-        l2tlb[index][key.second] = newEntry;
-        
-    }
-
     return newEntry;
-}
-
-bool
-TLB::l2lookup(Addr vaddr){
-
-    //l2sets should be power of 2
-    assert(l2sets && ((l2sets & (l2sets-1)) == 0));
-
-    Addr index = vaddr >> PageShift  & (l2sets-1);
-
-    // hit / miss? 
-    if (l2tlb[index].find(vaddr) != l2tlb[index].end()){
-
-        // no need to update LRU as it 
-        // will be updated by the L1 fill logic
-        return true;
-        
-    } else {
-        //miss 
-        return false;
-    }
-
-
 }
 
 TlbEntry *
@@ -543,17 +489,6 @@ TLB::translate(const RequestPtr &req,
                 } else {
                     stats.wrMisses++;
                 }
-
-                Cycles latency = l2miss_latency;
-                //check if miss in L2 TLB as well
-                stats.l2Accesses++;
-                if (l2lookup(vaddr)){ 
-                    //l2 hit
-                    latency = l2hit_latency;
-                } else {
-                    stats.l2Misses++;
-                }
-
                 if (FullSystem) {
                     Fault fault = walker->start(tc, translation, req, mode);
                     if (timing || fault != NoFault) {
@@ -571,7 +506,7 @@ TLB::translate(const RequestPtr &req,
                              [this, vaddr, translation, req, tc, mode]{
                                  handleMiss(vaddr, translation, req, tc, mode);
                              }, name() + ".TLBMissEvent", true),
-                             cpu->clockEdge(latency));
+                             cpu->clockEdge(miss_latency));
 
                          DPRINTF(TLB, "schduling to handle TLB miss for %#x \n",
                           vaddr);
@@ -704,8 +639,6 @@ TLB::getWalker()
 
 TLB::TlbStats::TlbStats(Stats::Group *parent)
   : Stats::Group(parent),
-    ADD_STAT(l2Accesses, "TLB l2 accesses"),
-    ADD_STAT(l2Misses, "TLB l2 misses"),
     ADD_STAT(rdAccesses, "TLB accesses on read requests"),
     ADD_STAT(wrAccesses, "TLB accesses on write requests"),
     ADD_STAT(rdMisses, "TLB misses on read requests"),

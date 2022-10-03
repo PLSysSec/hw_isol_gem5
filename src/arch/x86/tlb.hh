@@ -73,8 +73,6 @@ namespace X86ISA
 
         TlbEntry *lookup(std::pair<Addr, Addr> key, bool update_lru = true);
 
-        bool l2lookup(Addr);
-
         void setConfigAddress(uint32_t addr);
 
       protected:
@@ -107,10 +105,6 @@ namespace X86ISA
         EntryList freeList;
 
         TlbEntryTrie trie;
-
-        //a set associative cache that holds TLB entries
-        std::vector<std::map<Addr, TlbEntry*>> l2tlb;
-
         uint64_t lruSeq;
 
         AddrRange m5opRange;
@@ -118,20 +112,13 @@ namespace X86ISA
         struct TlbStats : public Stats::Group {
             TlbStats(Stats::Group *parent);
 
-            Stats::Scalar l2Accesses;
-            Stats::Scalar l2Misses;
             Stats::Scalar rdAccesses;
             Stats::Scalar wrAccesses;
             Stats::Scalar rdMisses;
             Stats::Scalar wrMisses;
         } stats;
 
-        Cycles l2miss_latency;
-        Cycles l2hit_latency;
-
-        uint l2assoc;
-        uint l2sets;
-
+        Cycles miss_latency;
 
         Fault translateInt(bool read, RequestPtr req, ThreadContext *tc);
 

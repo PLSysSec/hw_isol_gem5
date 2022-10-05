@@ -120,12 +120,9 @@ hfi_set_sandbox_metadata_continue:
 
     limm t1, 128
     limm t2, 0
-    limm t3, 0
     ld t2, seg, [1, t1, rax], dataSize=1
-    ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 8, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV)", t2
-    wrval "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK)", t3
+    wrval "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)", t2
     wrval "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)", t4
 };
 
@@ -187,11 +184,9 @@ hfi_get_sandbox_metadata_continue:
     st t7, seg, [1, t1, rax], 24, dataSize=8
 
     limm t1, 128
-    rdval t2, "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV)"
-    rdval t3, "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK)"
+    rdval t2, "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)"
     rdval t4, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
     st t2, seg, [1, t1, rax], dataSize=1
-    st t3, seg, [1, t1, rax], 1, dataSize=1
     st t4, seg, [1, t1, rax], 8, dataSize=8
 };
 
@@ -292,11 +287,9 @@ def macroop HFI_SAVE_THREAD_CONTEXT
     st t7, seg, [1, t1, rax], 24, dataSize=8
 
     limm t1, 128
-    rdval t2, "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV)"
-    rdval t3, "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK)"
+    rdval t2, "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)"
     rdval t4, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
     st t2, seg, [1, t1, rax], dataSize=1
-    st t3, seg, [1, t1, rax], 1, dataSize=1
     st t4, seg, [1, t1, rax], 8, dataSize=8
 
     limm t1, 144
@@ -374,10 +367,8 @@ def macroop HFI_LOAD_THREAD_CONTEXT
     limm t2, 0
     limm t3, 0
     ld t2, seg, [1, t1, rax], dataSize=1
-    ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t4, seg, [1, t1, rax], 8, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV)", t2
-    wrval "InstRegIndex(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK)", t3
+    wrval "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)", t2
     wrval "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)", t4
 
     limm t1, 144

@@ -40,10 +40,30 @@ typedef struct {
 typedef struct hfi_sandbox {
     // Each segment specifies an address range and its associated permissions
     hfi_linear_data_range data_ranges[LINEAR_DATA_RANGE_COUNT];
-    // Allow the unrestricted mov instruction
-    bool disallow_unrestricted_mov;
-    // Allow unrestricted stack instructions like push pop ret
-    bool disallow_unrestricted_stack;
+    /**
+     * @brief Bit that controls whether this is a "structured" sandbox with a
+     * trusted compiler.
+     *
+     * In a structured sandbox, existing instructions are unchanged but binaries
+     * get a new hfi sandboxed mov instruction "hmov"
+     *
+     *  hmov reg_region_num, reg * {1, 2, 4, 8}, disp_32
+     *
+     * as well as instructions with region number encoded in the instruction
+     *
+     *  hmov1 reg * {1, 2, 4, 8}, disp_32
+     *  hmov2 reg * {1, 2, 4, 8}, disp_32
+     *  hmov3 reg * {1, 2, 4, 8}, disp_32
+     *  hmov4 reg * {1, 2, 4, 8}, disp_32
+     *
+     * Structured sandboxes can also use the hfi instructions such as
+     * "hfi_set_sandbox_metadata", "hfi_get_sandbox_metadata" etc.
+     *
+     * In an unstructured sandbox, there are no new instructions, but the
+     * existing mov instruction is modified to be sandboxed. Unstructured
+     * sandboxes cannot call hfi instructions other than hfi_exit
+     */
+    bool is_trusted_sandbox;
     /**
      * @brief Optional code address that is called (jumped to) when the
      * hfi_exit_sandbox or syscall instruction is run while inside a sandbox

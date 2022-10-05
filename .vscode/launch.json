@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "gem5-test-hfi",
+            "name": "gem5-test-hfi-success",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/X86/gem5.opt",
@@ -14,7 +14,32 @@
                 "--cpu-type=DerivO3CPU",
                 "--caches",
                 "-c",
-                "mybuild/mybuildout/test-hfi",
+                "mybuild/mybuildout/test-hfi-success",
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "gem5-dbg-test-hfi-success",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/X86/gem5.debug",
+            "args": [
+                "configs/example/se.py",
+                "--cpu-type=DerivO3CPU",
+                "--caches",
+                "-c",
+                "mybuild/mybuildout/test-hfi-success",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

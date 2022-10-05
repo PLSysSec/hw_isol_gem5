@@ -258,8 +258,6 @@ let {{
                                 1, X86ISA::ZeroReg, X86ISA::INTREG_RDI, 0,
                                 env.addressSize, false);''')
                 Name += "_M"
-            elif opType.tag == "NR":
-                Name += "_NR"
             else:
                 raise Exception("Unrecognized tag {}.".format(opType.tag))
 

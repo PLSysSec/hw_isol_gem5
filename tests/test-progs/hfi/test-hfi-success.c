@@ -10,12 +10,9 @@ typedef void(*void_void_ptr_t)();
 
 void hfi_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
 void hfi_load_store_ret_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
-void hfi_load_store_push_pop_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
-void hfi_ur_load_store_test(hfi_sandbox* sandbox, void* load_address, void* store_address);
 uint64_t hfi_load_test(hfi_sandbox* sandbox, void* load_address);
 void hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_value);
 void noop_func();
-void hfi_call_test(hfi_sandbox* sandbox, void* call_address);
 void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
     hfi_thread_context* load_context, hfi_thread_context* save_context2);
 void hfi_loadsavemetadata_test(hfi_sandbox* sandbox, hfi_sandbox* save_metadata,
@@ -30,7 +27,7 @@ void* assert_memcmp(const void* p1, const void* p2, size_t n) {
         const char* c2 = (const char*) p2;
         for(size_t i = 0; i < n; i++) {
             const char* diff_string = c1[i] == c2[i]? "" : "<----";
-            printf("Byte %zu: (left, right): %02X, %02X %s\n", i, c1[i], c2[i], diff_string);
+            printf("Byte %zu: (left, right): %02X, %02X %s\n", i, c1[i], c2[i], diff_string); fflush(stdout);
         }
         assert(is_equal);
     }
@@ -47,7 +44,7 @@ hfi_sandbox get_full_access_sandbox() {
 
 void test_entry_exit() {
     hfi_sandbox sandbox = get_full_access_sandbox();
-    printf("test_entry_exit\n");
+    printf("test_entry_exit\n"); fflush(stdout);
     hfi_set_sandbox_metadata(&sandbox);
     hfi_enter_sandbox();
     hfi_exit_sandbox();
@@ -60,28 +57,10 @@ void test_load_store() {
     sandbox.data_ranges[0].upper_bound = (uintptr_t) &(array[5]);
 
     // check load and store
-    printf("test_load_store\n");
+    printf("test_load_store\n"); fflush(stdout);
     hfi_load_store_test(&sandbox, &(array[3]), &(array[4]));
     assert(array[4] == array[3]);
     array[4] = 4;
-
-    // check load and store and returns
-    printf("test_load_store + ret\n");
-    hfi_load_store_ret_test(&sandbox, &(array[3]), &(array[4]));
-    assert(array[4] == array[3]);
-    array[4] = 4;
-
-    // check load and store with a push pop
-    printf("test_load_store + push pop\n");
-    hfi_load_store_push_pop_test(&sandbox, &(array[3]), &(array[4]));
-    assert(array[4] == array[3]);
-    array[4] = 4;
-
-    // check urmov load and store
-    printf("test_load_store unrestricted\n");
-    hfi_ur_load_store_test(&sandbox, &(array[6]), &(array[7]));
-    assert(array[7] == array[6]);
-    array[7] = 7;
 }
 
 void test_load_store_with_base() {
@@ -92,7 +71,7 @@ void test_load_store_with_base() {
     sandbox.data_ranges[0].base_address = (uintptr_t) array;
     sandbox.data_ranges[0].lower_bound = 0;
     sandbox.data_ranges[0].upper_bound = ((uintptr_t) &(array[5])) - ((uintptr_t) &(array[0]));
-    printf("test_load_store_with_base\n");
+    printf("test_load_store_with_base\n"); fflush(stdout);
     hfi_load_store_test(&sandbox,
         (void*) (((uintptr_t) &(array[3])) - ((uintptr_t) &(array[0]))),
         (void*) (((uintptr_t) &(array[4])) - ((uintptr_t) &(array[0])))
@@ -121,7 +100,7 @@ void test_save_load_context() {
     load_context->inside_sandbox = 1;
     load_context->exit_sandbox_reason = hfi_get_exit_reason();
     load_context->exit_instruction_pointer = hfi_get_exit_location();
-    printf("test_save_load_context\n");
+    printf("test_save_load_context\n"); fflush(stdout);
     hfi_loadsavecontext_test(&sandbox, save_context, load_context, save_context2);
 
     assert_memcmp(save_context, load_context, sizeof(hfi_thread_context));
@@ -145,28 +124,17 @@ void test_save_load_metadata() {
     sandbox.data_ranges[0].upper_bound = (uintptr_t) &(metadatas[4]);
 
     *load_metadata = sandbox;
-    printf("test_save_load_metadata\n");
+    printf("test_save_load_metadata\n"); fflush(stdout);
     hfi_loadsavemetadata_test(&sandbox, save_metadata, load_metadata, save_metadata2);
 
     assert_memcmp(save_metadata, load_metadata, sizeof(hfi_sandbox));
     assert_memcmp(save_metadata2, load_metadata, sizeof(hfi_sandbox));
 }
 
-void test_call_indirect() {
-    hfi_sandbox sandbox = get_full_access_sandbox();
-
-    printf("test_call_indirect\n");
-    // check call indirect which does a memory reference
-    void_void_ptr_t func_ptr = &noop_func;
-    sandbox.data_ranges[0].lower_bound = (uintptr_t) &func_ptr;
-    sandbox.data_ranges[0].upper_bound = sandbox.data_ranges[0].lower_bound + sizeof(func_ptr);
-    hfi_call_test(&sandbox, &func_ptr);
-}
-
 void test_exit_handler() {
     hfi_sandbox sandbox = get_full_access_sandbox();
     sandbox.exit_sandbox_handler = (void*) &noop_func;
-    printf("test_exit_handler\n");
+    printf("test_exit_handler\n"); fflush(stdout);
     hfi_exit_handler_test(&sandbox);
     enum HFI_EXIT_REASON exit_reason = hfi_get_exit_reason();
     assert(exit_reason == HFI_EXIT_REASON_EXIT);
@@ -178,18 +146,17 @@ void test_exit_handler() {
 int main(int argc, char* argv[])
 {
     uint64_t version = hfi_get_version();
-    printf("HFI version: %"PRIu64"\n", version);
+    printf("HFI version: %"PRIu64"\n", version); fflush(stdout);
     assert(version >= 2);
 
-    uint64_t hfi_linear_range_count = hfi_get_linear_data_range_count();
-    printf("HFI linear range count: %"PRIu64"\n", hfi_linear_range_count);
-    assert(hfi_linear_range_count >= 4);
+    uint64_t hfi_linear_data_range_count = hfi_get_linear_data_range_count();
+    printf("HFI linear data range count: %"PRIu64"\n", hfi_linear_data_range_count); fflush(stdout);
+    assert(hfi_linear_data_range_count >= 4);
 
     test_entry_exit();
     test_load_store();
     test_load_store_with_base();
     test_save_load_context();
     test_save_load_metadata();
-    test_call_indirect();
     test_exit_handler();
 }

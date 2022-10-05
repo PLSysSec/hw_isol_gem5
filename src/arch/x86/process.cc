@@ -433,8 +433,7 @@ X86_64Process::initState()
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND, 0);
 
-            tc->setMiscRegNoEffect(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_IS_TRUSTED_SANDBOX, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_EXIT_SANDBOX_HANDLER, 0);
 
             tc->setMiscRegNoEffect(MISCREG_HFI_INSIDE_SANDBOX, 0);

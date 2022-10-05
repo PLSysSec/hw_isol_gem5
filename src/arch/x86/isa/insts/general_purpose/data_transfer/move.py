@@ -38,21 +38,9 @@ microcode = '''
 #
 # Regular moves
 #
-def macroop MOV_R_MI_NR {
-    limm t1, imm, dataSize=asz
-    .unrestricted
-    ld reg, seg, [1, t0, t1]
-};
-
 def macroop MOV_R_MI {
     limm t1, imm, dataSize=asz
     ld reg, seg, [1, t0, t1]
-};
-
-def macroop MOV_MI_R_NR {
-    limm t1, imm, dataSize=asz
-    .unrestricted
-    st reg, seg, [1, t0, t1]
 };
 
 def macroop MOV_MI_R {
@@ -60,27 +48,12 @@ def macroop MOV_MI_R {
     st reg, seg, [1, t0, t1]
 };
 
-def macroop MOV_R_R_NR {
-    mov reg, reg, regm
-};
-
 def macroop MOV_R_R {
     mov reg, reg, regm
 };
 
-def macroop MOV_M_R_NR {
-    .unrestricted
-    st reg, seg, sib, disp
-};
-
 def macroop MOV_M_R {
     st reg, seg, sib, disp
-};
-
-def macroop MOV_P_R_NR {
-    rdip t7
-    .unrestricted
-    st reg, seg, riprel, disp
 };
 
 def macroop MOV_P_R {
@@ -88,19 +61,8 @@ def macroop MOV_P_R {
     st reg, seg, riprel, disp
 };
 
-def macroop MOV_R_M_NR {
-    .unrestricted
-    ld reg, seg, sib, disp
-};
-
 def macroop MOV_R_M {
     ld reg, seg, sib, disp
-};
-
-def macroop MOV_R_P_NR {
-    rdip t7
-    .unrestricted
-    ld reg, seg, riprel, disp
 };
 
 def macroop MOV_R_P {
@@ -108,18 +70,8 @@ def macroop MOV_R_P {
     ld reg, seg, riprel, disp
 };
 
-def macroop MOV_R_I_NR {
-    limm reg, imm
-};
-
 def macroop MOV_R_I {
     limm reg, imm
-};
-
-def macroop MOV_M_I_NR {
-    limm t1, imm
-    .unrestricted
-    st t1, seg, sib, disp
 };
 
 def macroop MOV_M_I {
@@ -127,18 +79,12 @@ def macroop MOV_M_I {
     st t1, seg, sib, disp
 };
 
-def macroop MOV_P_I_NR {
-    rdip t7
-    limm t1, imm
-    .unrestricted
-    st t1, seg, riprel, disp
-};
-
 def macroop MOV_P_I {
     rdip t7
     limm t1, imm
     st t1, seg, riprel, disp
 };
+
 
 #
 # Sign extending moves

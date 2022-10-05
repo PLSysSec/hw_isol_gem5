@@ -13,6 +13,7 @@ EXAMPLE_GEM5_TRACE_FLAG=
 # EXAMPLE_GEM5_TRACE_FLAG=--debug-flags=Exec,HFI
 # EXAMPLE_GEM5_TRACE_FLAG=--debug-break=1355932000
 # EXAMPLE_GEM5_TRACE_FLAG=--debug-flags=SyscallVerbose
+# EXAMPLE_GEM5_TRACE_FLAG=--debug-flags=SyscallVerbose,HFI
 RUN_SIM=$(shell realpath ../build/X86/gem5.opt) $(EXAMPLE_GEM5_TRACE_FLAG) $(shell realpath ../configs/example/se.py) --cpu-type=DerivO3CPU --caches -c
 EXPECT_FAIL=./mybuild/expectfail.sh
 TEST_FILES := $(wildcard ../tests/test-progs/hfi/test-*.c)

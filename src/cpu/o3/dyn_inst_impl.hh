@@ -209,8 +209,7 @@ BaseO3DynInst<Impl>::printHFIMetadata() {
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_BASE_ADDRESS: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_LOWER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_UPPER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND));
-    DPRINTF(HFI, "HFI_DISALLOW_UNRESTRICTED_MOV: %" PRIu64 "\n",   (uint64_t) readMiscReg(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV));
-    DPRINTF(HFI, "HFI_DISALLOW_UNRESTRICTED_STACK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK));
+    DPRINTF(HFI, "HFI_IS_TRUSTED_SANDBOX: %" PRIu64 "\n",          (uint64_t) readMiscReg(MISCREG_HFI_IS_TRUSTED_SANDBOX));
     DPRINTF(HFI, "HFI_EXIT_SANDBOX_HANDLER: %" PRIu64 "\n",        (uint64_t) readMiscReg(MISCREG_HFI_EXIT_SANDBOX_HANDLER));
     DPRINTF(HFI, "HFI_INSIDE_SANDBOX: %" PRIu64 "\n",              (uint64_t) readMiscReg(MISCREG_HFI_INSIDE_SANDBOX));
     DPRINTF(HFI, "HFI_EXIT_REASON: %" PRIu64 "\n",                 (uint64_t) readMiscReg(MISCREG_HFI_EXIT_REASON));
@@ -248,33 +247,22 @@ Fault
 BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
     using namespace TheISA;
 
-    bool allow_unrestricted_stack = this->readMiscReg(MISCREG_HFI_DISALLOW_UNRESTRICTED_STACK) == 0;
-    bool is_unrestricted_stack_instruction = this->staticInst->isUnrestricted();
-    bool allowed_unrestricted_stack_instruction = allow_unrestricted_stack && is_unrestricted_stack_instruction;
-
-    bool allow_unrestricted_mov = this->readMiscReg(MISCREG_HFI_DISALLOW_UNRESTRICTED_MOV) == 0;
-    bool is_unrestricted_mov_instruction = this->macroop->isUnrestricted();
-    bool allowed_unrestricted_mov_instruction = allow_unrestricted_mov && is_unrestricted_mov_instruction;
+    bool allow_unrestricted = this->readMiscReg(MISCREG_HFI_IS_TRUSTED_SANDBOX) == 1;
+    // bool is_unrestricted_mov_instruction = this->macroop->isUnrestricted();
 
     bool is_inside_sandbox = this->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX) != 0;
 
-    bool apply_bounds_checks = is_inside_sandbox &&
-        !allowed_unrestricted_stack_instruction && !allowed_unrestricted_mov_instruction;
+    bool apply_bounds_checks = is_inside_sandbox && !allow_unrestricted;
 
-    if (is_inside_sandbox && !apply_bounds_checks) {
+    if (is_inside_sandbox || apply_bounds_checks) {
         DPRINTF(HFI,
-            "HFI bounds check is not necessary for %s, EA=%lx \n"
-            "HFI allow_unrestricted_stack: %d\n"
-            "HFI is_unrestricted_stack_instruction: %d\n"
-            "HFI allow_unrestricted_mov: %d\n"
-            "HFI is_unrestricted_mov_instruction: %d\n"
+            "HFI bounds check is %s necessary for %s, EA=%lx \n"
+            "HFI allow_unrestricted: %d\n"
             "HFI is_inside_sandbox: %d\n"
             "HFI apply_bounds_checks: %d\n",
+            apply_bounds_checks? "" : "not",
             this->macroop->getName().c_str(), EA,
-            (int) allow_unrestricted_stack,
-            (int) is_unrestricted_stack_instruction,
-            (int) allow_unrestricted_mov,
-            (int) is_unrestricted_mov_instruction,
+            (int) allow_unrestricted,
             (int) is_inside_sandbox,
             (int) apply_bounds_checks
         );

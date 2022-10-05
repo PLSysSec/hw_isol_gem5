@@ -35,44 +35,6 @@ _hfi_load_store_ret_test:
     // .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
 
-.globl hfi_load_store_push_pop_test
-.type hfi_load_store_push_pop_test,@function
-.align 16
-hfi_load_store_push_pop_test:
-_hfi_load_store_push_pop_test:
-    # rdi: param 1 is the sandbox params
-    # rsi: param 2 is the load address
-    # rdx: param 3 is the store address
-    # enter the sandbox, perform load&store, push&pop, then exit
-    mov %rdi, %rax
-    .byte   0x0F, 0x04, 0x71, 0x00 # set sandbox metadata
-    .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
-    mov 0x0(%rsi), %rcx
-    push %rcx
-    pop %r8
-    mov %r8, 0x0(%rdx)
-    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
-    ret
-
-.globl hfi_ur_load_store_test
-.type hfi_ur_load_store_test,@function
-.align 16
-hfi_ur_load_store_test:
-_hfi_ur_load_store_test:
-    # rdi: param 1 is the sandbox params
-    # rsi: param 2 is the load address
-    # rdx: param 3 is the store address
-    # enter the sandbox, perform load&store, then exit
-    mov %rdi, %rax
-    .byte   0x0F, 0x04, 0x71, 0x00 # set sandbox metadata
-    .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
-    .byte 0x0e # unrestricted mov prefix
-    mov 0x0(%rsi), %rcx
-    .byte 0x0e # unrestricted mov prefix
-    mov %rcx, 0x0(%rdx)
-    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
-    ret
-
 .globl hfi_load_test
 .type hfi_load_test,@function
 .align 16
@@ -109,21 +71,6 @@ _hfi_store_test:
 .align 16
 noop_func:
 _noop_func:
-    ret
-
-.globl hfi_call_test
-.type hfi_call_test,@function
-.align 16
-hfi_call_test:
-_hfi_call_test:
-    # rdi: param 1 is the sandbox params
-    # rsi: param 2 is the call address
-    # enter the sandbox, perform call, then exit
-    mov %rdi, %rax
-    .byte   0x0F, 0x04, 0x71, 0x00 # set sandbox metadata
-    .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
-    call *(%rsi)
-    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
 
 .globl hfi_loadsavecontext_test

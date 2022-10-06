@@ -101,6 +101,7 @@ class BaseO3DynInst : public BaseDynInst<Impl>
         TheISA::MiscRegIndex reg_base_address,
         TheISA::MiscRegIndex reg_offset_limit,
         TheISA::MiscRegIndex reg_perm,
+        TheISA::MiscRegIndex reg_rangesizetype,
         bool& out_faulted);
     void doHFIMaskCheck(Addr EA,
         TheISA::MiscRegIndex reg_base_mask,

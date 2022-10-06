@@ -191,18 +191,22 @@ BaseO3DynInst<Impl>::printHFIMetadata() {
     DPRINTF(HFI, "HFI sandbox bounds metadata!\n");
     DPRINTF(HFI, "HFI_LINEAR_RANGE_1_READABLE: %" PRIu64 "\n",     (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_READABLE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_1_WRITEABLE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_1_RANGESIZETYPE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_RANGESIZETYPE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_1_BASE_ADDRESS_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS_BASE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_1_OFFSET_LIMIT_IGNORE_MASK: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_OFFSET_LIMIT_IGNORE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_2_READABLE: %" PRIu64 "\n",     (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_READABLE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_2_WRITEABLE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_2_RANGESIZETYPE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_RANGESIZETYPE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_2_BASE_ADDRESS_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS_BASE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_2_OFFSET_LIMIT_IGNORE_MASK: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_OFFSET_LIMIT_IGNORE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_3_READABLE: %" PRIu64 "\n",     (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_READABLE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_3_WRITEABLE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_3_RANGESIZETYPE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_RANGESIZETYPE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_3_BASE_ADDRESS_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS_BASE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_3_OFFSET_LIMIT_IGNORE_MASK: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_OFFSET_LIMIT_IGNORE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_READABLE: %" PRIu64 "\n",     (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_READABLE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_WRITEABLE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_4_RANGESIZETYPE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_RANGESIZETYPE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_BASE_ADDRESS_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS_BASE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_OFFSET_LIMIT_IGNORE_MASK: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_OFFSET_LIMIT_IGNORE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_CODERANGE_1_EXECUTABLE: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_CODERANGE_1_EXECUTABLE));
@@ -225,6 +229,7 @@ Addr BaseO3DynInst<Impl>::doHFIStructuredMov(uint64_t scale,
     TheISA::MiscRegIndex reg_base_address,
     TheISA::MiscRegIndex reg_offset_limit,
     TheISA::MiscRegIndex reg_perm,
+    TheISA::MiscRegIndex reg_rangesizetype,
     bool& out_faulted)
 {
     out_faulted = false;
@@ -236,16 +241,21 @@ Addr BaseO3DynInst<Impl>::doHFIStructuredMov(uint64_t scale,
         return ret;
     }
 
+    bool check_lower = this->readMiscReg(reg_rangesizetype) != 0;
     uint64_t new_base = this->readMiscReg(reg_base_address);
     uint64_t offset_limit = this->readMiscReg(reg_offset_limit);
     // TODO: add size of move to offset_limit
     uint32_t offset_limit_mid32 = (uint32_t) (offset_limit >> 16);
+    uint32_t offset_limit_low32 = (uint32_t) offset_limit;
+    uint32_t offset_limit_chosen32 = check_lower? offset_limit_low32 : offset_limit_mid32;
 
     uint64_t offset = scale * index + displacement;
     uint32_t offset_mid32 = (uint32_t) (offset >> 16);
+    uint32_t offset_low32 = (uint32_t) offset;
+    uint32_t offset_chosen32 = check_lower? offset_low32 : offset_mid32;
 
-    // HFI with trusted sandboxes compares the middle 32 bits
-    bool hfi_is_inbounds = offset_mid32 < offset_limit_mid32;
+    // HFI with trusted sandboxes compares the chosen 32 bits
+    bool hfi_is_inbounds = offset_chosen32 < offset_limit_chosen32;
     // We want this to simulate the actual bounds check
     // This works as long as the offset_limit is always a power of 2^16
     bool actual_is_inbounds = offset < offset_limit;
@@ -317,6 +327,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
     MiscRegIndex hfi_regs_read[]          = { MISCREG_HFI_LINEAR_RANGE_1_READABLE                , MISCREG_HFI_LINEAR_RANGE_2_READABLE                , MISCREG_HFI_LINEAR_RANGE_3_READABLE                , MISCREG_HFI_LINEAR_RANGE_4_READABLE                 };
     MiscRegIndex hfi_regs_write[]         = { MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE               , MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE               , MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE               , MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE                };
     MiscRegIndex* hfi_regs_perm           = is_store? hfi_regs_write : hfi_regs_read;
+    MiscRegIndex hfi_regs_rangesizetype[] = { MISCREG_HFI_LINEAR_RANGE_1_RANGESIZETYPE           , MISCREG_HFI_LINEAR_RANGE_2_RANGESIZETYPE           , MISCREG_HFI_LINEAR_RANGE_3_RANGESIZETYPE           , MISCREG_HFI_LINEAR_RANGE_4_RANGESIZETYPE            };
 
     if (is_trusted_sandbox) {
 
@@ -352,6 +363,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
                 hfi_regs_base[segment_index],
                 hfi_regs_offset_ignore[segment_index],
                 hfi_regs_perm[segment_index],
+                hfi_regs_rangesizetype[segment_index],
                 /* out */ faulted
             );
 

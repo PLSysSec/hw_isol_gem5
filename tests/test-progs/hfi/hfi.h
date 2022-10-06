@@ -7,6 +7,17 @@
 extern "C" {
 #endif
 
+typedef enum {
+    // Range size can be up to 2^48, but the upper bound address must be aligned
+    // to 2^16.
+    HFI_RANGE_SIZE_TYPE_LARGE,
+    // Range size can be up to 2^32, but the range must not cross a 2^32
+    // boundary. If you want a small range that cross a 2^32 boundary, split the
+    // range into two separate small ranges, that don't cross the boundary.
+    HFI_RANGE_SIZE_TYPE_SMALL
+} HFI_RANGE_SIZE_TYPE;
+
+
 /**
  * @brief Metadata for one linear data range of a sandbox
  */
@@ -18,7 +29,11 @@ typedef struct {
     /**
      * @brief Write permissions for this range
      */
-    char writeable;
+    uint8_t writeable;
+    /**
+     * @brief Range size type from HFI_RANGE_SIZE_TYPE
+     */
+    uint8_t range_size_type;
     /**
      * @brief base_address --- Used by the trusted sandbox. A constant base whose value is added to all loads and stores
      * performed in this region.

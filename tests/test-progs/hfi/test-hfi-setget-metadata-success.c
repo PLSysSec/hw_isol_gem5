@@ -23,14 +23,15 @@ int main(int argc, char* argv[]) {
     sandbox_to_save->is_trusted_sandbox = true;
 
     for (int i = 0; i < HFI_LINEAR_DATA_RANGE_COUNT; i++) {
-        sandbox_to_save->data_ranges[i].readable = (bool) (i % 2);
-        sandbox_to_save->data_ranges[i].writeable = (bool) ((i + 1) % 2);
+        sandbox_to_save->data_ranges[i].readable = (uint8_t) (i % 2);
+        sandbox_to_save->data_ranges[i].writeable = (uint8_t) ((i + 1) % 2);
+        sandbox_to_save->data_ranges[i].range_size_type = (uint8_t) ((i + 1) % 2);
         sandbox_to_save->data_ranges[i].base_mask = (uint64_t) 0x453450000000 * i;
         sandbox_to_save->data_ranges[i].ignore_mask = (uintptr_t) 0x345500000 * i;
     }
 
     for (int i = 0; i < HFI_LINEAR_CODE_RANGE_COUNT; i++) {
-        sandbox_to_save->code_ranges[i].executable = (bool) ((i + 1) % 2);
+        sandbox_to_save->code_ranges[i].executable = (uint8_t) ((i + 1) % 2);
         sandbox_to_save->code_ranges[i].base_mask = (uint64_t) 0x764450000000 * i;
         sandbox_to_save->code_ranges[i].ignore_mask = (uintptr_t) 0x432500000 * i;
     }

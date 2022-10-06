@@ -124,11 +124,12 @@ BaseO3DynInst<Impl>::initVars()
 
 template <class Impl>
 Fault
-BaseO3DynInst<Impl>::execute()
-{   
-    //HFI 
-    if (!checkHFICtrl(this->pc.instAddr()))
-        return  std::make_shared<TheISA::HFIBoundsCheck>();
+BaseO3DynInst<Impl>::execute(){
+
+    //HFI
+    if (!checkHFICtrl(this->pc.instAddr())) {
+        return std::make_shared<TheISA::HFIBoundsCheck>();
+    }
 
     // @todo: Pretty convoluted way to avoid squashing from happening
     // when using the TC during an instruction's execution
@@ -148,7 +149,7 @@ template <class Impl>
 Fault
 BaseO3DynInst<Impl>::initiateAcc()
 {
-    //HFI 
+    //HFI
     if (!checkHFICtrl(this->pc.instAddr()))
         return  std::make_shared<TheISA::HFIBoundsCheck>();
 
@@ -194,6 +195,30 @@ BaseO3DynInst<Impl>::completeAcc(PacketPtr pkt)
 template <class Impl>
 bool
 BaseO3DynInst<Impl>::checkHFICtrl(Addr pc) {
+    using namespace TheISA;
+
+    MiscRegIndex hfi_regs_base[]          = { MISCREG_HFI_LINEAR_CODERANGE_1_BASE_MASK  , MISCREG_HFI_LINEAR_CODERANGE_2_BASE_MASK   };
+    MiscRegIndex hfi_regs_offset_ignore[] = { MISCREG_HFI_LINEAR_CODERANGE_1_IGNORE_MASK, MISCREG_HFI_LINEAR_CODERANGE_2_IGNORE_MASK };
+    MiscRegIndex hfi_regs_perm[]          = { MISCREG_HFI_LINEAR_CODERANGE_1_EXECUTABLE , MISCREG_HFI_LINEAR_CODERANGE_2_EXECUTABLE  };
+
+    bool found = false;
+    bool faulted = false;
+
+    for (int i = 0; i < 2; i++) {
+        doHFIMaskCheck(pc, hfi_regs_base[i], hfi_regs_offset_ignore[i], hfi_regs_perm[i], /* out */ found, /* out */ faulted);
+        if (found) {
+            break;
+        }
+    }
+
+    // if (pc != this->cpu->pcState(this->threadNumber).pc()) {
+    //     printf("!!!!!Prefetch / Speculative Exec!!!!!!!\n");
+    // }
+
+    if (faulted || !found) {
+        return false;
+    }
+
     return true;
 }
 

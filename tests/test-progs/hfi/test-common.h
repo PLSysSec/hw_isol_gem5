@@ -19,6 +19,10 @@ inline hfi_sandbox get_full_access_mask_sandbox() {
     sandbox.data_ranges[0].base_mask = 0;
     sandbox.data_ranges[0].ignore_mask = (uint64_t)0xFFFFFFFFFFFFFFFF;
 
+    sandbox.code_ranges[0].executable = true;
+    sandbox.code_ranges[0].base_mask = 0;
+    sandbox.code_ranges[0].ignore_mask = (uint64_t)0xFFFFFFFFFFFFFFFF;
+
     return sandbox;
 }
 

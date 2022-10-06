@@ -113,6 +113,10 @@ class BaseO3DynInst : public BaseDynInst<Impl>
     /** check the HFI for the effective address */
     Fault checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t index, uint64_t base, uint64_t displacement);
 
+
+    /** checks the HFI control path returns true if the check passes**/
+    bool checkHFICtrl(Addr pc);
+
   private:
     /** Initializes variables. */
     void initVars();

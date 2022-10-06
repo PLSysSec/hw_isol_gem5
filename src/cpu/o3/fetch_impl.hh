@@ -1073,8 +1073,6 @@ DefaultFetch<Impl>::buildInst(ThreadID tid, StaticInstPtr staticInst,
     // Get a sequence number.
     InstSeqNum seq = cpu->getAndIncrementInstSeq();
 
-    // HFI: code masking. Create a fault instruction if mask fails
-
     // Create a new DynInst from the instruction fetched.
     DynInstPtr instruction =
         new DynInst(staticInst, curMacroop, thisPC, nextPC, seq, cpu);

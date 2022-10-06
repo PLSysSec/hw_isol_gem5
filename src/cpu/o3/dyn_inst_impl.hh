@@ -125,7 +125,11 @@ BaseO3DynInst<Impl>::initVars()
 template <class Impl>
 Fault
 BaseO3DynInst<Impl>::execute()
-{
+{   
+    //HFI 
+    if (!checkHFICtrl(this->pc.instAddr()))
+        return  std::make_shared<TheISA::HFIBoundsCheck>();
+
     // @todo: Pretty convoluted way to avoid squashing from happening
     // when using the TC during an instruction's execution
     // (specifically for instructions that have side-effects that use
@@ -144,6 +148,10 @@ template <class Impl>
 Fault
 BaseO3DynInst<Impl>::initiateAcc()
 {
+    //HFI 
+    if (!checkHFICtrl(this->pc.instAddr()))
+        return  std::make_shared<TheISA::HFIBoundsCheck>();
+
     // @todo: Pretty convoluted way to avoid squashing from happening
     // when using the TC during an instruction's execution
     // (specifically for instructions that have side-effects that use
@@ -180,6 +188,13 @@ BaseO3DynInst<Impl>::completeAcc(PacketPtr pkt)
     this->thread->noSquashFromTC = no_squash_from_TC;
 
     return this->fault;
+}
+
+
+template <class Impl>
+bool
+BaseO3DynInst<Impl>::checkHFICtrl(Addr pc) {
+    return true;
 }
 
 

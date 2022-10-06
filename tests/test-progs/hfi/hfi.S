@@ -80,12 +80,12 @@ hfi_hmov_store:
     mov  %rdi, 0x0(%rsi, %rdx, 1)
     ret
 
-hfi_hmov_load:
+hfi_hmov1_load:
     .byte 0x0d # hmov1 prefix
     mov  0x0(, %rdi, 1), %rax
     ret
 
-hfi_hmov_store:
+hfi_hmov1_store:
     .byte 0x0d # hmov1 prefix
     mov  %rdi, 0x0(, %rsi, 1)
     ret

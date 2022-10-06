@@ -185,14 +185,20 @@ enum HFI_EXIT_REASON hfi_get_exit_reason();
 void* hfi_get_exit_location();
 
 ////////////////
-// Unrestricted mov instructions exposed as functions
+// HFI mov instructions exposed as functions
 ////////////////
 
-// Load from the given address even if it outside hfi bounds
-uint64_t hfi_urmov_load(void* address);
+// Load from the given region number, offset
+uint64_t hfi_hmov_load(uint64_t region_number, uint64_t offset);
 
-// Store to the given address even if it outside hfi bounds
-void hfi_urmov_store(uint64_t data, void* address);
+// Store to the given region number, offset
+void hfi_hmov_store(uint64_t data, uint64_t region_number, uint64_t offset);
+
+// Load from the region 1, offset
+uint64_t hfi_hmov1_load(uint64_t offset);
+
+// Store to the region 1, offset
+void hfi_hmov1_store(uint64_t data, uint64_t offset);
 
 #ifdef __cplusplus
 }

@@ -70,12 +70,22 @@ _hfi_get_exit_location:
     .byte   0x0F, 0x04, 0x70, 0x00
     ret
 
-hfi_urmov_load:
-    .byte 0x0e # unrestricted mov prefix
-    mov  0x0(%rdi), %rax
+hfi_hmov_load:
+    .byte 0x0e # hmov prefix
+    mov  0x0(%rdi, %rsi, 1), %rax
     ret
 
-hfi_urmov_store:
-    .byte 0x0e # unrestricted mov prefix
-    mov  %rdi, 0x0(%rsi)
+hfi_hmov_store:
+    .byte 0x0e # hmov prefix
+    mov  %rdi, 0x0(%rsi, %rdx, 1)
+    ret
+
+hfi_hmov_load:
+    .byte 0x0d # hmov1 prefix
+    mov  0x0(, %rdi, 1), %rax
+    ret
+
+hfi_hmov_store:
+    .byte 0x0d # hmov1 prefix
+    mov  %rdi, 0x0(, %rsi, 1)
     ret

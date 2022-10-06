@@ -211,8 +211,11 @@ BaseO3DynInst<Impl>::checkHFICtrl(Addr pc) {
         }
     }
 
-    // if (pc != this->cpu->pcState(this->threadNumber).pc()) {
+    // Addr rip = this->cpu->pcState(this->threadNumber).pc();
+    // if (pc != rip) {
     //     printf("!!!!!Prefetch / Speculative Exec!!!!!!!\n");
+    // } else {
+    //     printf("!!!!!Sequential Exec!!!!!!!\n");
     // }
 
     if (faulted || !found) {

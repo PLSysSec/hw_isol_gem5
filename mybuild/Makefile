@@ -22,6 +22,9 @@ TEST_NAMES := $(basename $(notdir $(TEST_FILES)))
 build-gem5:
 	cd .. && scons build/X86/gem5.opt -j $(PARALLEL_COUNT) --ignore-style
 
+build-gem5-debug:
+	cd .. && scons build/X86/gem5.debug -j $(PARALLEL_COUNT) --ignore-style
+
 .PRECIOUS: mybuildout/test-%
 mybuildout/test-%: ../tests/test-progs/hfi/hfi.S ../tests/test-progs/hfi/test-%.c ../tests/test-progs/hfi/hfi_load_store.S
 	mkdir -p mybuildout

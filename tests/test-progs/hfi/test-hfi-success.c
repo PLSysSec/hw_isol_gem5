@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "hfi.h"
+#include "test-common.h"
 
 typedef void(*void_void_ptr_t)();
 
@@ -15,8 +16,6 @@ void hfi_store_test(hfi_sandbox* sandbox, void* store_address, uint64_t store_va
 void noop_func();
 void hfi_loadsavecontext_test(hfi_sandbox* sandbox, hfi_thread_context* save_context,
     hfi_thread_context* load_context, hfi_thread_context* save_context2);
-void hfi_loadsavemetadata_test(hfi_sandbox* sandbox, hfi_sandbox* save_metadata,
-    hfi_sandbox* load_metadata, hfi_sandbox* save_metadata2);
 void hfi_exit_handler_test(hfi_sandbox* sandbox);
 void hfi_test_exit_location();
 
@@ -33,17 +32,8 @@ void* assert_memcmp(const void* p1, const void* p2, size_t n) {
     }
 }
 
-hfi_sandbox get_full_access_sandbox() {
-    hfi_sandbox sandbox;
-    memset(&sandbox, 0, sizeof(hfi_sandbox));
-    sandbox.data_ranges[0].readable = 1;
-    sandbox.data_ranges[0].writeable = 1;
-    sandbox.data_ranges[0].upper_bound = UINT64_MAX;
-    return sandbox;
-}
-
 void test_entry_exit() {
-    hfi_sandbox sandbox = get_full_access_sandbox();
+    hfi_sandbox sandbox = get_full_access_mask_sandbox();
     printf("test_entry_exit\n"); fflush(stdout);
     hfi_set_sandbox_metadata(&sandbox);
     hfi_enter_sandbox();
@@ -51,7 +41,7 @@ void test_entry_exit() {
 }
 
 void test_load_store() {
-    hfi_sandbox sandbox = get_full_access_sandbox();
+    hfi_sandbox sandbox = get_full_access_mask_sandbox();
     uint64_t array[] = {0,1,2,3,4,5,6,7};
     sandbox.data_ranges[0].lower_bound = (uintptr_t) array;
     sandbox.data_ranges[0].upper_bound = (uintptr_t) &(array[5]);
@@ -64,7 +54,7 @@ void test_load_store() {
 }
 
 void test_load_store_with_base() {
-    hfi_sandbox sandbox = get_full_access_sandbox();
+    hfi_sandbox sandbox = get_full_access_mask_sandbox();
     uint64_t array[] = {0,1,2,3,4,5,6,7};
 
     // check load and store with a base address
@@ -81,7 +71,7 @@ void test_load_store_with_base() {
 }
 
 void test_save_load_context() {
-    hfi_sandbox sandbox = get_full_access_sandbox();
+    hfi_sandbox sandbox = get_full_access_mask_sandbox();
 
     // This test saves the current context, loads the target context and then saves the current context again
     // The test plan here is to enter a sandbox
@@ -107,32 +97,8 @@ void test_save_load_context() {
     assert_memcmp(save_context2, load_context, sizeof(hfi_thread_context));
 }
 
-void test_save_load_metadata() {
-    hfi_sandbox sandbox = get_full_access_sandbox();
-
-    // This test saves the current metadata, loads the target metadata and then saves the current metadata again
-    // The test plan here is to enter a sandbox
-    // 1) save metadata and see that it has the expected value
-    // 2) load metadata which is the same as the sandbox metadata, save it again and see if it has the expected value
-    hfi_sandbox metadatas[3];
-    memset(metadatas, 0, sizeof(hfi_sandbox) * 3);
-
-    hfi_sandbox* save_metadata  = &(metadatas[0]);
-    hfi_sandbox* load_metadata  = &(metadatas[1]);
-    hfi_sandbox* save_metadata2 = &(metadatas[2]);
-    sandbox.data_ranges[0].lower_bound = (uintptr_t) metadatas;
-    sandbox.data_ranges[0].upper_bound = (uintptr_t) &(metadatas[4]);
-
-    *load_metadata = sandbox;
-    printf("test_save_load_metadata\n"); fflush(stdout);
-    hfi_loadsavemetadata_test(&sandbox, save_metadata, load_metadata, save_metadata2);
-
-    assert_memcmp(save_metadata, load_metadata, sizeof(hfi_sandbox));
-    assert_memcmp(save_metadata2, load_metadata, sizeof(hfi_sandbox));
-}
-
 void test_exit_handler() {
-    hfi_sandbox sandbox = get_full_access_sandbox();
+    hfi_sandbox sandbox = get_full_access_mask_sandbox();
     sandbox.exit_sandbox_handler = (void*) &noop_func;
     printf("test_exit_handler\n"); fflush(stdout);
     hfi_exit_handler_test(&sandbox);

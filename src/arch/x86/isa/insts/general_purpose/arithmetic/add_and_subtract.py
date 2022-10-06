@@ -61,64 +61,70 @@ hfi_set_sandbox_metadata_continue:
     limm t1, 0
     limm t2, 0
     limm t3, 0
-    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t5, seg, [1, t1, rax], 8, dataSize=8
     ld t6, seg, [1, t1, rax], 16, dataSize=8
-    ld t7, seg, [1, t1, rax], 24, dataSize=8
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_READABLE)", t2
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE)", t3
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS)", t5
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)", t6
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)", t7
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS_BASE_MASK)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_OFFSET_LIMIT_IGNORE_MASK)", t6
 
-    limm t1, 32
+    limm t1, 24
     limm t2, 0
     limm t3, 0
-    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t5, seg, [1, t1, rax], 8, dataSize=8
     ld t6, seg, [1, t1, rax], 16, dataSize=8
-    ld t7, seg, [1, t1, rax], 24, dataSize=8
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_READABLE)", t2
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE)", t3
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS)", t5
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)", t6
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)", t7
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS_BASE_MASK)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_OFFSET_LIMIT_IGNORE_MASK)", t6
 
-    limm t1, 64
+    limm t1, 48
     limm t2, 0
     limm t3, 0
-    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t5, seg, [1, t1, rax], 8, dataSize=8
     ld t6, seg, [1, t1, rax], 16, dataSize=8
-    ld t7, seg, [1, t1, rax], 24, dataSize=8
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_READABLE)", t2
     wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE)", t3
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS)", t5
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)", t6
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)", t7
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS_BASE_MASK)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_OFFSET_LIMIT_IGNORE_MASK)", t6
+
+    limm t1, 72
+    limm t2, 0
+    limm t3, 0
+    ld t2, seg, [1, t1, rax], dataSize=1
+    ld t3, seg, [1, t1, rax], 1, dataSize=1
+    ld t5, seg, [1, t1, rax], 8, dataSize=8
+    ld t6, seg, [1, t1, rax], 16, dataSize=8
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_READABLE)", t2
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE)", t3
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS_BASE_MASK)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_OFFSET_LIMIT_IGNORE_MASK)", t6
 
     limm t1, 96
     limm t2, 0
-    limm t3, 0
-    limm t4, 0
     ld t2, seg, [1, t1, rax], dataSize=1
-    ld t3, seg, [1, t1, rax], 1, dataSize=1
     ld t5, seg, [1, t1, rax], 8, dataSize=8
     ld t6, seg, [1, t1, rax], 16, dataSize=8
-    ld t7, seg, [1, t1, rax], 24, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_READABLE)", t2
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE)", t3
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS)", t5
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)", t6
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)", t7
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_1_EXECUTABLE)", t2
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_1_BASE_MASK)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_1_IGNORE_MASK)", t6
 
-    limm t1, 128
+    limm t1, 120
+    limm t2, 0
+    ld t2, seg, [1, t1, rax], dataSize=1
+    ld t5, seg, [1, t1, rax], 8, dataSize=8
+    ld t6, seg, [1, t1, rax], 16, dataSize=8
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_2_EXECUTABLE)", t2
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_2_BASE_MASK)", t5
+    wrval "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_2_IGNORE_MASK)", t6
+
+    limm t1, 144
     limm t2, 0
     ld t2, seg, [1, t1, rax], dataSize=1
     ld t4, seg, [1, t1, rax], 8, dataSize=8
@@ -138,52 +144,60 @@ hfi_get_sandbox_metadata_continue:
     limm t1, 0
     rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_READABLE)"
     rdval t3, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE)"
-    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS)"
-    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)"
-    rdval t7, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)"
+    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS_BASE_MASK)"
+    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_OFFSET_LIMIT_IGNORE_MASK)"
     st t2, seg, [1, t1, rax], dataSize=1
     st t3, seg, [1, t1, rax], 1, dataSize=1
     st t5, seg, [1, t1, rax], 8, dataSize=8
     st t6, seg, [1, t1, rax], 16, dataSize=8
-    st t7, seg, [1, t1, rax], 24, dataSize=8
 
-    limm t1, 32
+    limm t1, 24
     rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_READABLE)"
     rdval t3, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE)"
-    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS)"
-    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)"
-    rdval t7, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)"
+    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS_BASE_MASK)"
+    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_OFFSET_LIMIT_IGNORE_MASK)"
     st t2, seg, [1, t1, rax], dataSize=1
     st t3, seg, [1, t1, rax], 1, dataSize=1
     st t5, seg, [1, t1, rax], 8, dataSize=8
     st t6, seg, [1, t1, rax], 16, dataSize=8
-    st t7, seg, [1, t1, rax], 24, dataSize=8
 
-    limm t1, 64
+    limm t1, 48
     rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_READABLE)"
     rdval t3, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE)"
-    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS)"
-    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)"
-    rdval t7, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)"
+    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS_BASE_MASK)"
+    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_OFFSET_LIMIT_IGNORE_MASK)"
     st t2, seg, [1, t1, rax], dataSize=1
     st t3, seg, [1, t1, rax], 1, dataSize=1
     st t5, seg, [1, t1, rax], 8, dataSize=8
     st t6, seg, [1, t1, rax], 16, dataSize=8
-    st t7, seg, [1, t1, rax], 24, dataSize=8
 
-    limm t1, 96
+    limm t1, 72
     rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_READABLE)"
     rdval t3, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE)"
-    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS)"
-    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)"
-    rdval t7, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)"
+    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS_BASE_MASK)"
+    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_OFFSET_LIMIT_IGNORE_MASK)"
     st t2, seg, [1, t1, rax], dataSize=1
     st t3, seg, [1, t1, rax], 1, dataSize=1
     st t5, seg, [1, t1, rax], 8, dataSize=8
     st t6, seg, [1, t1, rax], 16, dataSize=8
-    st t7, seg, [1, t1, rax], 24, dataSize=8
 
-    limm t1, 128
+    limm t1, 96
+    rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_1_EXECUTABLE)"
+    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_1_BASE_MASK)"
+    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_1_IGNORE_MASK)"
+    st t2, seg, [1, t1, rax], dataSize=1
+    st t5, seg, [1, t1, rax], 8, dataSize=8
+    st t6, seg, [1, t1, rax], 16, dataSize=8
+
+    limm t1, 120
+    rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_2_EXECUTABLE)"
+    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_2_BASE_MASK)"
+    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_CODERANGE_2_IGNORE_MASK)"
+    st t2, seg, [1, t1, rax], dataSize=1
+    st t5, seg, [1, t1, rax], 8, dataSize=8
+    st t6, seg, [1, t1, rax], 16, dataSize=8
+
+    limm t1, 144
     rdval t2, "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)"
     rdval t4, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
     st t2, seg, [1, t1, rax], dataSize=1
@@ -232,154 +246,6 @@ hfi_exit_sandbox_continue:
 
 hfi_exit_sandbox_nohandler:
     limm t0, 0
-};
-
-# TODO: below instructions should check for ring 0
-
-def macroop HFI_SAVE_THREAD_CONTEXT
-{
-    limm t1, 0
-    rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_READABLE)"
-    rdval t3, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE)"
-    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS)"
-    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)"
-    rdval t7, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)"
-    st t2, seg, [1, t1, rax], dataSize=1
-    st t3, seg, [1, t1, rax], 1, dataSize=1
-    st t5, seg, [1, t1, rax], 8, dataSize=8
-    st t6, seg, [1, t1, rax], 16, dataSize=8
-    st t7, seg, [1, t1, rax], 24, dataSize=8
-
-    limm t1, 32
-    rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_READABLE)"
-    rdval t3, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE)"
-    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS)"
-    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)"
-    rdval t7, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)"
-    st t2, seg, [1, t1, rax], dataSize=1
-    st t3, seg, [1, t1, rax], 1, dataSize=1
-    st t5, seg, [1, t1, rax], 8, dataSize=8
-    st t6, seg, [1, t1, rax], 16, dataSize=8
-    st t7, seg, [1, t1, rax], 24, dataSize=8
-
-    limm t1, 64
-    rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_READABLE)"
-    rdval t3, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE)"
-    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS)"
-    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)"
-    rdval t7, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)"
-    st t2, seg, [1, t1, rax], dataSize=1
-    st t3, seg, [1, t1, rax], 1, dataSize=1
-    st t5, seg, [1, t1, rax], 8, dataSize=8
-    st t6, seg, [1, t1, rax], 16, dataSize=8
-    st t7, seg, [1, t1, rax], 24, dataSize=8
-
-    limm t1, 96
-    rdval t2, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_READABLE)"
-    rdval t3, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE)"
-    rdval t5, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS)"
-    rdval t6, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)"
-    rdval t7, "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)"
-    st t2, seg, [1, t1, rax], dataSize=1
-    st t3, seg, [1, t1, rax], 1, dataSize=1
-    st t5, seg, [1, t1, rax], 8, dataSize=8
-    st t6, seg, [1, t1, rax], 16, dataSize=8
-    st t7, seg, [1, t1, rax], 24, dataSize=8
-
-    limm t1, 128
-    rdval t2, "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)"
-    rdval t4, "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)"
-    st t2, seg, [1, t1, rax], dataSize=1
-    st t4, seg, [1, t1, rax], 8, dataSize=8
-
-    limm t1, 144
-    rdval t2, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
-    rdval t3, "InstRegIndex(MISCREG_HFI_EXIT_REASON)"
-    rdval t4, "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)"
-    st t2, seg, [1, t1, rax], dataSize=1
-    st t3, seg, [1, t1, rax], 4, dataSize=4
-    st t4, seg, [1, t1, rax], 8, dataSize=8
-};
-
-def macroop HFI_LOAD_THREAD_CONTEXT
-{
-    limm t1, 0
-    limm t2, 0
-    limm t3, 0
-    limm t4, 0
-    ld t2, seg, [1, t1, rax], dataSize=1
-    ld t3, seg, [1, t1, rax], 1, dataSize=1
-    ld t5, seg, [1, t1, rax], 8, dataSize=8
-    ld t6, seg, [1, t1, rax], 16, dataSize=8
-    ld t7, seg, [1, t1, rax], 24, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_READABLE)", t2
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE)", t3
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS)", t5
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND)", t6
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND)", t7
-
-    limm t1, 32
-    limm t2, 0
-    limm t3, 0
-    limm t4, 0
-    ld t2, seg, [1, t1, rax], dataSize=1
-    ld t3, seg, [1, t1, rax], 1, dataSize=1
-    ld t5, seg, [1, t1, rax], 8, dataSize=8
-    ld t6, seg, [1, t1, rax], 16, dataSize=8
-    ld t7, seg, [1, t1, rax], 24, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_READABLE)", t2
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE)", t3
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS)", t5
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND)", t6
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND)", t7
-
-    limm t1, 64
-    limm t2, 0
-    limm t3, 0
-    limm t4, 0
-    ld t2, seg, [1, t1, rax], dataSize=1
-    ld t3, seg, [1, t1, rax], 1, dataSize=1
-    ld t5, seg, [1, t1, rax], 8, dataSize=8
-    ld t6, seg, [1, t1, rax], 16, dataSize=8
-    ld t7, seg, [1, t1, rax], 24, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_READABLE)", t2
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE)", t3
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS)", t5
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND)", t6
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND)", t7
-
-    limm t1, 96
-    limm t2, 0
-    limm t3, 0
-    limm t4, 0
-    ld t2, seg, [1, t1, rax], dataSize=1
-    ld t3, seg, [1, t1, rax], 1, dataSize=1
-    ld t5, seg, [1, t1, rax], 8, dataSize=8
-    ld t6, seg, [1, t1, rax], 16, dataSize=8
-    ld t7, seg, [1, t1, rax], 24, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_READABLE)", t2
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE)", t3
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS)", t5
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND)", t6
-    wrval "InstRegIndex(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND)", t7
-
-    limm t1, 128
-    limm t2, 0
-    limm t3, 0
-    ld t2, seg, [1, t1, rax], dataSize=1
-    ld t4, seg, [1, t1, rax], 8, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)", t2
-    wrval "InstRegIndex(MISCREG_HFI_EXIT_SANDBOX_HANDLER)", t4
-
-    limm t1, 144
-    limm t2, 0
-    limm t3, 0
-    ld t2, seg, [1, t1, rax], dataSize=1
-    ld t3, seg, [1, t1, rax], 4, dataSize=4
-    ld t4, seg, [1, t1, rax], 8, dataSize=8
-    wrval "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)", t2
-    wrval "InstRegIndex(MISCREG_HFI_EXIT_REASON)", t3
-    wrval "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)", t4
 };
 
 def macroop HFI_GET_EXIT_REASON

@@ -70,27 +70,6 @@ _hfi_get_exit_location:
     .byte   0x0F, 0x04, 0x70, 0x00
     ret
 
-.globl hfi_save_thread_context
-.type hfi_save_thread_context,@function
-.align 16
-hfi_save_thread_context:
-_hfi_save_thread_context:
-    # mov param into rax
-    mov %rdi, %rax
-    .byte   0x0F, 0x04, 0x67, 0x00
-    ret
-
-
-.globl hfi_load_thread_context
-.type hfi_load_thread_context,@function
-.align 16
-hfi_load_thread_context:
-_hfi_load_thread_context:
-    # mov param into rax
-    mov %rdi, %rax
-    .byte   0x0F, 0x04, 0x68, 0x00
-    ret
-
 hfi_urmov_load:
     .byte 0x0e # unrestricted mov prefix
     mov  0x0(%rdi), %rax

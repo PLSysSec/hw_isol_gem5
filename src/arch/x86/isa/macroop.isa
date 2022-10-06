@@ -159,6 +159,21 @@ let {{
         def unrestricted(self):
             self.unrestricted = True
 
+        def hfi_structured(self):
+            self.hfi_structured = True
+
+        def hfi_structured1(self):
+            self.hfi_structured1 = True
+
+        def hfi_structured2(self):
+            self.hfi_structured2 = True
+
+        def hfi_structured3(self):
+            self.hfi_structured3 = True
+
+        def hfi_structured4(self):
+            self.hfi_structured4 = True
+
         def __init__(self, name):
             super(X86Macroop, self).__init__(name)
             self.directives = {
@@ -171,7 +186,12 @@ let {{
                 "function_return" : self.function_return,
                 "control_direct" : self.control_direct,
                 "control_indirect" : self.control_indirect,
-                "unrestricted": self.unrestricted
+                "unrestricted": self.unrestricted,
+                "hfi_structured": self.hfi_structured,
+                "hfi_structured1": self.hfi_structured1,
+                "hfi_structured2": self.hfi_structured2,
+                "hfi_structured3": self.hfi_structured3,
+                "hfi_structured4": self.hfi_structured4
             }
             self.declared = False
             self.adjust_env = ""
@@ -193,6 +213,11 @@ let {{
             self.control_direct = False
             self.control_indirect = False
             self.unrestricted = False
+            self.hfi_structured = False
+            self.hfi_structured1 = False
+            self.hfi_structured2 = False
+            self.hfi_structured3 = False
+            self.hfi_structured4 = False
 
         def getAllocator(self, env):
             return "new X86Macroop::%s(machInst, %s)" % \
@@ -230,6 +255,16 @@ let {{
 
                 if self.unrestricted:
                         flags.append("IsUnrestricted")
+                if self.hfi_structured:
+                        flags.append("IsHfiStructured")
+                if self.hfi_structured1:
+                        flags.append("IsHfiStructured1")
+                if self.hfi_structured2:
+                        flags.append("IsHfiStructured2")
+                if self.hfi_structured3:
+                        flags.append("IsHfiStructured3")
+                if self.hfi_structured4:
+                        flags.append("IsHfiStructured4")
                 if micropc == numMicroops - 1:
                     flags.append("IsLastMicroop")
 

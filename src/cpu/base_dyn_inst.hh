@@ -575,6 +575,11 @@ class BaseDynInst : public ExecContext, public RefCounted
     bool isHtmCmd() const { return staticInst->isHtmCmd(); }
 
     bool isUnrestricted() const { return staticInst->isUnrestricted(); }
+    bool isHFIStuctured() const { return staticInst->isHFIStuctured(); }
+    bool isHFIStuctured1() const { return staticInst->isHFIStuctured1(); }
+    bool isHFIStuctured2() const { return staticInst->isHFIStuctured2(); }
+    bool isHFIStuctured3() const { return staticInst->isHFIStuctured3(); }
+    bool isHFIStuctured4() const { return staticInst->isHFIStuctured4(); }
     uint64_t
     getHtmTransactionUid() const override
     {
@@ -590,7 +595,7 @@ class BaseDynInst : public ExecContext, public RefCounted
     }
 
     Fault
-    checkHFI(Addr &EA, bool is_store) override
+    checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t index, uint64_t base, uint64_t displacement) override
     {
         panic("Not yet implemented\n");
         return NoFault;

@@ -237,8 +237,6 @@
                     0x64: Inst::HFI_GET_LINEAR_DATA_RANGE_COUNT();
                     0x65: Inst::HFI_ENTER_SANDBOX();
                     0x66: Inst::HFI_EXIT_SANDBOX();
-                    0x67: Inst::HFI_SAVE_THREAD_CONTEXT();
-                    0x68: Inst::HFI_LOAD_THREAD_CONTEXT();
                     0x69: Inst::HFI_GET_EXIT_REASON();
                     0x70: Inst::HFI_GET_EXIT_LOCATION();
                     0x71: Inst::HFI_SET_SANDBOX_METADATA();

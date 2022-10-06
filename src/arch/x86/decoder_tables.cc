@@ -56,13 +56,18 @@ namespace X86ISA
     const uint8_t V2 = Vex2Prefix;
     const uint8_t V3 = Vex3Prefix;
     const uint8_t UR = Unrestricted;
+    const uint8_t HF = HfiStructured;
+    const uint8_t HF1 = HfiStructured1;
+    const uint8_t HF2 = HfiStructured2;
+    const uint8_t HF3 = HfiStructured3;
+    const uint8_t HF4 = HfiStructured4;
 
     //This table identifies whether a byte is a prefix, and if it is,
     //which prefix it is.
     const Decoder::ByteTable Decoder::Prefixes =
     {    //LSB
 // MSB   0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | A | B | C | D | E | F
-/*   0*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , UR , 0,
+/*   0*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , HF1, HF, 0,
 /*   1*/ 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0,
 /*   2*/ 0 , 0 , 0 , 0 , 0 , 0 , ES, 0 , 0 , 0 , 0 , 0 , 0 , 0 , CS, 0,
 /*   3*/ 0 , 0 , 0 , 0 , 0 , 0 , SS, 0 , 0 , 0 , 0 , 0 , 0 , 0 , DS, 0,

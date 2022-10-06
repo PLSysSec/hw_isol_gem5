@@ -406,32 +406,33 @@ X86_64Process::initState()
             RegVal sfmask = (1 << 8) | (1 << 10); // TF | DF
             tc->setMiscReg(MISCREG_SF_MASK, sfmask);
 
-            tc->setMiscRegNoEffect(MISCREG_SANDBOX_BASE_1, 0);
-            tc->setMiscRegNoEffect(MISCREG_SANDBOX_SIZE_1, 0xffffffffffff);
-
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS_BASE_MASK, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_1_OFFSET_LIMIT_IGNORE_MASK, 0);
 
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS_BASE_MASK, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_2_OFFSET_LIMIT_IGNORE_MASK, 0);
 
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS_BASE_MASK, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_3_OFFSET_LIMIT_IGNORE_MASK, 0);
 
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_READABLE, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND, 0);
-            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS_BASE_MASK, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_RANGE_4_OFFSET_LIMIT_IGNORE_MASK, 0);
+
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_CODERANGE_1_EXECUTABLE, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_CODERANGE_1_BASE_MASK, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_CODERANGE_1_IGNORE_MASK, 0);
+
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_CODERANGE_2_EXECUTABLE, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_CODERANGE_2_BASE_MASK, 0);
+            tc->setMiscRegNoEffect(MISCREG_HFI_LINEAR_CODERANGE_2_IGNORE_MASK, 0);
 
             tc->setMiscRegNoEffect(MISCREG_HFI_IS_TRUSTED_SANDBOX, 0);
             tc->setMiscRegNoEffect(MISCREG_HFI_EXIT_SANDBOX_HANDLER, 0);
@@ -614,8 +615,6 @@ X86_64Process::initState()
             tc->setMiscReg(MISCREG_CR0, cr0);
 
             tc->setMiscReg(MISCREG_MXCSR, 0x1f80);
-            tc->setMiscRegNoEffect(MISCREG_SANDBOX_BASE_1, 0);
-            tc->setMiscRegNoEffect(MISCREG_SANDBOX_SIZE_1, 0xffffffffffff);
         }
     }
 

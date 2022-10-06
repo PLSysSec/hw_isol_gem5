@@ -63,6 +63,11 @@ Decoder::doResetState()
     emi.sib = 0;
 
     emi.unrestricted = 0;
+    emi.hfi_structured = 0;
+    emi.hfi_structured1 = 0;
+    emi.hfi_structured2 = 0;
+    emi.hfi_structured3 = 0;
+    emi.hfi_structured4 = 0;
 
     if (instBytes->si) {
         return FromCacheState;
@@ -236,7 +241,26 @@ Decoder::doPrefixState(uint8_t nextByte)
         DPRINTF(Decoder, "Found Rex prefix %#x.\n", nextByte);
         emi.unrestricted = 1;
         break;
-
+      case HfiStructured:
+        DPRINTF(Decoder, "Found Rex prefix %#x.\n", nextByte);
+        emi.hfi_structured = 1;
+        break;
+      case HfiStructured1:
+        DPRINTF(Decoder, "Found Rex prefix %#x.\n", nextByte);
+        emi.hfi_structured1 = 1;
+        break;
+      case HfiStructured2:
+        DPRINTF(Decoder, "Found Rex prefix %#x.\n", nextByte);
+        emi.hfi_structured2 = 1;
+        break;
+      case HfiStructured3:
+        DPRINTF(Decoder, "Found Rex prefix %#x.\n", nextByte);
+        emi.hfi_structured3 = 1;
+        break;
+      case HfiStructured4:
+        DPRINTF(Decoder, "Found Rex prefix %#x.\n", nextByte);
+        emi.hfi_structured4 = 1;
+        break;
       case 0:
         nextState = OneByteOpcodeState;
         break;
@@ -734,6 +758,26 @@ Decoder::decode(PCState &nextPC)
     if (emi.unrestricted)
     {
       si->setisUnrestricted();
+    }
+    if (emi.hfi_structured)
+    {
+      si->setIsHFIStuctured();
+    }
+    if (emi.hfi_structured1)
+    {
+      si->setIsHFIStuctured1();
+    }
+    if (emi.hfi_structured2)
+    {
+      si->setIsHFIStuctured2();
+    }
+    if (emi.hfi_structured3)
+    {
+      si->setIsHFIStuctured3();
+    }
+    if (emi.hfi_structured4)
+    {
+      si->setIsHFIStuctured4();
     }
     return si;
 }

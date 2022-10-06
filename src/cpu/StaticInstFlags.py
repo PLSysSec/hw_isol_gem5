@@ -115,5 +115,10 @@ class StaticInstFlags(Enum):
         'IsHtmStart',       # Starts a HTM transaction
         'IsHtmStop',        # Stops (commits) a HTM transaction
         'IsHtmCancel',      # Explicitely aborts a HTM transaction
-        'IsUnrestricted'    # Unrestricted mov
+        'IsUnrestricted',   # Unrestricted mov
+        'IsHfiStructured',  # HFI structured mov
+        'IsHfiStructured1',  # HFI structured mov 1
+        'IsHfiStructured2',  # HFI structured mov 2
+        'IsHfiStructured3',  # HFI structured mov 3
+        'IsHfiStructured4'   # HFI structured mov 4
         ]

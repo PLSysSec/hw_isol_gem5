@@ -20,26 +20,73 @@ typedef struct {
      */
     char writeable;
     /**
-     * @brief A constant base whose value is added to all loads and stores
+     * @brief base_address --- Used by the trusted sandbox. A constant base whose value is added to all loads and stores
+     * performed in this region.
+     * base_mask --- Used by the untrusted sandbox. A mask that is uses as a prefix check for all loads and stores
      * performed in this region.
      */
-    uint64_t base_address;
-    // The lower bound of this segment's allowed range
-    uint64_t lower_bound;
-    // The upper bound of this segment's allowed range
-    uint64_t upper_bound;
+    union {
+        // used by the trusted sandbox
+        uint64_t base_address;
+        // used by the untrusted sandobx
+        uint64_t base_mask;
+    };
+    /**
+     * @brief offset_limit --- Used by the trusted sandbox. The size of the
+     * region. Must be a power of 64k.
+     * ignore_mask --- Used by the untrusted sandbox. A mask that is used to
+     * drop unchecked bits of the suffix for all loads and stores performed in
+     * this region.
+     */
+    union {
+        // used by the trusted sandbox
+        uint64_t offset_limit;
+        // used by the untrusted sandobx
+        uint64_t ignore_mask;
+    };
 } hfi_linear_data_range;
+
+/**
+ * @brief Metadata for one linear code range of a sandbox
+ */
+typedef struct {
+    /**
+     * @brief Execute permissions for this range
+     */
+    uint8_t executable;
+    /**
+     * @brief A mask that is uses as a prefix check for all instructions.
+     */
+    uint64_t base_mask;
+    /**
+     * @brief A mask that is used to drop unchecked bits of the suffix for all
+     * instructions.
+     */
+    uint64_t ignore_mask;
+} hfi_linear_code_range;
 
 /**
  * @brief The number of linear data ranges supported. This can be different on
  * different HFI versions. In this version, it is 4.
  */
-#define LINEAR_DATA_RANGE_COUNT 4
+#define HFI_LINEAR_DATA_RANGE_COUNT 4
+
+/**
+ * @brief The number of linear code ranges supported. This can be different on
+ * different HFI versions. In this version, it is 4.
+ */
+#define HFI_LINEAR_CODE_RANGE_COUNT 2
 
 // The metadata required for a "hardware sandbox"
-typedef struct hfi_sandbox {
-    // Each segment specifies an address range and its associated permissions
-    hfi_linear_data_range data_ranges[LINEAR_DATA_RANGE_COUNT];
+typedef struct {
+    /**
+     * @brief Specifies an address range and its associated permissions for data read/write
+     */
+    hfi_linear_data_range data_ranges[HFI_LINEAR_DATA_RANGE_COUNT];
+        /**
+     * @brief Specifies an address range and its associated permissions for code exec
+     */
+    hfi_linear_code_range code_ranges[HFI_LINEAR_CODE_RANGE_COUNT];
     /**
      * @brief Bit that controls whether this is a "structured" sandbox with a
      * trusted compiler.
@@ -83,7 +130,7 @@ enum HFI_EXIT_REASON {
     HFI_EXIT_REASON_SYSENTER = 1026,
     HFI_EXIT_REASON_PRIVSWITCH = 1027
 };
-typedef struct hfi_thread_context {
+typedef struct {
     hfi_sandbox curr_sandbox_data;
     bool inside_sandbox;
     /* HFI_EXIT_REASON */ uint32_t exit_sandbox_reason;
@@ -121,18 +168,6 @@ enum HFI_EXIT_REASON hfi_get_exit_reason();
 
 // Instruction that gets the last reason for sandbox exit
 void* hfi_get_exit_location();
-
-////////////////
-// Context load/save instructions
-// These are instructions are needed to support process/thread scheduling
-// The OS will use this to preserve register values during scheduling
-////////////////
-
-// Save the current thread's context to the address in the parameter
-void hfi_save_thread_context(hfi_thread_context* thread_ctx);
-
-// Restore the current thread's context from the address in the parameter
-void hfi_load_thread_context(const hfi_thread_context* thread_ctx);
 
 ////////////////
 // Unrestricted mov instructions exposed as functions

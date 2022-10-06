@@ -30,7 +30,7 @@
             ]
         },
         {
-            "name": "gem5-dbg-test-hfi-success",
+            "name": "gem5-dbg-test-hfi-setget-metadata-success",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/X86/gem5.debug",
@@ -39,7 +39,7 @@
                 "--cpu-type=DerivO3CPU",
                 "--caches",
                 "-c",
-                "mybuild/mybuildout/test-hfi-success",
+                "mybuild/mybuildout/test-hfi-setget-metadata-success",
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

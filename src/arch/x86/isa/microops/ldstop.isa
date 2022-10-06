@@ -127,7 +127,7 @@ def template MicroLoadInitiateAcc {{
         %(ea_code)s;
         DPRINTF(X86, "%s : %s: The address is %#x\n", instMnem, mnemonic, EA);
 
-        fault = xc->checkHFI(EA, false);
+        fault = xc->checkHFI(EA, false, scale, Index, Base, disp);
 
         if (fault == NoFault)
             fault = initiateMemRead(xc, traceData, EA,
@@ -199,7 +199,7 @@ def template MicroStoreInitiateAcc {{
         %(ea_code)s;
         DPRINTF(X86, "%s : %s: The address is %#x\n", instMnem, mnemonic, EA);
 
-        fault = xc->checkHFI(EA, true);
+        fault = xc->checkHFI(EA, true, scale, Index, Base, disp);
 
         if (fault == NoFault){
             %(code)s;

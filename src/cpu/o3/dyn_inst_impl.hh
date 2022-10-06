@@ -191,24 +191,26 @@ BaseO3DynInst<Impl>::printHFIMetadata() {
     DPRINTF(HFI, "HFI sandbox bounds metadata!\n");
     DPRINTF(HFI, "HFI_LINEAR_RANGE_1_READABLE: %" PRIu64 "\n",     (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_READABLE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_1_WRITEABLE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_1_BASE_ADDRESS: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_1_LOWER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_1_UPPER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_1_BASE_ADDRESS_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS_BASE_MASK));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_1_OFFSET_LIMIT_IGNORE_MASK: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_1_OFFSET_LIMIT_IGNORE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_2_READABLE: %" PRIu64 "\n",     (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_READABLE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_2_WRITEABLE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_2_BASE_ADDRESS: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_2_LOWER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_2_UPPER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_2_BASE_ADDRESS_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS_BASE_MASK));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_2_OFFSET_LIMIT_IGNORE_MASK: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_2_OFFSET_LIMIT_IGNORE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_3_READABLE: %" PRIu64 "\n",     (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_READABLE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_3_WRITEABLE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_3_BASE_ADDRESS: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_3_LOWER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_3_UPPER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_3_BASE_ADDRESS_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS_BASE_MASK));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_3_OFFSET_LIMIT_IGNORE_MASK: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_3_OFFSET_LIMIT_IGNORE_MASK));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_READABLE: %" PRIu64 "\n",     (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_READABLE));
     DPRINTF(HFI, "HFI_LINEAR_RANGE_4_WRITEABLE: %" PRIu64 "\n",    (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_4_BASE_ADDRESS: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_4_LOWER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND));
-    DPRINTF(HFI, "HFI_LINEAR_RANGE_4_UPPER_BOUND: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_4_BASE_ADDRESS_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS_BASE_MASK));
+    DPRINTF(HFI, "HFI_LINEAR_RANGE_4_OFFSET_LIMIT_IGNORE_MASK: %" PRIu64 "\n",  (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_RANGE_4_OFFSET_LIMIT_IGNORE_MASK));
+    DPRINTF(HFI, "HFI_LINEAR_CODERANGE_1_EXECUTABLE: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_CODERANGE_1_EXECUTABLE));
+    DPRINTF(HFI, "HFI_LINEAR_CODERANGE_1_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_CODERANGE_1_BASE_MASK));
+    DPRINTF(HFI, "HFI_LINEAR_CODERANGE_1_IGNORE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_CODERANGE_1_IGNORE_MASK));
+    DPRINTF(HFI, "HFI_LINEAR_CODERANGE_2_EXECUTABLE: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_CODERANGE_2_EXECUTABLE));
+    DPRINTF(HFI, "HFI_LINEAR_CODERANGE_2_BASE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_CODERANGE_2_BASE_MASK));
+    DPRINTF(HFI, "HFI_LINEAR_CODERANGE_2_IGNORE_MASK: %" PRIu64 "\n", (uint64_t) readMiscReg(MISCREG_HFI_LINEAR_CODERANGE_2_IGNORE_MASK));
     DPRINTF(HFI, "HFI_IS_TRUSTED_SANDBOX: %" PRIu64 "\n",          (uint64_t) readMiscReg(MISCREG_HFI_IS_TRUSTED_SANDBOX));
     DPRINTF(HFI, "HFI_EXIT_SANDBOX_HANDLER: %" PRIu64 "\n",        (uint64_t) readMiscReg(MISCREG_HFI_EXIT_SANDBOX_HANDLER));
     DPRINTF(HFI, "HFI_INSIDE_SANDBOX: %" PRIu64 "\n",              (uint64_t) readMiscReg(MISCREG_HFI_INSIDE_SANDBOX));
@@ -217,98 +219,167 @@ BaseO3DynInst<Impl>::printHFIMetadata() {
 }
 
 template <class Impl>
-Addr
-BaseO3DynInst<Impl>::doHFIRangeCheck(Addr EA,
-    TheISA::MiscRegIndex reg_base,
-    TheISA::MiscRegIndex reg_lower,
-    TheISA::MiscRegIndex reg_upper,
+Addr BaseO3DynInst<Impl>::doHFIStructuredMov(uint64_t scale,
+    uint64_t index,
+    uint64_t displacement,
+    TheISA::MiscRegIndex reg_base_address,
+    TheISA::MiscRegIndex reg_offset_limit,
+    TheISA::MiscRegIndex reg_perm,
+    bool& out_faulted)
+{
+    out_faulted = false;
+    Addr ret = 0;
+
+    bool permitted = this->readMiscReg(reg_perm) == 1;
+    if(!permitted) {
+        out_faulted = true;
+        return ret;
+    }
+
+    uint64_t new_base = this->readMiscReg(reg_base_address);
+    uint64_t offset_limit = this->readMiscReg(reg_offset_limit);
+    // TODO: add size of move to offset_limit
+    uint32_t offset_limit_mid32 = (uint32_t) (offset_limit >> 16);
+
+    uint64_t offset = scale * index + displacement;
+    uint32_t offset_mid32 = (uint32_t) (offset >> 16);
+
+    // HFI with trusted sandboxes compares the middle 32 bits
+    bool hfi_is_inbounds = offset_mid32 < offset_limit_mid32;
+    // We want this to simulate the actual bounds check
+    // This works as long as the offset_limit is always a power of 2^16
+    bool actual_is_inbounds = offset < offset_limit;
+
+    // Sanity check
+    if(hfi_is_inbounds != actual_is_inbounds) {
+        printf("HFI: Unexpected\n");
+        abort();
+    }
+
+    if (!hfi_is_inbounds){
+        out_faulted = true;
+        return ret;
+    }
+
+    ret = new_base + offset;
+    return ret;
+}
+
+template <class Impl>
+void BaseO3DynInst<Impl>::doHFIMaskCheck(Addr EA,
+    TheISA::MiscRegIndex reg_base_mask,
+    TheISA::MiscRegIndex reg_ignore_mask,
     TheISA::MiscRegIndex reg_perm,
     bool& out_found, bool& out_faulted)
 {
-    out_found = EA >= readMiscReg(reg_lower) && EA <= readMiscReg(reg_upper);
-    Addr fullAddress = EA;
+
+    uint64_t addr = EA;
+    uint64_t base_mask = this->readMiscReg(reg_base_mask);
+    uint64_t ignore_mask = this->readMiscReg(reg_ignore_mask);
+
+    // all of the bits except the ignore bits have to match
+    out_found = ((addr || ignore_mask) ^ base_mask) == 0;
+    out_faulted = false;
+
     if (out_found) {
-        if(!readMiscReg(reg_perm)) {
+        bool permitted = this->readMiscReg(reg_perm) == 1;
+        if (!permitted) {
             out_faulted = true;
-        } else {
-            auto base = readMiscReg(reg_base);
-            if (base != 0) {
-                DPRINTF(HFI, "Adding base: %lu\n", (long unsigned) base);
-            }
-            fullAddress += base;
         }
     }
-    return fullAddress;
 }
-
 
 template <class Impl>
 Fault
-BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store){
+BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t index, uint64_t base, uint64_t displacement){
     using namespace TheISA;
-
-    bool allow_unrestricted = this->readMiscReg(MISCREG_HFI_IS_TRUSTED_SANDBOX) == 1;
-    // bool is_unrestricted_mov_instruction = this->macroop->isUnrestricted();
 
     bool is_inside_sandbox = this->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX) != 0;
 
-    bool apply_bounds_checks = is_inside_sandbox && !allow_unrestricted;
-
-    if (is_inside_sandbox || apply_bounds_checks) {
-        DPRINTF(HFI,
-            "HFI bounds check is %s necessary for %s, EA=%lx \n"
-            "HFI allow_unrestricted: %d\n"
-            "HFI is_inside_sandbox: %d\n"
-            "HFI apply_bounds_checks: %d\n",
-            apply_bounds_checks? "" : "not",
-            this->macroop->getName().c_str(), EA,
-            (int) allow_unrestricted,
-            (int) is_inside_sandbox,
-            (int) apply_bounds_checks
-        );
-    }
-
-    if (!apply_bounds_checks){
+    if (!is_inside_sandbox) {
         return NoFault;
     }
 
-    DPRINTF(HFI, "checking bounds for %s, EA=%x \n", this->macroop->getName(), EA);
+    bool is_trusted_sandbox = this->readMiscReg(MISCREG_HFI_IS_TRUSTED_SANDBOX) == 1;
+    bool is_hfi_structured_mov = this->macroop->isHFIStuctured();
+    bool is_hfi_structured_mov1 = this->macroop->isHFIStuctured1();
+    bool is_hfi_structured_mov2 = this->macroop->isHFIStuctured2();
+    bool is_hfi_structured_mov3 = this->macroop->isHFIStuctured3();
+    bool is_hfi_structured_mov4 = this->macroop->isHFIStuctured4();
+    bool is_hfi_structured_mov_any = is_hfi_structured_mov ||
+        is_hfi_structured_mov1 ||
+        is_hfi_structured_mov2 ||
+        is_hfi_structured_mov3 ||
+        is_hfi_structured_mov4;
 
-    printHFIMetadata();
+    MiscRegIndex hfi_regs_base[]          = { MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS_BASE_MASK  , MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS_BASE_MASK  , MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS_BASE_MASK  , MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS_BASE_MASK   };
+    MiscRegIndex hfi_regs_offset_ignore[] = { MISCREG_HFI_LINEAR_RANGE_1_OFFSET_LIMIT_IGNORE_MASK, MISCREG_HFI_LINEAR_RANGE_2_OFFSET_LIMIT_IGNORE_MASK, MISCREG_HFI_LINEAR_RANGE_3_OFFSET_LIMIT_IGNORE_MASK, MISCREG_HFI_LINEAR_RANGE_4_OFFSET_LIMIT_IGNORE_MASK };
+    MiscRegIndex hfi_regs_read[]          = { MISCREG_HFI_LINEAR_RANGE_1_READABLE                , MISCREG_HFI_LINEAR_RANGE_2_READABLE                , MISCREG_HFI_LINEAR_RANGE_3_READABLE                , MISCREG_HFI_LINEAR_RANGE_4_READABLE                 };
+    MiscRegIndex hfi_regs_write[]         = { MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE               , MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE               , MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE               , MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE                };
+    MiscRegIndex* hfi_regs_perm           = is_store? hfi_regs_write : hfi_regs_read;
 
-    bool out_found = false;
-    bool out_faulted = false;
+    if (is_trusted_sandbox) {
 
-    MiscRegIndex hfi_regs_base[]  = { MISCREG_HFI_LINEAR_RANGE_1_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_2_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_3_BASE_ADDRESS, MISCREG_HFI_LINEAR_RANGE_4_BASE_ADDRESS };
-    MiscRegIndex hfi_regs_lower[] = { MISCREG_HFI_LINEAR_RANGE_1_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_LOWER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_LOWER_BOUND  };
-    MiscRegIndex hfi_regs_upper[] = { MISCREG_HFI_LINEAR_RANGE_1_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_2_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_3_UPPER_BOUND , MISCREG_HFI_LINEAR_RANGE_4_UPPER_BOUND  };
-    MiscRegIndex hfi_regs_read[]  = { MISCREG_HFI_LINEAR_RANGE_1_READABLE    , MISCREG_HFI_LINEAR_RANGE_2_READABLE    , MISCREG_HFI_LINEAR_RANGE_3_READABLE    , MISCREG_HFI_LINEAR_RANGE_4_READABLE     };
-    MiscRegIndex hfi_regs_write[] = { MISCREG_HFI_LINEAR_RANGE_1_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_2_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_3_WRITEABLE   , MISCREG_HFI_LINEAR_RANGE_4_WRITEABLE    };
-    MiscRegIndex* hfi_regs_perm   = is_store? hfi_regs_write : hfi_regs_read;
+        if (is_hfi_structured_mov_any) {
+            uint64_t segment_number = 0;
 
-    uint64_t final_effective_addr = 0;
+            if (is_hfi_structured_mov) {
+                segment_number = base;
+            } else {
+                if (base != 0 && index != 0) {
+                    printf("Used an hfi_structured_movN prefix with a non zero base\n");
+                    abort();
+                } else if (base != 0) {
+                    // standardize on unused base for hfi_structured_mov_N instruction
+                    index = base;
+                    base = 0;
+                }
 
-    for (uint64_t i = 0; i < 4; i++) {
-        final_effective_addr = doHFIRangeCheck(EA,
-            hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
-            out_found, out_faulted);
-        if (out_found) { break; }
-    }
+                if (is_hfi_structured_mov1){ segment_number = 1; }
+                else if (is_hfi_structured_mov2){ segment_number = 2; }
+                else if (is_hfi_structured_mov3){ segment_number = 3; }
+                else if (is_hfi_structured_mov4){ segment_number = 4; }
+            }
 
-    if(!out_found || out_faulted) {
-        std::cout << "SFI " << (is_store? "store" : "load") << " fault: " << EA << "!\n";
+            if (segment_number < 1 && segment_number > 4) {
+                return std::make_shared<TheISA::HFIBoundsCheck>();
+            }
 
-        // redo the check below for easy debugging when a debugger is attached
-        for (uint64_t i = 0; i < 4; i++) {
-            final_effective_addr = doHFIRangeCheck(EA,
-                hfi_regs_base[i], hfi_regs_lower[i], hfi_regs_upper[i], hfi_regs_perm[i],
-                out_found, out_faulted);
-            if (out_found) { break; }
+            bool faulted = false;
+            uint64_t segment_index = segment_number - 1;
+
+            uint64_t newAddress = doHFIStructuredMov(scale, index, displacement,
+                hfi_regs_base[segment_index],
+                hfi_regs_offset_ignore[segment_index],
+                hfi_regs_perm[segment_index],
+                /* out */ faulted
+            );
+
+            if(faulted) {
+                return std::make_shared<TheISA::HFIBoundsCheck>();
+            }
+
+            EA = newAddress;
+
         }
-        return std::make_shared<TheISA::HFIBoundsCheck>();
     } else {
-        // update the effective address here
-        EA = final_effective_addr;
+        if (is_hfi_structured_mov) {
+            return std::make_shared<TheISA::HFIIllegalInst>();
+        }
+
+        bool found = false;
+        bool faulted = false;
+
+        for (int i = 0; i < 4; i++) {
+            doHFIMaskCheck(EA, hfi_regs_base[i], hfi_regs_offset_ignore[i], hfi_regs_perm[i], /* out */ found, /* out */ faulted);
+            if (found) {
+                break;
+            }
+        }
+
+        if (faulted || !found) {
+            return std::make_shared<TheISA::HFIBoundsCheck>();
+        }
     }
 
     return NoFault;

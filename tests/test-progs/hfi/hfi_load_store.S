@@ -95,26 +95,17 @@ _hfi_loadsavecontext_test:
     .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
 
-.globl hfi_loadsavemetadata_test
-.type hfi_loadsavemetadata_test,@function
+.globl hfi_setgetmetadata_test
+.type hfi_setgetmetadata_test,@function
 .align 16
-hfi_loadsavemetadata_test:
-_hfi_loadsavemetadata_test:
-    # rdi: param 1 is the sandbox params
-    # rsi: param 2 is the curr sandbox metadata to save into
-    # rdx: param 3 is the curr sandbox metadata to load from
-    # rcx: param 4 is the curr sandbox metadata to save into the second time
-    # enter the sandbox, perform savemetadata, loadmetadata, savemetadata then exit
+hfi_setgetmetadata_test:
+_hfi_setgetmetadata_test:
+    # rdi: param 1 is the sandbox metadata to save from
+    # rsi: param 2 is the sandbox metadata to restore to
     mov %rdi, %rax
     .byte   0x0F, 0x04, 0x71, 0x00 # set sandbox metadata
-    .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
-    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     mov %rsi, %rax
-    .byte   0x0F, 0x04, 0x72, 0x00 # save metadata
-    mov %rdx, %rax
-    .byte   0x0F, 0x04, 0x71, 0x00 # load metadata
-    mov %rcx, %rax
-    .byte   0x0F, 0x04, 0x72, 0x00 # save metadata
+    .byte   0x0F, 0x04, 0x72, 0x00 # get sandbox metadata
     ret
 
 .globl hfi_exit_handler_test

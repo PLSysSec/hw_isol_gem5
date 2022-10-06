@@ -95,16 +95,22 @@ class BaseO3DynInst : public BaseDynInst<Impl>
     Fault completeAcc(PacketPtr pkt);
 
     void printHFIMetadata();
-    Addr doHFIRangeCheck(Addr EA,
-        TheISA::MiscRegIndex reg_base,
-        TheISA::MiscRegIndex reg_lower,
-        TheISA::MiscRegIndex reg_upper,
+    Addr doHFIStructuredMov(uint64_t scale,
+        uint64_t index,
+        uint64_t displacement,
+        TheISA::MiscRegIndex reg_base_address,
+        TheISA::MiscRegIndex reg_offset_limit,
+        TheISA::MiscRegIndex reg_perm,
+        bool& out_faulted);
+    void doHFIMaskCheck(Addr EA,
+        TheISA::MiscRegIndex reg_base_mask,
+        TheISA::MiscRegIndex reg_ignore_mask,
         TheISA::MiscRegIndex reg_perm,
         bool& out_found,
         bool& out_faulted);
 
     /** check the HFI for the effective address */
-    Fault checkHFI(Addr &EA, bool is_store);
+    Fault checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t index, uint64_t base, uint64_t displacement);
 
   private:
     /** Initializes variables. */

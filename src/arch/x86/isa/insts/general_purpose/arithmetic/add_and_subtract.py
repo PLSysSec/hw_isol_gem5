@@ -56,9 +56,12 @@ def macroop HFI_GET_LINEAR_CODE_RANGE_COUNT
 
 def macroop HFI_SET_SANDBOX_METADATA
 {
-    # if (reg_hfi_curr.inside_sandbox) { SIGSEV; }
+    # if (reg_hfi_curr.inside_sandbox && !reg_hfi_curr.is_trusted_sandbox) { SIGSEV; }
     rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
-    and t1, t1, t1, flags=(ZF,)
+    rdval t2, "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)"
+    # Get !t2
+    xori t2, t2, 1
+    and t1, t1, t2, flags=(ZF,)
     br label("hfi_set_sandbox_metadata_continue"), flags=(CZF,)
     fault "std::make_shared<HFIIllegalInst>()",
 
@@ -151,9 +154,12 @@ hfi_set_sandbox_metadata_continue:
 
 def macroop HFI_GET_SANDBOX_METADATA
 {
-    # if (reg_hfi_curr.inside_sandbox) { SIGSEV; }
+    # if (reg_hfi_curr.inside_sandbox && !reg_hfi_curr.is_trusted_sandbox) { SIGSEV; }
     rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
-    and t1, t1, t1, flags=(ZF,)
+    rdval t2, "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)"
+    # Get !t2
+    xori t2, t2, 1
+    and t1, t1, t2, flags=(ZF,)
     br label("hfi_get_sandbox_metadata_continue"), flags=(CZF,)
     fault "std::make_shared<HFIIllegalInst>()",
 
@@ -275,11 +281,25 @@ hfi_exit_sandbox_nohandler:
 
 def macroop HFI_GET_EXIT_REASON
 {
+    # if (!reg_hfi_curr.inside_sandbox) { SIGSEV; }
+    rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    and t1, t1, t1, flags=(ZF,)
+    br label("hfi_get_exit_reason_continue"), flags=(nCZF,)
+    fault "std::make_shared<HFIIllegalInst>()",
+
+hfi_get_exit_reason_continue:
     rdval rax, "InstRegIndex(MISCREG_HFI_EXIT_REASON)"
 };
 
 def macroop HFI_GET_EXIT_LOCATION
 {
+    # if (!reg_hfi_curr.inside_sandbox) { SIGSEV; }
+    rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
+    and t1, t1, t1, flags=(ZF,)
+    br label("hfi_get_exit_location_continue"), flags=(nCZF,)
+    fault "std::make_shared<HFIIllegalInst>()",
+
+hfi_get_exit_location_continue:
     rdval rax, "InstRegIndex(MISCREG_HFI_EXIT_LOCATION)"
 };
 

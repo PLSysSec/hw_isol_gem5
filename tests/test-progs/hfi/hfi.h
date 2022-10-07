@@ -236,80 +236,36 @@ inline void* hfi_get_exit_location() {
 // HFI mov instructions exposed as functions
 ////////////////
 
-#ifndef UINT_SHORT_PREFIXES
-typedef uint8_t u8;
-typedef int8_t s8;
-typedef uint16_t u16;
-typedef int16_t s16;
-typedef uint32_t u32;
-typedef int32_t s32;
-typedef uint64_t u64;
-typedef int64_t s64;
-typedef float f32;
-typedef double f64;
-#define UINT_SHORT_PREFIXES
-#endif
-
 // Load/store from the given region number, offset
 
-#define hfi_mov_loadstore_any(type)                                              \
-inline type hfi_hmov_load_##type(uint64_t region, uint64_t offset) {             \
-    type data;                                                                   \
+#define hfi_mov_load_anytype(region, offset, data)                               \
     asm(".byte 0x0e\n"                                                           \
     "mov (%1, %2), %0\n"                                                         \
     : "=r"(data)                                                                 \
     : "r"(region), "r"(offset)                                                   \
-    );                                                                           \
-    return data;                                                                 \
-}                                                                                \
-inline void hfi_hmov_store_##type(type data, uint64_t region, uint64_t offset) { \
+    );
+
+#define hfi_mov_store_anytype(region, offset, data)                              \
     asm(".byte 0x0e\n"                                                           \
     "mov %0, (%1, %2)\n"                                                         \
     :                                                                            \
     : "r"(data), "r"(region), "r"(offset)                                        \
-    );                                                                           \
-}
-
-hfi_mov_loadstore_any(u8);
-hfi_mov_loadstore_any(u16);
-hfi_mov_loadstore_any(u32);
-hfi_mov_loadstore_any(u64);
-hfi_mov_loadstore_any(s8);
-hfi_mov_loadstore_any(s16);
-hfi_mov_loadstore_any(s32);
-hfi_mov_loadstore_any(s64);
-hfi_mov_loadstore_any(f32);
-hfi_mov_loadstore_any(f64);
+    );
 
 // Load/store from the region 1, offset
-#define hfi_mov1_loadstore_any(type)                             \
-inline type hfi_hmov1_load_##type(uint64_t offset) {             \
-    type data;                                                   \
+#define hfi_mov1_load_anytype(offset, data)                 \
     asm(".byte 0x0d\n"                                           \
     "mov (%1), %0\n"                                             \
     : "=r"(data)                                                 \
     : "r"(offset)                                                \
-    );                                                           \
-    return data;                                                 \
-}                                                                \
-inline void hfi_hmov1_store_##type(type data, uint64_t offset) { \
+    );
+
+#define hfi_mov1_store_anytype(offset, data)                     \
     asm(".byte 0x0d\n"                                           \
     "mov %0, (%1)\n"                                             \
     :                                                            \
     : "r"(data), "r"(offset)                                     \
-    );                                                           \
-}
-
-hfi_mov1_loadstore_any(u8);
-hfi_mov1_loadstore_any(u16);
-hfi_mov1_loadstore_any(u32);
-hfi_mov1_loadstore_any(u64);
-hfi_mov1_loadstore_any(s8);
-hfi_mov1_loadstore_any(s16);
-hfi_mov1_loadstore_any(s32);
-hfi_mov1_loadstore_any(s64);
-hfi_mov1_loadstore_any(f32);
-hfi_mov1_loadstore_any(f64);
+    );
 
 #ifdef __cplusplus
 }

@@ -154,35 +154,83 @@ typedef struct {
 
 // Get the version of HFI implemented in hardware.
 // Return value: the version of the hfi
-uint64_t hfi_get_version();
+inline uint64_t hfi_get_version() {
+    uint64_t ret = 0;
+    asm(".byte 0x0F, 0x04, 0x63, 0x00\n"
+    : "=a"(ret)
+    );
+    return ret;
+}
 
-// Get the number of ranges supported by HFI.
-// Return value: the number of ranges supported by HFI.
-uint64_t hfi_get_linear_data_range_count();
+// Get the number of data ranges supported by HFI.
+// Return value: the number of data ranges supported by HFI.
+inline uint64_t hfi_get_linear_data_range_count() {
+    uint64_t ret = 0;
+    asm(".byte 0x0F, 0x04, 0x64, 0x00\n"
+    : "=a"(ret)
+    );
+    return ret;
+}
+
+// Get the number of code ranges supported by HFI.
+// Return value: the number of code ranges supported by HFI.
+inline uint64_t hfi_get_linear_code_range_count() {
+    uint64_t ret = 0;
+    asm(".byte 0x0F, 0x04, 0x73, 0x00\n"
+    : "=a"(ret)
+    );
+    return ret;
+}
 
 // Instruction executed to configure the sandbox for the current thread.
 // This loads the hfi CPU registers with bounds information used for checking.
 // Parameters: the current sandbox's data
-void hfi_set_sandbox_metadata(const hfi_sandbox* param_hfi_curr_sandbox_data);
+inline void hfi_set_sandbox_metadata(const hfi_sandbox* param_hfi_curr_sandbox_data) {
+    asm(".byte 0x0F, 0x04, 0x71, 0x00\n"
+    :
+    : "a"(param_hfi_curr_sandbox_data)
+    );
+}
 
 // Instruction executed to get the current configuration the sandbox for the current thread.
 // This loads the hfi CPU registers with bounds information used for checking.
 // Parameters: the current sandbox's data
-void hfi_get_sandbox_metadata(hfi_sandbox* param_hfi_curr_sandbox_data);
+inline void hfi_get_sandbox_metadata(hfi_sandbox* param_hfi_curr_sandbox_data) {
+    asm(".byte 0x0F, 0x04, 0x72, 0x00\n"
+    :
+    : "a"(param_hfi_curr_sandbox_data)
+    );
+}
 
 // Instruction executed to enter a sandbox.
 // This enables the hfi bounds checking.
-void hfi_enter_sandbox();
+inline void hfi_enter_sandbox() {
+    asm(".byte 0x0F, 0x04, 0x65, 0x00\n");
+}
 
 // Instruction executed to exit a sandbox. Can be invoked by any code
 // Relies on trusted compilers to ensure this instruction is not misused/called from a bad context
-void hfi_exit_sandbox();
+inline void hfi_exit_sandbox() {
+    asm(".byte 0x0F, 0x04, 0x66, 0x00\n");
+}
 
 // Instruction that gets the last reason for sandbox exit
-enum HFI_EXIT_REASON hfi_get_exit_reason();
+inline enum HFI_EXIT_REASON hfi_get_exit_reason() {
+    uint64_t ret = 0;
+    asm(".byte 0x0F, 0x04, 0x69, 0x00\n"
+    : "=a"(ret)
+    );
+    return (enum HFI_EXIT_REASON) ret;
+}
 
 // Instruction that gets the last reason for sandbox exit
-void* hfi_get_exit_location();
+inline void* hfi_get_exit_location() {
+    void* ret = 0;
+    asm(".byte 0x0F, 0x04, 0x70, 0x00\n"
+    : "=a"(ret)
+    );
+    return ret;
+}
 
 ////////////////
 // HFI mov instructions exposed as functions

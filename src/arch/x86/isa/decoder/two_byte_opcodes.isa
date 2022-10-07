@@ -241,6 +241,7 @@
                     0x70: Inst::HFI_GET_EXIT_LOCATION();
                     0x71: Inst::HFI_SET_SANDBOX_METADATA();
                     0x72: Inst::HFI_GET_SANDBOX_METADATA();
+                    0x73: Inst::HFI_GET_LINEAR_CODE_RANGE_COUNT();
 
                     default: Inst::UD2();
                 }

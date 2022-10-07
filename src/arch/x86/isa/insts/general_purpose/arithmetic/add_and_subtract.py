@@ -49,6 +49,11 @@ def macroop HFI_GET_LINEAR_DATA_RANGE_COUNT
     limm rax, 4
 };
 
+def macroop HFI_GET_LINEAR_CODE_RANGE_COUNT
+{
+    limm rax, 2
+};
+
 def macroop HFI_SET_SANDBOX_METADATA
 {
     # if (reg_hfi_curr.inside_sandbox) { SIGSEV; }

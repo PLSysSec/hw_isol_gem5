@@ -26,7 +26,7 @@ build-gem5-debug:
 	cd .. && scons build/X86/gem5.debug -j $(PARALLEL_COUNT) --ignore-style
 
 .PRECIOUS: mybuildout/test-%
-mybuildout/test-%: ../tests/test-progs/hfi/hfi.S ../tests/test-progs/hfi/test-%.c ../tests/test-progs/hfi/hfi_load_store.S
+mybuildout/test-%: ../tests/test-progs/hfi/test-%.c ../tests/test-progs/hfi/hfi_load_store.S
 	mkdir -p mybuildout
 	$(EXAMPLE_CC) $^ $(EXAMPLE_FLAGS) -o $@
 

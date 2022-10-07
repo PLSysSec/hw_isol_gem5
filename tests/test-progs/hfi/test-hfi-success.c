@@ -119,6 +119,10 @@ int main(int argc, char* argv[])
     printf("HFI linear data range count: %"PRIu64"\n", hfi_linear_data_range_count); fflush(stdout);
     assert(hfi_linear_data_range_count >= 4);
 
+    uint64_t hfi_linear_code_range_count = hfi_get_linear_code_range_count();
+    printf("HFI linear code range count: %"PRIu64"\n", hfi_linear_code_range_count); fflush(stdout);
+    assert(hfi_linear_code_range_count >= 2);
+
     test_entry_exit();
     test_load_store();
     test_load_store_with_base();

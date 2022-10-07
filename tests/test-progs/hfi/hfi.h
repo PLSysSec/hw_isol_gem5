@@ -300,16 +300,16 @@ inline void hfi_hmov1_store_##type(type data, uint64_t offset) { \
     );                                                           \
 }
 
-hfi_mov_loadstore_any(u8);
-hfi_mov_loadstore_any(u16);
-hfi_mov_loadstore_any(u32);
-hfi_mov_loadstore_any(u64);
-hfi_mov_loadstore_any(s8);
-hfi_mov_loadstore_any(s16);
-hfi_mov_loadstore_any(s32);
-hfi_mov_loadstore_any(s64);
-hfi_mov_loadstore_any(f32);
-hfi_mov_loadstore_any(f64);
+hfi_mov1_loadstore_any(u8);
+hfi_mov1_loadstore_any(u16);
+hfi_mov1_loadstore_any(u32);
+hfi_mov1_loadstore_any(u64);
+hfi_mov1_loadstore_any(s8);
+hfi_mov1_loadstore_any(s16);
+hfi_mov1_loadstore_any(s32);
+hfi_mov1_loadstore_any(s64);
+hfi_mov1_loadstore_any(f32);
+hfi_mov1_loadstore_any(f64);
 
 #ifdef __cplusplus
 }

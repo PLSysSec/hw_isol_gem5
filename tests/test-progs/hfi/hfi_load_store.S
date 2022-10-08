@@ -31,8 +31,7 @@ _hfi_load_store_ret_test:
     .byte   0x0F, 0x04, 0x65, 0x00 # enter sandbox
     mov 0x0(%rsi), %rcx
     mov %rcx, 0x0(%rdx)
-    call hfi_exit_sandbox
-    // .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
+    .byte   0x0F, 0x04, 0x66, 0x00 # exit sandbox
     ret
 
 .globl hfi_load_test

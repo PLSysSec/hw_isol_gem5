@@ -197,6 +197,12 @@ bool
 BaseO3DynInst<Impl>::checkHFICtrl(Addr pc) {
     using namespace TheISA;
 
+    bool is_inside_sandbox = this->readMiscReg(MISCREG_HFI_INSIDE_SANDBOX) != 0;
+
+    if (!is_inside_sandbox) {
+        return true;
+    }
+
     MiscRegIndex hfi_regs_base[]          = { MISCREG_HFI_LINEAR_CODERANGE_1_BASE_MASK  , MISCREG_HFI_LINEAR_CODERANGE_2_BASE_MASK   };
     MiscRegIndex hfi_regs_offset_ignore[] = { MISCREG_HFI_LINEAR_CODERANGE_1_IGNORE_MASK, MISCREG_HFI_LINEAR_CODERANGE_2_IGNORE_MASK };
     MiscRegIndex hfi_regs_perm[]          = { MISCREG_HFI_LINEAR_CODERANGE_1_EXECUTABLE , MISCREG_HFI_LINEAR_CODERANGE_2_EXECUTABLE  };

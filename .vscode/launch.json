@@ -30,6 +30,31 @@
             ]
         },
         {
+            "name": "test-dbg-hfi-gem5-success",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/X86/gem5.debug",
+            "args": [
+                "configs/example/se.py",
+                "--cpu-type=DerivO3CPU",
+                "--caches",
+                "-c",
+                "mybuild/mybuildout/test-hfi-gem5-success",
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "name": "gem5-dbg-test-hfi-setget-metadata-success",
             "type": "cppdbg",
             "request": "launch",

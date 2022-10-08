@@ -337,7 +337,7 @@ void BaseO3DynInst<Impl>::doHFIMaskCheck(Addr EA,
     uint64_t ignore_mask = this->readMiscReg(reg_ignore_mask);
 
     // all of the bits except the ignore bits have to match
-    out_found = ((addr || ignore_mask) ^ base_mask) == 0;
+    out_found = (addr && ignore_mask) == base_mask;
     out_faulted = false;
 
     if (out_found) {

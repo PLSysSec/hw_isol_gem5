@@ -402,11 +402,15 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
                 if (base != 0 && index != 0) {
                     printf("Used an hfi_structured_movN prefix with a non zero base\n");
                     abort();
-                } else if (base != 0) {
+                } else if (base != 0 && index == 0) {
                     // standardize on unused base for hfi_structured_mov_N instruction
                     index = base;
+                    scale = 1;
                     base = 0;
                 }
+                // else if (base == 0 && index != 0) {
+                // noop
+                // }
 
                 if (is_hfi_structured_mov1){ segment_number = 1; }
                 else if (is_hfi_structured_mov2){ segment_number = 2; }

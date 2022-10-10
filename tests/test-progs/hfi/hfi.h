@@ -236,14 +236,14 @@ typedef struct {
 
 // Load/store from the region 1, offset
 #define hfi_mov1_load_anytype(offset, data)                 \
-    asm(".byte 0x0d\n"                                           \
+    asm(".byte 0x65\n"                                           \
     "mov (%1), %0\n"                                             \
     : "=r"(data)                                                 \
     : "r"(offset)                                                \
     );
 
 #define hfi_mov1_store_anytype(offset, data)                     \
-    asm(".byte 0x0d\n"                                           \
+    asm(".byte 0x65\n"                                           \
     "mov %0, (%1)\n"                                             \
     :                                                            \
     : "r"(data), "r"(offset)                                     \

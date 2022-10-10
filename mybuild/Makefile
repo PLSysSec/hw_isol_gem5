@@ -5,7 +5,8 @@
 CURR_DIR := $(shell realpath ./)
 PARALLEL_COUNT=$(shell nproc)
 
-EXAMPLE_CC=$(CURR_DIR)/../../musl-gcc/bin/x86_64-linux-musl-gcc -static
+# EXAMPLE_CC=$(CURR_DIR)/../../musl-gcc/bin/x86_64-linux-musl-gcc -static
+EXAMPLE_CC=gcc
 EXAMPLE_FLAGS=-O0 -g
 EXAMPLE_GEM5_TRACE_FLAG=
 # EXAMPLE_GEM5_TRACE_FLAG=--debug-flags=Exec

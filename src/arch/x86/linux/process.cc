@@ -562,8 +562,7 @@ static SyscallDescTable<X86_64LinuxProcess::SyscallABI> syscallDescs64 = {
     { 310, "proess_vm_readv" },
     { 311, "proess_vm_writev" },
     { 312, "kcmp" },
-    { 313, "finit_module" },
-    { 318, "getrandom", ignoreFunc },
+    { 313, "finit_module" }
 };
 
 void

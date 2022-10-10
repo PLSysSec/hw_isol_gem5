@@ -225,6 +225,8 @@ BaseO3DynInst<Impl>::checkHFICtrl(Addr pc) {
     // }
 
     if (faulted || !found) {
+        printf("HFI code mask oob\n");
+        printHFIMetadata();
         return false;
     }
 
@@ -272,7 +274,8 @@ BaseO3DynInst<Impl>::printHFIMetadata() {
 }
 
 template <class Impl>
-Addr BaseO3DynInst<Impl>::doHFIStructuredMov(uint64_t scale,
+Addr BaseO3DynInst<Impl>::doHFIStructuredMov(uint64_t segment_index,
+    uint64_t scale,
     uint64_t index,
     uint64_t displacement,
     TheISA::MiscRegIndex reg_base_address,
@@ -311,7 +314,8 @@ Addr BaseO3DynInst<Impl>::doHFIStructuredMov(uint64_t scale,
 
     // Sanity check
     if(hfi_is_inbounds != actual_is_inbounds) {
-        printf("HFI: Unexpected\n");
+        printf("HFI: Unexpected oob\n");
+        printHFIMetadata();
         abort();
     }
 
@@ -319,6 +323,15 @@ Addr BaseO3DynInst<Impl>::doHFIStructuredMov(uint64_t scale,
         out_faulted = true;
         return ret;
     }
+
+    DPRINTF(HFI, "Replaced "
+        "(r%" PRIu64 ", %" PRIu64 " * %" PRIu64 " + %" PRIu64 ")"
+        " with "
+        "(%" PRIu64 "+ %" PRIu64 " * %" PRIu64 " + %" PRIu64 ")"
+        "\n",
+        segment_index, scale, index, displacement,
+        new_base, scale, index, displacement
+    );
 
     ret = new_base + offset;
     return ret;
@@ -408,7 +421,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
             bool faulted = false;
             uint64_t segment_index = segment_number - 1;
 
-            uint64_t newAddress = doHFIStructuredMov(scale, index, displacement,
+            uint64_t newAddress = doHFIStructuredMov(segment_index, scale, index, displacement,
                 hfi_regs_base[segment_index],
                 hfi_regs_offset_ignore[segment_index],
                 hfi_regs_perm[segment_index],
@@ -417,6 +430,8 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
             );
 
             if(faulted) {
+                printf("HFI hmov oob\n");
+                printHFIMetadata();
                 return std::make_shared<TheISA::HFIBoundsCheck>();
             }
 
@@ -439,6 +454,8 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
         }
 
         if (faulted || !found) {
+            printf("HFI data mask oob\n");
+            printHFIMetadata();
             return std::make_shared<TheISA::HFIBoundsCheck>();
         }
     }

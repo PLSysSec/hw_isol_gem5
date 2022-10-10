@@ -95,7 +95,8 @@ class BaseO3DynInst : public BaseDynInst<Impl>
     Fault completeAcc(PacketPtr pkt);
 
     void printHFIMetadata();
-    Addr doHFIStructuredMov(uint64_t scale,
+    Addr doHFIStructuredMov(uint64_t segment_index,
+        uint64_t scale,
         uint64_t index,
         uint64_t displacement,
         TheISA::MiscRegIndex reg_base_address,

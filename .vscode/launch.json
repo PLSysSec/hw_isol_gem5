@@ -132,18 +132,16 @@
             ]
         },
         {
-            "name": "test_rlbox_glue",
+            "name": "debug-test_rlbox_glue",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/X86/gem5.opt",
+            "program": "${workspaceFolder}/build/X86/gem5.debug",
             "args": [
                 "${workspaceFolder}/configs/example/se.py",
                 "--cpu-type=DerivO3CPU",
                 "--caches",
                 "-c",
-                "./test_rlbox_glue",
-                "-o",
-                "3"
+                "./test_rlbox_glue"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/../rlbox_hfi_wasm2c_sandbox/build_debug",

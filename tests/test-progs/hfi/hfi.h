@@ -197,7 +197,11 @@ typedef struct {
 #else
 #  define HFI_THREAD_LOCAL _Thread_local
 #endif
-__attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_metadata = 0;
+__attribute__((weak)) HFI_THREAD_LOCAL hfi_sandbox* hfi_emulated_current_metadata = 0;
+__attribute__((weak)) HFI_THREAD_LOCAL int hfi_emulated_is_in_sandbox = 0;
+__attribute__((weak)) HFI_THREAD_LOCAL int hfi_emulated_is_trusted_sandbox = 0;
+__attribute__((weak)) HFI_THREAD_LOCAL void* hfi_emulated_exit_handler = 0;
+__attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #undef HFI_THREAD_LOCAL
 #endif
 
@@ -206,24 +210,25 @@ __attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_m
 // Parameters: the current sandbox's data of type "const hfi_sandbox*"
 #ifdef HFI_EMULATION
 
-#define hfi_set_sandbox_metadata(hfi_metadata)                       \
-{                                                                    \
-    hfi_emulated_current_metadata = hfi_metadata;                    \
-    /* Emulate the cost of moving 1 data region and 1 code region */ \
-    /* This is approximately 48 bytes or 6 moves*/                   \
-    /* One of the moves is used to move the pointer to TLS above*/   \
-    /* Remaining 5 moves are below*/                                 \
-    /* we pick a random register (r10) to move to*/                  \
-    asm(                                                             \
-    "mov (%0), %%r10\n"                                              \
-    "mov (%0), %%r10\n"                                              \
-    "mov (%0), %%r10\n"                                              \
-    "mov (%0), %%r10\n"                                              \
-    "mov (%0), %%r10\n"                                              \
-    :                                                                \
-    : "r"(hfi_metadata)                                              \
-    : "r10"                                                          \
-    );                                                               \
+#define hfi_set_sandbox_metadata(hfi_metadata)                                           \
+{                                                                                        \
+    hfi_emulated_current_metadata = hfi_metadata;                                        \
+    hfi_emulated_is_trusted_sandbox = hfi_emulated_current_metadata->is_trusted_sandbox; \
+    hfi_emulated_exit_handler = hfi_emulated_current_metadata->exit_sandbox_handler;     \
+    /* Emulate the rem cost of moving 1 data region and 1 code region */                 \
+    /* This is approximately 2 * 64-bit params per region + perm bits*/                  \
+    /* This is approximately 4 byte moves + perm bits (rounded to 8 byte move)*/         \
+    /* we pick a random register (r10) to move to */                                     \
+    asm(                                                                                 \
+    "mov (%0), %%r10\n"                                                                  \
+    "mov (%0), %%r10\n"                                                                  \
+    "mov (%0), %%r10\n"                                                                  \
+    "mov (%0), %%r10\n"                                                                  \
+    "mov (%0), %%r10\n"                                                                  \
+    :                                                                                    \
+    : "r"(hfi_metadata)                                                                  \
+    : "r10"                                                                              \
+    );                                                                                   \
 }
 
 #else
@@ -254,7 +259,12 @@ __attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_m
 // Instruction executed to enter a sandbox.
 // This enables the hfi bounds checking.
 #ifdef HFI_EMULATION
-#define hfi_enter_sandbox() asm("lfence;")
+#define hfi_enter_sandbox()                                                          \
+{                                                                                    \
+    if (hfi_emulated_is_in_sandbox && !hfi_emulated_is_trusted_sandbox) { abort(); } \
+    hfi_emulated_is_in_sandbox = 1;                                                  \
+    asm("lfence;");                                                                  \
+}
 #else
 #define hfi_enter_sandbox() asm(".byte 0x0F, 0x04, 0x65, 0x00\n")
 #endif
@@ -262,7 +272,19 @@ __attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_m
 // Instruction executed to exit a sandbox. Can be invoked by any code
 // Relies on trusted compilers to ensure this instruction is not misused/called from a bad context
 #ifdef HFI_EMULATION
-#define hfi_exit_sandbox() asm("lfence;")
+#define hfi_exit_sandbox()                                      \
+{                                                               \
+    if (!hfi_emulated_is_in_sandbox) { abort(); }               \
+    hfi_emulated_is_in_sandbox = 0;                             \
+    hfi_emulated_exit_reason = (uint32_t) HFI_EXIT_REASON_EXIT; \
+    asm("lfence;");                                             \
+    if (hfi_emulated_exit_handler) {                            \
+        asm("jmp *(%0)\n"                                       \
+        :                                                       \
+        : "r"(hfi_emulated_exit_handler)                        \
+        );                                                      \
+    }                                                           \
+}
 #else
 #define hfi_exit_sandbox() asm(".byte 0x0F, 0x04, 0x66, 0x00\n")
 #endif
@@ -270,7 +292,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_m
 // Instruction that gets the last reason for sandbox exit
 // Return of type enum HFI_EXIT_REASON
 #ifdef HFI_EMULATION
-#define hfi_get_exit_reason(out_ret) out_ret = HFI_EXIT_REASON_EXIT
+#define hfi_get_exit_reason(out_ret) out_ret = hfi_emulated_exit_reason
 #else
 
 #define hfi_get_exit_reason(out_ret)     \

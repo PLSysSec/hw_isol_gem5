@@ -154,71 +154,155 @@ typedef struct {
 
 // Get the version of HFI implemented in hardware.
 // Return value: the version of the hfi
+#ifdef HFI_EMULATION
+#define hfi_get_version(out_ret) out_ret = 2;
+#else
+
 #define hfi_get_version(out_ret)         \
     asm(".byte 0x0F, 0x04, 0x63, 0x00\n" \
     : "=a"(out_ret)                      \
     )
 
+#endif
+
 // Get the number of data ranges supported by HFI.
 // Return value: the number of data ranges supported by HFI.
+#ifdef HFI_EMULATION
+#define hfi_get_linear_data_range_count(out_ret) out_ret = 4;
+#else
+
 #define hfi_get_linear_data_range_count(out_ret) \
     asm(".byte 0x0F, 0x04, 0x64, 0x00\n"         \
     : "=a"(out_ret)                              \
     )
 
+#endif
+
 // Get the number of code ranges supported by HFI.
 // Return value: the number of code ranges supported by HFI.
+#ifdef HFI_EMULATION
+#define hfi_get_linear_code_range_count(out_ret) out_ret = 2;
+#else
+
 #define hfi_get_linear_code_range_count(out_ret) \
     asm(".byte 0x0F, 0x04, 0x73, 0x00\n"         \
     : "=a"(out_ret)                              \
     )
 
+#endif
+
+#ifdef HFI_EMULATION
+#ifdef __cplusplus
+#  define HFI_THREAD_LOCAL thread_local
+#else
+#  define HFI_THREAD_LOCAL _Thread_local
+#endif
+__attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_metadata = 0;
+#undef HFI_THREAD_LOCAL
+#endif
+
 // Instruction executed to configure the sandbox for the current thread.
 // This loads the hfi CPU registers with bounds information used for checking.
 // Parameters: the current sandbox's data of type "const hfi_sandbox*"
+#ifdef HFI_EMULATION
+
+#define hfi_set_sandbox_metadata(out_ret)                            \
+{                                                                    \
+    hfi_emulated_current_metadata = hfi_metadata;                    \
+    /* Emulate the cost of moving 1 data region and 1 code region */ \
+    /* This is approximately 48 bytes or 6 moves*/                   \
+    /* One of the moves is used to move the pointer to TLS above*/   \
+    /* Remaining 5 moves are below*/                                 \
+    /* we pick a random register (r10) to move to*/                  \
+    asm(                                                             \
+    "mov (%0), %%r10\n"                                              \
+    "mov (%0), %%r10\n"                                              \
+    "mov (%0), %%r10\n"                                              \
+    "mov (%0), %%r10\n"                                              \
+    "mov (%0), %%r10\n"                                              \
+    :                                                                \
+    : "r"(hfi_metadata)                                              \
+    : "r10"                                                          \
+    );                                                               \
+}
+
+#else
+
 #define hfi_set_sandbox_metadata(hfi_metadata) \
     asm(".byte 0x0F, 0x04, 0x71, 0x00\n"       \
     :                                          \
     : "a"(hfi_metadata)                        \
     )
 
+#endif
+
 // Instruction executed to get the current configuration the sandbox for the current thread.
 // This loads the hfi CPU registers with bounds information used for checking.
 // Parameters: the current sandbox's data of type "const hfi_sandbox*"
+#ifdef HFI_EMULATION
+#define hfi_get_sandbox_metadata(out_hfi_metadata) memcpy(out_hfi_metadata, hfi_emulated_current_metadata, sizeof(hfi_sandbox));
+#else
+
 #define hfi_get_sandbox_metadata(out_hfi_metadata) \
     asm(".byte 0x0F, 0x04, 0x72, 0x00\n"           \
     :                                              \
     : "a"(out_hfi_metadata)                        \
     )
 
+#endif
+
 // Instruction executed to enter a sandbox.
 // This enables the hfi bounds checking.
+#ifdef HFI_EMULATION
+#define hfi_enter_sandbox() asm("lfence;")
+#else
 #define hfi_enter_sandbox() asm(".byte 0x0F, 0x04, 0x65, 0x00\n")
+#endif
 
 // Instruction executed to exit a sandbox. Can be invoked by any code
 // Relies on trusted compilers to ensure this instruction is not misused/called from a bad context
+#ifdef HFI_EMULATION
+#define hfi_exit_sandbox() asm("lfence;")
+#else
 #define hfi_exit_sandbox() asm(".byte 0x0F, 0x04, 0x66, 0x00\n")
-
+#endif
 
 // Instruction that gets the last reason for sandbox exit
 // Return of type enum HFI_EXIT_REASON
+#ifdef HFI_EMULATION
+#define hfi_exit_sandbox() out_ret = HFI_EXIT_REASON_EXIT
+#else
+
 #define hfi_get_exit_reason(out_ret)     \
     asm(".byte 0x0F, 0x04, 0x69, 0x00\n" \
     : "=a"(out_ret)                      \
     )
 
+#endif
+
 // Instruction that gets the last reason for sandbox exit
 // Return of type void*
+#ifdef HFI_EMULATION
+#define hfi_get_exit_location() out_ret = (void*) 0
+#else
+
 #define hfi_get_exit_location(out_ret)   \
     asm(".byte 0x0F, 0x04, 0x70, 0x00\n" \
     : "=a"(out_ret)                      \
     )
+
+#endif
 
 ////////////////
 // HFI mov instructions exposed as functions
 ////////////////
 
 // Load/store from the given region number, offset
+#ifdef HFI_EMULATION
+
+// Not supported in emulation mode
+
+#else
 
 #define hfi_mov_load_anytype(region, offset, data)                               \
     asm(".byte 0x0e\n"                                                           \
@@ -234,8 +318,29 @@ typedef struct {
     : "r"(data), "r"(region), "r"(offset)                                        \
     );
 
+#endif
+
 // Load/store from the region 1, offset
-#define hfi_mov1_load_anytype(offset, data)                 \
+#ifdef HFI_EMULATION
+
+#define hfi_mov1_load_anytype(offset, data)                      \
+    asm(".byte 0x90\n"                                           \
+    "mov (%1), %0\n"                                             \
+    : "=r"(data)                                                 \
+    : "r"(offset)                                                \
+    );
+
+
+#define hfi_mov1_store_anytype(offset, data)                     \
+    asm(".byte 0x90\n"                                           \
+    "mov %0, (%1)\n"                                             \
+    :                                                            \
+    : "r"(data), "r"(offset)                                     \
+    );
+
+#else
+
+#define hfi_mov1_load_anytype(offset, data)                      \
     asm(".byte 0x65\n"                                           \
     "mov (%1), %0\n"                                             \
     : "=r"(data)                                                 \
@@ -248,6 +353,8 @@ typedef struct {
     :                                                            \
     : "r"(data), "r"(offset)                                     \
     );
+
+#endif
 
 #ifdef __cplusplus
 }

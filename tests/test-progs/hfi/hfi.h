@@ -206,7 +206,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_m
 // Parameters: the current sandbox's data of type "const hfi_sandbox*"
 #ifdef HFI_EMULATION
 
-#define hfi_set_sandbox_metadata(out_ret)                            \
+#define hfi_set_sandbox_metadata(hfi_metadata)                       \
 {                                                                    \
     hfi_emulated_current_metadata = hfi_metadata;                    \
     /* Emulate the cost of moving 1 data region and 1 code region */ \
@@ -270,7 +270,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_m
 // Instruction that gets the last reason for sandbox exit
 // Return of type enum HFI_EXIT_REASON
 #ifdef HFI_EMULATION
-#define hfi_exit_sandbox() out_ret = HFI_EXIT_REASON_EXIT
+#define hfi_get_exit_reason(out_ret) out_ret = HFI_EXIT_REASON_EXIT
 #else
 
 #define hfi_get_exit_reason(out_ret)     \
@@ -283,7 +283,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL const hfi_sandbox* hfi_emulated_current_m
 // Instruction that gets the last reason for sandbox exit
 // Return of type void*
 #ifdef HFI_EMULATION
-#define hfi_get_exit_location() out_ret = (void*) 0
+#define hfi_get_exit_location(out_ret) out_ret = (void*) 0
 #else
 
 #define hfi_get_exit_location(out_ret)   \

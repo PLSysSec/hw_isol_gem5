@@ -53,7 +53,7 @@ test: $(TEST_NAMES)
 clean-gem5:
 	cd .. && scons -c
 
-clean-examples:
+clean-tests:
 	-rm -rf mybuildout
 
-clean: clean-gem5 clean-examples
+clean: clean-gem5 clean-tests

@@ -237,9 +237,12 @@ hfi_get_sandbox_metadata_continue:
 
 def macroop HFI_ENTER_SANDBOX
 {
-    # if (reg_hfi_curr.inside_sandbox) { SIGSEV; }
+    # if (reg_hfi_curr.inside_sandbox && !reg_hfi_curr.is_trusted_sandbox) { SIGSEV; }
     rdval t1, "InstRegIndex(MISCREG_HFI_INSIDE_SANDBOX)"
-    and t1, t1, t1, flags=(ZF,)
+    rdval t2, "InstRegIndex(MISCREG_HFI_IS_TRUSTED_SANDBOX)"
+    # Get !t2
+    xori t2, t2, 1
+    and t1, t1, t2, flags=(ZF,)
     br label("hfi_enter_sandbox_continue"), flags=(CZF,)
     fault "std::make_shared<HFIIllegalInst>()",
 

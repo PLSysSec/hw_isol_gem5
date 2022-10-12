@@ -47,6 +47,7 @@ import m5
 from m5.objects import *
 from common.Caches import *
 from common import ObjectList
+from common.cores.x86 import skylake
 
 def config_cache(options, system):
     if options.external_memory_system and (options.caches or options.l2cache):
@@ -67,6 +68,17 @@ def config_cache(options, system):
             core.O3_ARM_v7a_DCache, core.O3_ARM_v7a_ICache, \
             core.O3_ARM_v7aL2, \
             core.O3_ARM_v7aWalkCache
+    elif options.cpu_type == "Skylake":
+        try:
+            import cores.x86.skylake as core
+        except:
+            print("Skylake is unavailable. Did you compile the O3 model?")
+            sys.exit(1)
+
+        dcache_class, icache_class, l2_cache_class, walk_cache_class = \
+            core.Skylake_DCache, core.Skylake_ICache, \
+            core.SkylakeL2, \
+            core.SkylakeWalkCache
     elif options.cpu_type == "HPI":
         try:
             import cores.arm.HPI as core

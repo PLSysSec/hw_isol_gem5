@@ -154,7 +154,7 @@ typedef struct {
 
 // Get the version of HFI implemented in hardware.
 // Return value: the version of the hfi
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #define hfi_get_version(out_ret) out_ret = 2;
 #else
 
@@ -167,7 +167,7 @@ typedef struct {
 
 // Get the number of data ranges supported by HFI.
 // Return value: the number of data ranges supported by HFI.
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #define hfi_get_linear_data_range_count(out_ret) out_ret = 4;
 #else
 
@@ -180,7 +180,7 @@ typedef struct {
 
 // Get the number of code ranges supported by HFI.
 // Return value: the number of code ranges supported by HFI.
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #define hfi_get_linear_code_range_count(out_ret) out_ret = 2;
 #else
 
@@ -191,7 +191,7 @@ typedef struct {
 
 #endif
 
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #ifdef __cplusplus
 #  define HFI_THREAD_LOCAL thread_local
 #else
@@ -208,7 +208,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 // Instruction executed to configure the sandbox for the current thread.
 // This loads the hfi CPU registers with bounds information used for checking.
 // Parameters: the current sandbox's data of type "const hfi_sandbox*"
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 
 #define hfi_set_sandbox_metadata(hfi_metadata)                                           \
 {                                                                                        \
@@ -244,7 +244,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 // Instruction executed to get the current configuration the sandbox for the current thread.
 // This loads the hfi CPU registers with bounds information used for checking.
 // Parameters: the current sandbox's data of type "const hfi_sandbox*"
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #define hfi_get_sandbox_metadata(out_hfi_metadata) memcpy(out_hfi_metadata, hfi_emulated_current_metadata, sizeof(hfi_sandbox));
 #else
 
@@ -258,7 +258,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 
 // Instruction executed to enter a sandbox.
 // This enables the hfi bounds checking.
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #define hfi_enter_sandbox()                                                          \
 {                                                                                    \
     if (hfi_emulated_is_in_sandbox && !hfi_emulated_is_trusted_sandbox) { abort(); } \
@@ -271,7 +271,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 
 // Instruction executed to exit a sandbox. Can be invoked by any code
 // Relies on trusted compilers to ensure this instruction is not misused/called from a bad context
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #define hfi_exit_sandbox()                                      \
 {                                                               \
     if (!hfi_emulated_is_in_sandbox) { abort(); }               \
@@ -291,7 +291,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 
 // Instruction that gets the last reason for sandbox exit
 // Return of type enum HFI_EXIT_REASON
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #define hfi_get_exit_reason(out_ret) out_ret = hfi_emulated_exit_reason
 #else
 
@@ -304,7 +304,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 
 // Instruction that gets the last reason for sandbox exit
 // Return of type void*
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 #define hfi_get_exit_location(out_ret) out_ret = (void*) 0
 #else
 
@@ -320,7 +320,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 ////////////////
 
 // Load/store from the given region number, offset
-#ifdef HFI_EMULATION
+#if defined(HFI_EMULATION) || defined(HFI_EMULATION2)
 
 // Not supported in emulation mode
 
@@ -356,6 +356,25 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #define hfi_mov1_store_anytype(offset, data)                     \
     asm(".byte 0x90\n"                                           \
     "mov %0, (%1)\n"                                             \
+    :                                                            \
+    : "r"(data), "r"(offset)                                     \
+    );
+
+#elif defined(HFI_EMULATION2)
+
+#define hfi_emulate2_memory_start() 0x7ffff000
+
+#define hfi_mov1_load_anytype(offset, data)                      \
+    asm(".byte 0x90\n"                                           \
+    "mov 0x7ffff000(%1), %0\n"                                             \
+    : "=r"(data)                                                 \
+    : "r"(offset)                                                \
+    );
+
+
+#define hfi_mov1_store_anytype(offset, data)                     \
+    asm(".byte 0x90\n"                                           \
+    "mov %0, 0x7ffff000(%1)\n"                                             \
     :                                                            \
     : "r"(data), "r"(offset)                                     \
     );

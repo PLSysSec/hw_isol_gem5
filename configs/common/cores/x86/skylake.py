@@ -281,8 +281,8 @@ class Skylake_DCache(Cache):
     write_buffers = 64
     # Consider the L2 a victim cache also for clean lines
     writeback_clean = True
-    # tags = BaseSetAssoc()
-    tags =  PartitionedSetAssoc(smt_policy=DynamicSMTPolicy())
+    tags = BaseSetAssoc()
+    # tags =  PartitionedSetAssoc(smt_policy=DynamicSMTPolicy())
 
 # TLB Cache
 # Use a cache as a L2 TLB

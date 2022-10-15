@@ -220,11 +220,11 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     /* This is approximately 4 byte moves + perm bits (rounded to 8 byte move)*/         \
     /* we pick a random register (r10) to move to */                                     \
     asm(                                                                                 \
-    "mov (%0), %%r10\n"                                                                  \
-    "mov (%0), %%r10\n"                                                                  \
-    "mov (%0), %%r10\n"                                                                  \
-    "mov (%0), %%r10\n"                                                                  \
-    "mov (%0), %%r10\n"                                                                  \
+    "mov 0x0(%0), %%r10\n"                                                               \
+    "mov 0x8(%0), %%r10\n"                                                               \
+    "mov 0x10(%0), %%r10\n"                                                              \
+    "mov 0x18(%0), %%r10\n"                                                              \
+    "mov 0x20(%0), %%r10\n"                                                              \
     :                                                                                    \
     : "r"(hfi_metadata)                                                                  \
     : "r10"                                                                              \

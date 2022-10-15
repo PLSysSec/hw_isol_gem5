@@ -325,34 +325,38 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 // Not supported in emulation mode
 #elif defined(HFI_EMULATION3)
 
-#define hfi_mov_load_anytype(region, offset, data)                               \
-    asm(                                                                         \
-    "mov (%1, %2), %0\n"                                                         \
-    : "=r"(data)                                                                 \
-    : "r"(hfi_emulated_current_metadata->data_ranges[region-1].base_address), "r"(offset) \
+#define hfi_mov_load_anytype(region, offset, data)                                                   \
+    asm(                                                                                             \
+    "mov (%1, %2), %0\n"                                                                             \
+    : "=r"(data)                                                                                     \
+    : "r"(hfi_emulated_current_metadata->data_ranges[region-1].base_address), "r"(offset)            \
+    : "memory"                                                                                       \
     );
 
-#define hfi_mov_store_anytype(region, offset, data)                              \
-    asm(                                                                         \
-    "mov %0, (%1, %2)\n"                                                         \
-    :                                                                            \
+#define hfi_mov_store_anytype(region, offset, data)                                                  \
+    asm(                                                                                             \
+    "mov %0, (%1, %2)\n"                                                                             \
+    :                                                                                                \
     : "r"(data), "r"(hfi_emulated_current_metadata->data_ranges[region-1].base_address), "r"(offset) \
+    : "memory"                                                                                       \
     );
 
 #else
 
-#define hfi_mov_load_anytype(region, offset, data)                               \
-    asm(".byte 0x0e\n"                                                           \
-    "mov (%1, %2), %0\n"                                                         \
-    : "=r"(data)                                                                 \
-    : "r"(region), "r"(offset)                                                   \
+#define hfi_mov_load_anytype(region, offset, data)                                                   \
+    asm(".byte 0x0e\n"                                                                               \
+    "mov (%1, %2), %0\n"                                                                             \
+    : "=r"(data)                                                                                     \
+    : "r"(region), "r"(offset)                                                                       \
+    : "memory"                                                                                       \
     );
 
-#define hfi_mov_store_anytype(region, offset, data)                              \
-    asm(".byte 0x0e\n"                                                           \
-    "mov %0, (%1, %2)\n"                                                         \
-    :                                                                            \
-    : "r"(data), "r"(region), "r"(offset)                                        \
+#define hfi_mov_store_anytype(region, offset, data)                                                  \
+    asm(".byte 0x0e\n"                                                                               \
+    "mov %0, (%1, %2)\n"                                                                             \
+    :                                                                                                \
+    : "r"(data), "r"(region), "r"(offset)                                                            \
+    : "memory"                                                                                       \
     );
 
 #endif
@@ -360,94 +364,107 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 // Load/store from the region 1, offset
 #ifdef HFI_EMULATION
 
-#define hfi_mov1_load_anytype(offset, data) memcpy(               \
-    &(data),                                                      \
-    ((char*)(uintptr_t)(offset)),                                 \
-    sizeof(data)                                                  \
-)
+// Underapproximation of hfi performance. Pick a heap location of 0 to 4GB
 
-#define hfi_mov1_store_anytype(offset, data) memcpy(              \
-    ((char*)(uintptr_t)(offset)),                                 \
-    &(data),                                                      \
-    sizeof(data)                                                  \
-)
-
-// #define hfi_mov1_load_anytype(offset, data)                      \
-//     asm(".byte 0x90\n"                                           \
-//     "mov (%1), %0\n"                                             \
-//     : "=r"(data)                                                 \
-//     : "r"(offset)                                                \
-//     );
+#define hfi_mov1_load_anytype(offset, data)                                                          \
+    asm(".byte 0x90\n"                                                                               \
+    "mov (%1), %0\n"                                                                                 \
+    : "=r"(data)                                                                                     \
+    : "r"(offset)                                                                                    \
+    : "memory"                                                                                       \
+    );
 
 
-// #define hfi_mov1_store_anytype(offset, data)                     \
-//     asm(".byte 0x90\n"                                           \
-//     "mov %0, (%1)\n"                                             \
-//     :                                                            \
-//     : "r"(data), "r"(offset)                                     \
-//     );
+#define hfi_mov1_store_anytype(offset, data)                                                         \
+    asm(".byte 0x90\n"                                                                               \
+    "mov %0, (%1)\n"                                                                                 \
+    :                                                                                                \
+    : "r"(data), "r"(offset)                                                                         \
+    : "memory"                                                                                       \
+    );
+
+
+// #define hfi_mov1_load_anytype(offset, data) memcpy(
+//     &(data),
+//     ((char*)(uintptr_t)(offset)),
+//     sizeof(data)
+// )
+
+// #define hfi_mov1_store_anytype(offset, data) memcpy(
+//     ((char*)(uintptr_t)(offset)),
+//     &(data),
+//     sizeof(data)
+// )
 
 #elif defined(HFI_EMULATION2)
 
+// Overapproximation of hfi performance. Pick a heap location outside of 0 to 4GB
 #define hfi_emulate2_memory_start() 0x7ffef000
 
-#define hfi_mov1_load_anytype(offset, data) memcpy(               \
-    &(data),                                                      \
-    ((char*)hfi_emulate2_memory_start()) + ((uintptr_t)(offset)), \
-    sizeof(data)                                                  \
-)
-
-#define hfi_mov1_store_anytype(offset, data) memcpy(              \
-    ((char*)hfi_emulate2_memory_start()) + ((uintptr_t)(offset)), \
-    &(data),                                                      \
-    sizeof(data)                                                  \
-)
-
-// #define hfi_mov1_load_anytype(offset, data)                      \
-//     asm(".byte 0x90\n"                                           \
-//     "mov 0x7ffef000(%1), %0\n"                                             \
-//     : "=r"(data)                                                 \
-//     : "r"(offset)                                                \
-//     );
+#define hfi_mov1_load_anytype(offset, data)                                                          \
+    asm(".byte 0x90\n"                                                                               \
+    "mov 0x7ffef000(%1), %0\n"                                                                       \
+    : "=r"(data)                                                                                     \
+    : "r"(offset)                                                                                    \
+    : "memory"                                                                                       \
+    );
 
 
-// #define hfi_mov1_store_anytype(offset, data)                     \
-//     asm(".byte 0x90\n"                                           \
-//     "mov %0, 0x7ffef000(%1)\n"                                             \
-//     :                                                            \
-//     : "r"(data), "r"(offset)                                     \
-//     );
+#define hfi_mov1_store_anytype(offset, data)                                                         \
+    asm(".byte 0x90\n"                                                                               \
+    "mov %0, 0x7ffef000(%1)\n"                                                                       \
+    :                                                                                                \
+    : "r"(data), "r"(offset)                                                                         \
+    : "memory"                                                                                       \
+    );
+
+
+// #define hfi_mov1_load_anytype(offset, data) memcpy(
+//     &(data),
+//     ((char*)hfi_emulate2_memory_start()) + ((uintptr_t)(offset)),
+//     sizeof(data)
+// )
+
+// #define hfi_mov1_store_anytype(offset, data) memcpy(
+//     ((char*)hfi_emulate2_memory_start()) + ((uintptr_t)(offset)),
+//     &(data),
+//     sizeof(data)
+// )
 
 #elif defined(HFI_EMULATION3)
 
-#define hfi_mov1_load_anytype(offset, data)                      \
-    asm(                                                         \
-    "mov (%2, %1), %0\n"                                         \
-    : "=r"(data)                                                 \
-    : "r"(offset), "r"(hfi_emulated_current_metadata->data_ranges[0].base_address) \
+#define hfi_mov1_load_anytype(offset, data)                                                          \
+    asm(                                                                                             \
+    "mov (%2, %1), %0\n"                                                                             \
+    : "=r"(data)                                                                                     \
+    : "r"(offset), "r"(hfi_emulated_current_metadata->data_ranges[0].base_address)                   \
+    : "memory"                                                                                       \
     );
 
-#define hfi_mov1_store_anytype(offset, data)                     \
-    asm(                                                         \
-    "mov %0, (%2, %1)\n"                                         \
-    :                                                            \
-    : "r"(data), "r"(offset), "r"(hfi_emulated_current_metadata->data_ranges[0].base_address) \
+#define hfi_mov1_store_anytype(offset, data)                                                         \
+    asm(                                                                                             \
+    "mov %0, (%2, %1)\n"                                                                             \
+    :                                                                                                \
+    : "r"(data), "r"(offset), "r"(hfi_emulated_current_metadata->data_ranges[0].base_address)        \
+    : "memory"                                                                                       \
     );
 
 #else
 
-#define hfi_mov1_load_anytype(offset, data)                      \
-    asm(".byte 0x65\n"                                           \
-    "mov (%1), %0\n"                                             \
-    : "=r"(data)                                                 \
-    : "r"(offset)                                                \
+#define hfi_mov1_load_anytype(offset, data)                                                          \
+    asm(".byte 0x65\n"                                                                               \
+    "mov (%1), %0\n"                                                                                 \
+    : "=r"(data)                                                                                     \
+    : "r"(offset)                                                                                    \
+    : "memory"                                                                                       \
     );
 
-#define hfi_mov1_store_anytype(offset, data)                     \
-    asm(".byte 0x65\n"                                           \
-    "mov %0, (%1)\n"                                             \
-    :                                                            \
-    : "r"(data), "r"(offset)                                     \
+#define hfi_mov1_store_anytype(offset, data)                                                         \
+    asm(".byte 0x65\n"                                                                               \
+    "mov %0, (%1)\n"                                                                                 \
+    :                                                                                                \
+    : "r"(data), "r"(offset)                                                                         \
+    : "memory"                                                                                       \
     );
 
 #endif

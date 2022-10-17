@@ -225,7 +225,7 @@ BaseO3DynInst<Impl>::checkHFICtrl(Addr pc) {
     // }
 
     if (faulted || !found) {
-        printf("HFI code mask oob\n");
+        // printf("HFI code mask oob\n");
         printHFIMetadata();
         return false;
     }
@@ -434,7 +434,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
             );
 
             if(faulted) {
-                printf("HFI hmov oob\n");
+                // printf("HFI hmov oob\n");
                 printHFIMetadata();
                 return std::make_shared<TheISA::HFIBoundsCheck>();
             }
@@ -458,7 +458,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
         }
 
         if (faulted || !found) {
-            printf("HFI data mask oob\n");
+            // printf("HFI data mask oob\n");
             printHFIMetadata();
             return std::make_shared<TheISA::HFIBoundsCheck>();
         }

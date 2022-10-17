@@ -279,5 +279,16 @@ if options.wait_gdb:
     for cpu in system.cpu:
         cpu.wait_for_remote_gdb = True
 
+# page_size = 4096
+# gb = 1024*1024*1024
+
+# reserve_start = 10*page_size
+# reserve_size = 4*gb - reserve_start
+# target_loc = 12*gb
+
+# print("START, SIZE: " + str(reserve_start) + " " + str(reserve_size))
+# system.cpu[0].workload[0].map(reserve_start, target_loc, reserve_size)
+# print("DONE! START, SIZE: " + str(reserve_start) + " " + str(reserve_size))
+
 root = Root(full_system = False, system = system)
 Simulation.run(options, root, system, FutureClass)

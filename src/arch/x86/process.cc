@@ -110,6 +110,9 @@ X86_64Process::X86_64Process(ProcessParams *params,
     Addr next_thread_stack_base = stack_base - max_stack_size;
     Addr mmap_end = 0x7FFFF7FFF000ULL;
 
+    HFI_Rsv_start = 0x59d000;
+    HFI_Rsv_size = 0x180000000ULL; // 6GB
+
     memState = make_shared<MemState>(this, brk_point, stack_base,
                                      max_stack_size, next_thread_stack_base,
                                      mmap_end);
@@ -154,6 +157,12 @@ X86_64Process::initState()
 
     // Set up the vsyscall page for this process.
     memState->mapRegion(vsyscallPage.base, vsyscallPage.size, "vsyscall");
+
+    // Setup reserved region for HFI
+    if (HFI_Rsv_start == 0)
+        panic("HFI reserved aregion is not set properly.");
+    memState->mapRegion(HFI_Rsv_start, HFI_Rsv_size, "HFIrsvd");
+
     uint8_t vtimeBlob[] = {
         0x48,0xc7,0xc0,0xc9,0x00,0x00,0x00,    // mov    $0xc9,%rax
         0x0f,0x05,                             // syscall

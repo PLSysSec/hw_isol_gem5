@@ -58,6 +58,7 @@ namespace X86ISA
     class X86Process : public Process
     {
       protected:
+
         Addr _gdtStart;
         Addr _gdtSize;
 
@@ -93,6 +94,9 @@ namespace X86ISA
     class X86_64Process : public X86Process
     {
       protected:
+        Addr HFI_Rsv_size;
+        Addr HFI_Rsv_start;
+
         class VSyscallPage
         {
           public:

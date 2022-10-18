@@ -256,14 +256,28 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 
 #endif
 
+#ifdef HFI_SIM_NOABORT
+#define HFI_SIM_ABORT()
+#else
+#define HFI_SIM_ABORT() abort()
+#endif
+
+#define serializing_inst() {                                                                 \
+    uint32_t garb_regs[4];                                                                   \
+    asm volatile ("cpuid"                                                                    \
+        : "=a" (garb_regs[0]), "=b" (garb_regs[1]), "=c" (garb_regs[2]), "=d" (garb_regs[3]) \
+        : "a" (0), "c" (0)                                                                   \
+    );                                                                                       \
+}
+
 // Instruction executed to enter a sandbox.
 // This enables the hfi bounds checking.
 #if defined(HFI_EMULATION) || defined(HFI_EMULATION2) || defined(HFI_EMULATION3)
 #define hfi_enter_sandbox()                                                          \
 {                                                                                    \
-    if (hfi_emulated_is_in_sandbox && !hfi_emulated_is_trusted_sandbox) { abort(); } \
+    if (hfi_emulated_is_in_sandbox && !hfi_emulated_is_trusted_sandbox) { HFI_SIM_ABORT(); } \
     hfi_emulated_is_in_sandbox = 1;                                                  \
-    asm("lfence;");                                                                  \
+    serializing_inst();                                                              \
 }
 #else
 #define hfi_enter_sandbox() asm(".byte 0x0F, 0x04, 0x65, 0x00\n")
@@ -274,10 +288,10 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #if defined(HFI_EMULATION) || defined(HFI_EMULATION2) || defined(HFI_EMULATION3)
 #define hfi_exit_sandbox()                                      \
 {                                                               \
-    if (!hfi_emulated_is_in_sandbox) { abort(); }               \
+    if (!hfi_emulated_is_in_sandbox) { HFI_SIM_ABORT(); }               \
     hfi_emulated_is_in_sandbox = 0;                             \
     hfi_emulated_exit_reason = (uint32_t) HFI_EXIT_REASON_EXIT; \
-    asm("lfence;");                                             \
+    serializing_inst();                                         \
     if (hfi_emulated_exit_handler) {                            \
         asm("jmp *(%0)\n"                                       \
         :                                                       \

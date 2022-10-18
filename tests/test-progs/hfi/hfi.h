@@ -152,6 +152,19 @@ typedef struct {
     void* exit_instruction_pointer;
 } hfi_thread_context;
 
+
+#ifdef HFI_SIM_NOABORT
+#define HFI_SIM_ABORT()
+#else
+#define HFI_SIM_ABORT() abort()
+#endif
+
+#ifdef HFI_USE_VOLATILE
+#define HFI_VOLATILE volatile
+#else
+#define HFI_VOLATILE
+#endif
+
 // Get the version of HFI implemented in hardware.
 // Return value: the version of the hfi
 #if defined(HFI_EMULATION) || defined(HFI_EMULATION2) || defined(HFI_EMULATION3)
@@ -159,7 +172,7 @@ typedef struct {
 #else
 
 #define hfi_get_version(out_ret)         \
-    asm(".byte 0x0F, 0x04, 0x63, 0x00\n" \
+    asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x63, 0x00\n" \
     : "=a"(out_ret)                      \
     )
 
@@ -172,7 +185,7 @@ typedef struct {
 #else
 
 #define hfi_get_linear_data_range_count(out_ret) \
-    asm(".byte 0x0F, 0x04, 0x64, 0x00\n"         \
+    asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x64, 0x00\n"         \
     : "=a"(out_ret)                              \
     )
 
@@ -185,7 +198,7 @@ typedef struct {
 #else
 
 #define hfi_get_linear_code_range_count(out_ret) \
-    asm(".byte 0x0F, 0x04, 0x73, 0x00\n"         \
+    asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x73, 0x00\n"         \
     : "=a"(out_ret)                              \
     )
 
@@ -219,7 +232,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     /* This is approximately 2 * 64-bit params per region + perm bits*/                  \
     /* This is approximately 4 byte moves + perm bits (rounded to 8 byte move)*/         \
     /* we pick a random register (r10) to move to */                                     \
-    asm(                                                                                 \
+    asm HFI_VOLATILE(                                                                                 \
     "mov 0x0(%0), %%r10\n"                                                               \
     "mov 0x8(%0), %%r10\n"                                                               \
     "mov 0x10(%0), %%r10\n"                                                              \
@@ -234,7 +247,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #else
 
 #define hfi_set_sandbox_metadata(hfi_metadata) \
-    asm(".byte 0x0F, 0x04, 0x71, 0x00\n"       \
+    asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x71, 0x00\n"       \
     :                                          \
     : "a"(hfi_metadata)                        \
     )
@@ -249,17 +262,11 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #else
 
 #define hfi_get_sandbox_metadata(out_hfi_metadata) \
-    asm(".byte 0x0F, 0x04, 0x72, 0x00\n"           \
+    asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x72, 0x00\n"           \
     :                                              \
     : "a"(out_hfi_metadata)                        \
     )
 
-#endif
-
-#ifdef HFI_SIM_NOABORT
-#define HFI_SIM_ABORT()
-#else
-#define HFI_SIM_ABORT() abort()
 #endif
 
 #define serializing_inst() {                                                                 \
@@ -280,7 +287,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     serializing_inst();                                                              \
 }
 #else
-#define hfi_enter_sandbox() asm(".byte 0x0F, 0x04, 0x65, 0x00\n")
+#define hfi_enter_sandbox() asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x65, 0x00\n")
 #endif
 
 // Instruction executed to exit a sandbox. Can be invoked by any code
@@ -293,14 +300,14 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     hfi_emulated_exit_reason = (uint32_t) HFI_EXIT_REASON_EXIT; \
     serializing_inst();                                         \
     if (hfi_emulated_exit_handler) {                            \
-        asm("jmp *(%0)\n"                                       \
+        asm HFI_VOLATILE("jmp *(%0)\n"                                       \
         :                                                       \
         : "r"(hfi_emulated_exit_handler)                        \
         );                                                      \
     }                                                           \
 }
 #else
-#define hfi_exit_sandbox() asm(".byte 0x0F, 0x04, 0x66, 0x00\n")
+#define hfi_exit_sandbox() asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x66, 0x00\n")
 #endif
 
 // Instruction that gets the last reason for sandbox exit
@@ -310,7 +317,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #else
 
 #define hfi_get_exit_reason(out_ret)     \
-    asm(".byte 0x0F, 0x04, 0x69, 0x00\n" \
+    asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x69, 0x00\n" \
     : "=a"(out_ret)                      \
     )
 
@@ -323,7 +330,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #else
 
 #define hfi_get_exit_location(out_ret)   \
-    asm(".byte 0x0F, 0x04, 0x70, 0x00\n" \
+    asm HFI_VOLATILE(".byte 0x0F, 0x04, 0x70, 0x00\n" \
     : "=a"(out_ret)                      \
     )
 
@@ -340,7 +347,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #elif defined(HFI_EMULATION3)
 
 #define hfi_mov_load_anytype(region, offset, data)                                                   \
-    asm(                                                                                             \
+    asm HFI_VOLATILE(                                                                                             \
     "mov (%1, %2), %0\n"                                                                             \
     : "=r"(data)                                                                                     \
     : "r"(hfi_emulated_current_metadata->data_ranges[region-1].base_address), "r"(offset)            \
@@ -348,7 +355,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     );
 
 #define hfi_mov_store_anytype(region, offset, data)                                                  \
-    asm(                                                                                             \
+    asm HFI_VOLATILE(                                                                                             \
     "mov %0, (%1, %2)\n"                                                                             \
     :                                                                                                \
     : "r"(data), "r"(hfi_emulated_current_metadata->data_ranges[region-1].base_address), "r"(offset) \
@@ -358,7 +365,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #else
 
 #define hfi_mov_load_anytype(region, offset, data)                                                   \
-    asm(".byte 0x0e\n"                                                                               \
+    asm HFI_VOLATILE(".byte 0x0e\n"                                                                               \
     "mov (%1, %2), %0\n"                                                                             \
     : "=r"(data)                                                                                     \
     : "r"(region), "r"(offset)                                                                       \
@@ -366,7 +373,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     );
 
 #define hfi_mov_store_anytype(region, offset, data)                                                  \
-    asm(".byte 0x0e\n"                                                                               \
+    asm HFI_VOLATILE(".byte 0x0e\n"                                                                               \
     "mov %0, (%1, %2)\n"                                                                             \
     :                                                                                                \
     : "r"(data), "r"(region), "r"(offset)                                                            \
@@ -381,7 +388,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 // Underapproximation of hfi performance. Pick a heap location of 0 to 4GB
 
 #define hfi_mov1_load_anytype(offset, data)                                                          \
-    asm(".byte 0x90\n"                                                                               \
+    asm HFI_VOLATILE(".byte 0x90\n"                                                                               \
     "mov (%1), %0\n"                                                                                 \
     : "=r"(data)                                                                                     \
     : "r"(offset)                                                                                    \
@@ -390,7 +397,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 
 
 #define hfi_mov1_store_anytype(offset, data)                                                         \
-    asm(".byte 0x90\n"                                                                               \
+    asm HFI_VOLATILE(".byte 0x90\n"                                                                               \
     "mov %0, (%1)\n"                                                                                 \
     :                                                                                                \
     : "r"(data), "r"(offset)                                                                         \
@@ -416,7 +423,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #define hfi_emulate2_memory_start() 0x7ffef000
 
 #define hfi_mov1_load_anytype(offset, data)                                                          \
-    asm(".byte 0x90\n"                                                                               \
+    asm HFI_VOLATILE(".byte 0x90\n"                                                                               \
     "mov 0x7ffef000(%1), %0\n"                                                                       \
     : "=r"(data)                                                                                     \
     : "r"(offset)                                                                                    \
@@ -425,7 +432,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 
 
 #define hfi_mov1_store_anytype(offset, data)                                                         \
-    asm(".byte 0x90\n"                                                                               \
+    asm HFI_VOLATILE(".byte 0x90\n"                                                                               \
     "mov %0, 0x7ffef000(%1)\n"                                                                       \
     :                                                                                                \
     : "r"(data), "r"(offset)                                                                         \
@@ -448,7 +455,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #elif defined(HFI_EMULATION3)
 
 #define hfi_mov1_load_anytype(offset, data)                                                          \
-    asm(                                                                                             \
+    asm HFI_VOLATILE(                                                                                             \
     "mov (%2, %1), %0\n"                                                                             \
     : "=r"(data)                                                                                     \
     : "r"(offset), "r"(hfi_emulated_current_metadata->data_ranges[0].base_address)                   \
@@ -456,7 +463,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     );
 
 #define hfi_mov1_store_anytype(offset, data)                                                         \
-    asm(                                                                                             \
+    asm HFI_VOLATILE(                                                                                             \
     "mov %0, (%2, %1)\n"                                                                             \
     :                                                                                                \
     : "r"(data), "r"(offset), "r"(hfi_emulated_current_metadata->data_ranges[0].base_address)        \
@@ -466,7 +473,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
 #else
 
 #define hfi_mov1_load_anytype(offset, data)                                                          \
-    asm(".byte 0x65\n"                                                                               \
+    asm HFI_VOLATILE(".byte 0x65\n"                                                                               \
     "mov (%1), %0\n"                                                                                 \
     : "=r"(data)                                                                                     \
     : "r"(offset)                                                                                    \
@@ -474,7 +481,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     );
 
 #define hfi_mov1_store_anytype(offset, data)                                                         \
-    asm(".byte 0x65\n"                                                                               \
+    asm HFI_VOLATILE(".byte 0x65\n"                                                                               \
     "mov %0, (%1)\n"                                                                                 \
     :                                                                                                \
     : "r"(data), "r"(offset)                                                                         \

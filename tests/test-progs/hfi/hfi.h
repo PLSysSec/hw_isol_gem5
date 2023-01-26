@@ -35,28 +35,28 @@ typedef struct {
      */
     uint8_t range_size_type;
     /**
-     * @brief base_address --- Used by the trusted sandbox. A constant base whose value is added to all loads and stores
+     * @brief base_address --- Used by the hybrid-mode sandbox. A constant base whose value is added to all loads and stores
      * performed in this region.
-     * base_mask --- Used by the untrusted sandbox. A mask that is uses as a prefix check for all loads and stores
+     * base_mask --- Used by the native-mode sandbox. A mask that is uses as a prefix check for all loads and stores
      * performed in this region.
      */
     union {
-        // used by the trusted sandbox
+        // used by the hybrid-mode sandbox
         uint64_t base_address;
-        // used by the untrusted sandobx
+        // used by the native-mode sandbox
         uint64_t base_mask;
     };
     /**
-     * @brief offset_limit --- Used by the trusted sandbox. The size of the
+     * @brief offset_limit --- Used by the hybrid-mode sandbox. The size of the
      * region. Must be a power of 64k.
-     * ignore_mask --- Used by the untrusted sandbox. A mask that is used to
+     * ignore_mask --- Used by the native-mode sandbox. A mask that is used to
      * drop unchecked bits of the suffix for all loads and stores performed in
      * this region.
      */
     union {
-        // used by the trusted sandbox
+        // used by the hybrid-mode sandbox
         uint64_t offset_limit;
-        // used by the untrusted sandobx
+        // used by the native-mode sandbox
         uint64_t ignore_mask;
     };
 } hfi_linear_data_range;
@@ -103,10 +103,10 @@ typedef struct {
      */
     hfi_linear_code_range code_ranges[HFI_LINEAR_CODE_RANGE_COUNT];
     /**
-     * @brief Bit that controls whether this is a "structured" sandbox with a
+     * @brief Bit that controls whether this is a "hybrid-mode" sandbox with a
      * trusted compiler.
      *
-     * In a structured sandbox, existing instructions are unchanged but binaries
+     * In a hybrid-mode sandbox, existing instructions are unchanged but binaries
      * get a new hfi sandboxed mov instruction "hmov"
      *
      *  hmov reg_region_num, reg * {1, 2, 4, 8}, disp_32
@@ -118,11 +118,11 @@ typedef struct {
      *  hmov3 reg * {1, 2, 4, 8}, disp_32
      *  hmov4 reg * {1, 2, 4, 8}, disp_32
      *
-     * Structured sandboxes can also use the hfi instructions such as
+     * hybrid-mode sandboxes can also use the hfi instructions such as
      * "hfi_set_sandbox_metadata", "hfi_get_sandbox_metadata" etc.
      *
-     * In an unstructured sandbox, there are no new instructions, but the
-     * existing mov instruction is modified to be sandboxed. Unstructured
+     * In an native-mode sandbox, there are no new instructions, but the
+     * existing mov instruction is modified to be sandboxed. native-mode
      * sandboxes cannot call hfi instructions other than hfi_exit
      */
     bool is_trusted_sandbox;

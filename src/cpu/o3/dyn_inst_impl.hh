@@ -419,6 +419,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
             }
 
             if (segment_number < 1 && segment_number > 4) {
+                EA = 0;
                 return std::make_shared<TheISA::HFIBoundsCheck>();
             }
 
@@ -436,6 +437,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
             if(faulted) {
                 // printf("HFI hmov oob\n");
                 printHFIMetadata();
+                EA = 0;
                 return std::make_shared<TheISA::HFIBoundsCheck>();
             }
 
@@ -460,6 +462,7 @@ BaseO3DynInst<Impl>::checkHFI(Addr &EA, bool is_store, uint64_t scale, uint64_t 
         if (faulted || !found) {
             // printf("HFI data mask oob\n");
             printHFIMetadata();
+            EA = 0;
             return std::make_shared<TheISA::HFIBoundsCheck>();
         }
     }

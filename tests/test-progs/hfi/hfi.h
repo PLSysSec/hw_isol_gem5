@@ -470,6 +470,7 @@ __attribute__((weak)) HFI_THREAD_LOCAL uint32_t hfi_emulated_exit_reason = 0;
     : "memory"                                                                                       \
     );
 
+// WASM_USE_HFI, actually use hfi encodings
 #else
 
 #define hfi_mov1_load_anytype(offset, data)                                                          \
